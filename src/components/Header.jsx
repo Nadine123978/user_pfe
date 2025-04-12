@@ -1,5 +1,12 @@
 import React from 'react';
-import { AppBar, Toolbar, Button, Typography, Box, Container, Stack } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  Box,
+  Stack,
+} from '@mui/material';
 
 const navItems = ['Home', 'About', 'Events', 'Blogs', 'Contact'];
 
@@ -10,13 +17,13 @@ export default function Header() {
         minHeight: '100vh',
         background: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
         color: 'white',
-        px: 3,
+        px: 0,
         py: 5,
       }}
     >
       {/* Navbar */}
       <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 8 } }}>
           <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 2 }}>
             SOCIETHY
             <Typography variant="caption" sx={{ display: 'block', letterSpacing: 1 }}>
@@ -34,7 +41,11 @@ export default function Header() {
 
           <Stack direction="row" spacing={2}>
             <Button color="inherit">Log In</Button>
-            <Button variant="outlined" color="inherit" sx={{ borderRadius: '20px' }}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              sx={{ borderRadius: '20px' }}
+            >
               Sign Up
             </Button>
           </Stack>
@@ -42,8 +53,12 @@ export default function Header() {
       </AppBar>
 
       {/* Main content */}
-      <Container maxWidth="xl" sx={{ mt: 10 }}>
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={5} alignItems="center">
+      <Box sx={{ width: '100%', px: { xs: 2, md: 8 }, mt: 10 }}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          spacing={5}
+          alignItems="center"
+        >
           {/* Text section */}
           <Box flex={1}>
             <Typography variant="body1" sx={{ mb: 1 }}>
@@ -95,7 +110,7 @@ export default function Header() {
             ))}
           </Box>
         </Stack>
-      </Container>
+      </Box>
     </Box>
   );
 }
