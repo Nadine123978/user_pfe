@@ -1,116 +1,63 @@
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  Typography,
-  Box,
-  Stack,
-} from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
-const navItems = ['Home', 'About', 'Events', 'Blogs', 'Contact'];
-
-export default function Header() {
+const Header = () => {
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)',
-        color: 'white',
-        px: 0,
-        py: 5,
-      }}
-    >
-      {/* Navbar */}
-      <AppBar position="static" color="transparent" elevation={0}>
-        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 8 } }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', letterSpacing: 2 }}>
-            SOCIETHY
-            <Typography variant="caption" sx={{ display: 'block', letterSpacing: 1 }}>
-              PARIS
-            </Typography>
+    <AppBar
+    position="static"
+    color="inherit"
+    elevation={0}
+    sx={{ width: '100%', px: { xs: 2, md: 4 } }}
+  >
+  
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        {/* Logo & Title */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <img
+            src="/ticket-logo.png" // ضع شعارك هون أو استبدله برابط خارجي
+            alt="logo"
+            style={{ width: 30 }}
+          />
+          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+            Counter
           </Typography>
+        </Box>
 
-          <Stack direction="row" spacing={3}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: 'white' }}>
-                {item}
-              </Button>
-            ))}
-          </Stack>
+        {/* Navigation */}
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
+          <Button color="inherit">Features</Button>
+          <Button color="inherit">Events</Button>
+          <Button color="inherit">How it Works</Button>
+          <Button color="inherit">Pricing</Button>
+          <Button color="inherit">Blog</Button>
+        </Box>
 
-          <Stack direction="row" spacing={2}>
-            <Button color="inherit">Log In</Button>
-            <Button
-              variant="outlined"
-              color="inherit"
-              sx={{ borderRadius: '20px' }}
-            >
-              Sign Up
-            </Button>
-          </Stack>
-        </Toolbar>
-      </AppBar>
+        {/* Contact + Icons */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button variant="contained" sx={{ backgroundColor: '#f7a600', color: '#000', fontWeight: 'bold' }}>
+            Contact Us
+          </Button>
+          <IconButton>
+            <i className="fas fa-search"></i> {/* بدك تضمن fontawesome لو بتحب */}
+          </IconButton>
+          <IconButton>
+            <i className="fas fa-times"></i>
+          </IconButton>
+        </Box>
 
-      {/* Main content */}
-      <Box sx={{ width: '100%', px: { xs: 2, md: 8 }, mt: 10 }}>
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={5}
-          alignItems="center"
+        {/* Hamburger menu (mobile) */}
+        <IconButton
+          sx={{ display: { xs: 'flex', md: 'none' }, marginLeft: 2 }}
+          edge="start"
+          color="inherit"
+          aria-label="menu"
         >
-          {/* Text section */}
-          <Box flex={1}>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              All the fun starts here.
-            </Typography>
-            <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2 }}>
-              Book your <br />
-              Tickets for Event!
-            </Typography>
-            <ul>
-              <li>Safe, Secure, Reliable ticketing.</li>
-              <li>Your ticket to live entertainment!</li>
-            </ul>
-            <Button
-              variant="contained"
-              sx={{
-                mt: 3,
-                borderRadius: '10px',
-                backgroundColor: '#ffffff',
-                color: '#000',
-                fontWeight: 'bold',
-              }}
-            >
-              View More
-            </Button>
-          </Box>
-
-          {/* Images section */}
-          <Box
-            flex={1}
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: 2,
-            }}
-          >
-            {[1, 2, 3, 4].map((num) => (
-              <Box
-                key={num}
-                sx={{
-                  height: 150,
-                  backgroundColor: '#222',
-                  backgroundImage: `url(https://via.placeholder.com/150?text=Image+${num})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  borderRadius: 2,
-                }}
-              />
-            ))}
-          </Box>
-        </Stack>
-      </Box>
-    </Box>
+          <MenuIcon />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
-}
+};
+
+export default Header;
