@@ -1,44 +1,67 @@
-import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import EventCard from './EventCard';
+import React from "react";
+import { Box, Button, Container, Stack, Typography } from "@mui/material";
 
 const HeroSection = () => {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', md: 'row' },
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        backgroundColor: '#fdf5e6',
-        padding: 5,
-        minHeight: '80vh',
-        width:'100%',
-      }}
-    >
-      {/* Left Text */}
-      <Box sx={{ flex: 1, pr: 5 }}>
-        <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2 }}>
-          Easy to Buy & <br />
-          Sale your <span style={{ color: '#f7a600' }}>Event Ticket</span>
-        </Typography>
-        <Typography sx={{ mb: 3 }}>
-          It is a long established fact that a reader content of a page <br />
-          when Ipsum is that it has a more-or-less normal.
-        </Typography>
-        <Button
-          variant="contained"
-          sx={{ backgroundColor: '#f7a600', color: '#000', fontWeight: 'bold' }}
+    <Box sx={{ backgroundColor: "#000", color: "#fff", minHeight: "80vh", py: 8 }}>
+      <Container maxWidth="xl" sx={{ mt: 10 }}>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          spacing={5}
+          alignItems="center"
         >
-          Get Started
-        </Button>
-      </Box>
+          {/* Text Section */}
+          <Box flex={1}>
+            <Typography variant="body1" sx={{ mb: 1 }}>
+              All the fun starts here.
+            </Typography>
+            <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
+              Book your <br />
+              Tickets for Event!
+            </Typography>
+            <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+              <li>Safe, Secure, Reliable ticketing.</li>
+              <li>Your ticket to live entertainment!</li>
+            </ul>
+            <Button
+              variant="contained"
+              sx={{
+                mt: 3,
+                borderRadius: "10px",
+                backgroundColor: "#ffffff",
+                color: "#000",
+                fontWeight: "bold",
+              }}
+            >
+              View More
+            </Button>
+          </Box>
 
-      {/* Right Card */}
-      <Box sx={{ flex: 1 }}>
-    
-       <EventCard />
-      </Box>
+          {/* Images Section */}
+          <Box
+            flex={1}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: 2,
+            }}
+          >
+            {[1, 2, 3, 4].map((num) => (
+              <Box
+                key={num}
+                sx={{
+                  height: 150,
+                  backgroundColor: "#222",
+                  backgroundImage: `url(https://via.placeholder.com/150?text=Image+${num})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  borderRadius: 2,
+                }}
+              />
+            ))}
+          </Box>
+        </Stack>
+      </Container>
     </Box>
   );
 };

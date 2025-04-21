@@ -1,60 +1,50 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+// components/Header.jsx
+import React from "react";
+import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import LaunchIcon from "@mui/icons-material/Launch";
+import { Link } from "react-router-dom"; // استيراد رابط من react-router-dom
 
 const Header = () => {
   return (
-    <AppBar
-    position="static"
-    color="inherit"
-    elevation={0}
-    sx={{ width: '100%', px: { xs: 2, md: 4 } }}
-  >
-  
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Logo & Title */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <img
-            src="/ticket-logo.png" // ضع شعارك هون أو استبدله برابط خارجي
-            alt="logo"
-            style={{ width: 30 }}
-          />
-          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-            Counter
-          </Typography>
+    <AppBar position="static" sx={{ background: "linear-gradient(to right, #03045E, #000)", boxShadow: "none" }}>
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        {/* الشعار */}
+        <Typography variant="h6" sx={{ fontWeight: "bold", letterSpacing: 2 }}>
+          SOCIETHY <Typography component="span" sx={{ fontSize: 10, ml: 0.5 }}>PARIS</Typography>
+        </Typography>
+
+        {/* القائمة */}
+        <Box sx={{ display: "flex", gap: 4 }}>
+          {["Home", "Events", "How it Works", "Blogs", "Contact"].map((item) => (
+            <Button key={item} sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
+              {item}
+            </Button>
+          ))}
         </Box>
 
-        {/* Navigation */}
-        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
-          <Button color="inherit">Features</Button>
-          <Button color="inherit">Events</Button>
-          <Button color="inherit">How it Works</Button>
-          <Button color="inherit">Pricing</Button>
-          <Button color="inherit">Blog</Button>
+        {/* أزرار التسجيل والدخول */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Link to="/login" style={{ textDecoration: "none" }}>
+            <Button sx={{ color: "#fff", textTransform: "none" }}>Login</Button>
+          </Link>
+          <Link to="/signup" style={{ textDecoration: "none" }}>
+            <Button
+              variant="outlined"
+              sx={{
+                color: "#fff",
+                borderColor: "#fff",
+                textTransform: "none",
+                "&:hover": {
+                  borderColor: "#fff",
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                },
+              }}
+              endIcon={<LaunchIcon sx={{ fontSize: 18 }} />}
+            >
+             SignUP
+            </Button>
+          </Link>
         </Box>
-
-        {/* Contact + Icons */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Button variant="contained" sx={{ backgroundColor: '#f7a600', color: '#000', fontWeight: 'bold' }}>
-            Contact Us
-          </Button>
-          <IconButton>
-            <i className="fas fa-search"></i> {/* بدك تضمن fontawesome لو بتحب */}
-          </IconButton>
-          <IconButton>
-            <i className="fas fa-times"></i>
-          </IconButton>
-        </Box>
-
-        {/* Hamburger menu (mobile) */}
-        <IconButton
-          sx={{ display: { xs: 'flex', md: 'none' }, marginLeft: 2 }}
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-        >
-          <MenuIcon />
-        </IconButton>
       </Toolbar>
     </AppBar>
   );
