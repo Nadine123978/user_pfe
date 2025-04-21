@@ -13,38 +13,40 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-    // التأكد من أن الحقول ليست فارغة
-    if (!email || !password) {
-      alert('Please fill in both fields');
-      return;
-    }
+  if (!email || !password) {
+    alert('Please fill in both fields');
+    return;
+  }
 
-    // إعداد البيانات لإرسالها إلى الـ API
-    const data = { email, password };
+  const data = { username: email, password }; // نستخدم username مش email لأن Spring Boot login بيطلب username
 
-    try {
-      const response = await fetch('https://your-api.com/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+  try {
+    const response = await fetch('http://localhost:8081/api/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (response.ok) {
-        // إذا كانت الاستجابة ناجحة (مثلاً، رمز JWT أو نجاح في التسجيل)
-        alert('Login Successful');
-        // هنا يمكنك توجيه المستخدم إلى صفحة أخرى باستخدام react-router
+    if (response.ok) {
+      const group = result.group;
+
+      if (group === "admin") {
+        window.location.href = "http://localhost:5174/admin-dashboard";
       } else {
-        // إذا كانت الاستجابة غير ناجحة
-        alert(result.message || 'Login failed');
+        window.location.href = "http://localhost:5173/user-dashboard";
       }
-    } catch (error) {
-      alert('Error: ' + error.message);
+    } else {
+      alert(result.message || 'Login failed');
     }
-  };
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+};
+
 
   return (
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
