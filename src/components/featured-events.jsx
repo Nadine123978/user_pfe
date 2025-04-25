@@ -29,13 +29,18 @@ const FeaturedEvents = () => {
       await axios.post("http://localhost:8081/api/bookings/create", null, {
         params: { userId, eventId },
       });
+<<<<<<< HEAD
       navigate("/booking");
+=======
+
+      navigate("/booking-success"); // أو أي صفحة بدك تنتقل إلها
+>>>>>>> aa2fdfb7bf32aef0ed42557b5be02f7688cacdb1
     } catch (error) {
       console.error("❌ Booking error:", error);
       alert("Booking failed. Try again.");
     }
   };
-
+  
   return (
     <Box sx={{ backgroundColor: '#052641', py: 6, px: 4, borderRadius: '24px', mt: 8 }}>
       <Typography variant="h4" color="white" fontWeight="bold" mb={1}>
@@ -66,6 +71,7 @@ const FeaturedEvents = () => {
                   {event.title}
                 </Typography>
                 <Typography variant="body2" color="gray" mb={2}>
+<<<<<<< HEAD
   {event.date} | {event.location?.fullAddress}
 </Typography>
 
@@ -73,6 +79,13 @@ const FeaturedEvents = () => {
                   onClick={() => handleBook(event.id)}
                   disabled={event.disabled}
                   variant={event.disabled ? "outlined" : "contained"}
+=======
+                  {event.date} | {event.location}
+                </Typography>
+                <Button
+                  variant={event.disabled ? 'outlined' : 'contained'}
+                  disabled={event.disabled}
+>>>>>>> aa2fdfb7bf32aef0ed42557b5be02f7688cacdb1
                   fullWidth
                   endIcon={<OpenInNewIcon />}
                   sx={{
@@ -82,7 +95,11 @@ const FeaturedEvents = () => {
                     fontWeight: 'bold',
                   }}
                 >
+<<<<<<< HEAD
                   View Tickets
+=======
+                  Get Tickets
+>>>>>>> aa2fdfb7bf32aef0ed42557b5be02f7688cacdb1
                 </Button>
               </CardContent>
             </Card>
