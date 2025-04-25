@@ -1,6 +1,9 @@
 // src/components/FeaturedEvents.jsx
 import { Box, Card, CardContent, CardMedia, Typography, Button, Grid } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const events = [
   {
@@ -30,6 +33,24 @@ const events = [
 ];
 
 const FeaturedEvents = () => {
+  const navigate = useNavigate(); // 👈 ضيفها هون
+
+  const handleBook = async (eventIndex) => {
+    try {
+      const userId = localStorage.getItem("userId"); // لازم تكون خزنتها بعد الـ login
+      const eventId = eventIndex + 1; // حسب ترتيب الأحداث أو عدّله حسب ID الحقيقي من الـ DB
+
+      await axios.post("http://localhost:8081/api/bookings/create", null, {
+        params: { userId, eventId },
+      });
+
+      navigate("/booking"); // أو أي صفحة بدك تنتقل إلها
+    } catch (error) {
+      console.error("❌ Booking error:", error);
+      alert("Booking failed. Try again.");
+    }
+  };
+
   return (
     <Box sx={{ backgroundColor: '#052641', py: 6, px: 4, borderRadius: '24px', mt: 8 }}>
       <Typography variant="h4" color="white" fontWeight="bold" mb={1}>
@@ -58,19 +79,21 @@ const FeaturedEvents = () => {
                   {event.date} | {event.location}
                 </Typography>
                 <Button
-                  variant={event.disabled ? 'outlined' : 'contained'}
-                  disabled={event.disabled}
-                  fullWidth
-                  endIcon={<OpenInNewIcon />}
-                  sx={{
-                    color: event.disabled ? '#999' : 'black',
-                    backgroundColor: event.disabled ? 'transparent' : 'white',
-                    borderColor: event.disabled ? '#444' : 'white',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Get Tickets
-                </Button>
+  onClick={() => navigate("/booking")}
+  disabled={event.disabled}
+  variant={event.disabled ? "outlined" : "contained"}
+  fullWidth
+  endIcon={<OpenInNewIcon />}
+  sx={{
+    color: event.disabled ? '#999' : 'black',
+    backgroundColor: event.disabled ? 'transparent' : 'white',
+    borderColor: event.disabled ? '#444' : 'white',
+    fontWeight: 'bold',
+  }}
+>
+  Get Tickets
+</Button>
+
               </CardContent>
             </Card>
           </Grid>
