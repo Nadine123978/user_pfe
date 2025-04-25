@@ -1,12 +1,60 @@
-import React from 'react';
-import { Box, Button, Checkbox, Container, FormControlLabel, TextField, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  Box,
+  Button,
+  Checkbox,
+  Container,
+  FormControlLabel,
+  TextField,
+  Typography,
+} from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 export default function SignUp() {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [agree, setAgree] = useState(false);
+  const navigate = useNavigate();
+
+
+  const handleSignUp = async () => {
+    if (!username || !email || !password) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    if (!agree) {
+      alert('You must agree to the terms and conditions.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:8081/api/users/create', {
+        username,
+        email,
+        password,
+      });
+
+      console.log('✅ User created:', response.data);
+      alert('Account created successfully!');
+      alert("Account created successfully!");
+navigate("/"); // أو مثلاً "/home"
+
+      // Redirect or clear fields if needed
+    } catch (error) {
+      console.error('❌ Error creating user:', error);
+      alert('Error creating account. Please try again.');
+    }
+  };
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)', // تقريب لألوان الغيوم
+        background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -31,14 +79,16 @@ export default function SignUp() {
           <TextField
             fullWidth
             label="Your name"
-            defaultValue="Adam Smith"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             variant="outlined"
             margin="normal"
           />
           <TextField
             fullWidth
             label="Email Address"
-            defaultValue="example@gmail.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             variant="outlined"
             margin="normal"
           />
@@ -46,12 +96,14 @@ export default function SignUp() {
             fullWidth
             label="Password"
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             variant="outlined"
             margin="normal"
           />
 
           <FormControlLabel
-            control={<Checkbox />}
+            control={<Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)} />}
             label={
               <Typography variant="body2">
                 I agree to the <strong>Terms</strong> and <strong>Conditions of Privacy</strong>
@@ -71,12 +123,14 @@ export default function SignUp() {
                 backgroundColor: '#33335c',
               },
             }}
+            onClick={handleSignUp}
           >
             Create Account
           </Button>
 
           <Typography variant="body2" align="center" mt={2}>
-            Already have an account? <strong style={{ cursor: 'pointer' }}>Login now</strong>
+            Already have an account?{' '}
+            <strong style={{ cursor: 'pointer' }}>Login now</strong>
           </Typography>
         </Box>
       </Container>
