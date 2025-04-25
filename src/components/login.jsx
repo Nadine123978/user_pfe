@@ -13,39 +13,40 @@ export default function Login() {
   };
 
   const handleLogin = async () => {
-  if (!email || !password) {
-    alert('Please fill in both fields');
-    return;
-  }
-
-  const data = { username: email, password }; // نستخدم username مش email لأن Spring Boot login بيطلب username
-
-  try {
-    const response = await fetch('http://localhost:8081/api/users/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      const group = result.group;
-
-      if (group === "admin") {
-        window.location.href = "http://localhost:5174/admin-dashboard";
-      } else {
-        window.location.href = "http://localhost:5173/user-dashboard";
-      }
-    } else {
-      alert(result.message || 'Login failed');
+    if (!email || !password) {
+      alert('Please fill in both fields');
+      return;
     }
-  } catch (error) {
-    alert('Error: ' + error.message);
-  }
-};
+  
+    const data = { email, password }; // إرسال email بدلاً من username
+  
+    try {
+      const response = await fetch('http://localhost:8081/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        const group = result.group;
+  
+        if (group === "admin") {
+          window.location.href = "http://localhost:5174/";
+        } else {
+          window.location.href = "http://localhost:5173/user-dashboard";
+        }
+      } else {
+        alert(result.message || 'Login failed');
+      }
+    } catch (error) {
+      alert('Error: ' + error.message);
+    }
+  };
+  
 
 
   return (
