@@ -3,7 +3,7 @@ import { Box, Button, Container, Stack, Typography } from "@mui/material";
 
 const HeroSection = () => {
   return (
-    <Box sx={{ backgroundColor: "#000", color: "#fff", minHeight: "80vh", py: 8 }}>
+    <Box sx={{ backgroundColor: "#000", color: "#fff", minHeight: "80vh", py: 8 , width:"100vw" }}>
       <Container maxWidth="xl" sx={{ mt: 10 }}>
         <Stack
           direction={{ xs: "column", md: "row" }}

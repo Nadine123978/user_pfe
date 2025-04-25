@@ -1,32 +1,22 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // دمج الاستيراد هنا
-import Header from "./components/Header";
-import HeroSection from './components/hero';
-import FeaturedEvents from "./components/featured-events";
-import EventCard from './components/EventCard';
-import UpcomingEvents from './components/UpcomingEvent';
-import HowItWorks from './components/how-works';
-import Login from './components/login'; // تأكد من استيراد مكونات تسجيل الدخول والتسجيل
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home';
+// باقي الصفحات مثلاً:
 import SignUp from './components/signup';
-import TrendingCategories from './components/trending-categories';
+import Login from './components/login';
+import ExperienceDetails from './pages/ExperienceDetails';
 
 function App() {
   return (
-    <div>
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/ExperienceDetails" element={<ExperienceDetails />} />
 
-        </Routes>
-        <HeroSection />
-        <FeaturedEvents/>
-        <TrendingCategories />
-        <UpcomingEvents />
-        <HowItWorks />
-      </Router>
-    </div>
+        {/* فيك تزيد باقي الصفحات هون */}
+      </Routes>
+    </Router>
   );
 }
 
