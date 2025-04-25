@@ -1,50 +1,35 @@
-// src/components/FeaturedEvents.jsx
+import React, { useEffect, useState } from 'react';
 import { Box, Card, CardContent, CardMedia, Typography, Button, Grid } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-
-const events = [
-  {
-    title: 'Digital thinkers meetup',
-    date: '29 Jan',
-    location: 'Grand Chapiteau',
-    price: '$200 - $300',
-    image: 'https://images.unsplash.com/photo-1581091012184-5c46a46b2a7d', // استبدل بالصور يلي بدك ياها
-    disabled: true,
-  },
-  {
-    title: 'Web design conference 2023',
-    date: '29 Jan',
-    location: 'Grand Chapiteau',
-    price: '$100 - $200',
-    image: 'https://images.unsplash.com/photo-1515162305285-1f0a5cfc2d4e',
-    disabled: true,
-  },
-  {
-    title: 'Digital Economy Conference 2023',
-    date: '29 Jan',
-    location: 'Grand Chapiteau',
-    price: '$250 - $300',
-    image: 'https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0',
-    disabled: false,
-  }
-];
-
 const FeaturedEvents = () => {
-  const navigate = useNavigate(); // 👈 ضيفها هون
+  const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
-  const handleBook = async (eventIndex) => {
+  useEffect(() => {
+    const fetchFeaturedEvents = async () => {
+      try {
+        const response = await axios.get("http://localhost:8081/api/events/featured");
+        console.log("✅ Events:", response.data);
+        setEvents(response.data);
+      } catch (error) {
+        console.error("❌ Error fetching featured events:", error);
+      }
+    };
+  
+    fetchFeaturedEvents();
+  }, []);
+  
+
+  const handleBook = async (eventId) => {
     try {
-      const userId = localStorage.getItem("userId"); // لازم تكون خزنتها بعد الـ login
-      const eventId = eventIndex + 1; // حسب ترتيب الأحداث أو عدّله حسب ID الحقيقي من الـ DB
-
+      const userId = localStorage.getItem("userId");
       await axios.post("http://localhost:8081/api/bookings/create", null, {
         params: { userId, eventId },
       });
-
-      navigate("/booking"); // أو أي صفحة بدك تنتقل إلها
+      navigate("/booking");
     } catch (error) {
       console.error("❌ Booking error:", error);
       alert("Booking failed. Try again.");
@@ -61,14 +46,19 @@ const FeaturedEvents = () => {
       </Typography>
 
       <Grid container spacing={4}>
-        {events.map((event, index) => (
-          <Grid item xs={12} md={4} key={index}>
+        {events.map((event) => (
+          <Grid item xs={12} md={4} key={event.id}>
             <Card sx={{ backgroundColor: '#0B2A4A', color: 'white', border: '1px solid #2e3c4f' }}>
               <CardMedia
                 component="img"
                 height="180"
-                image={event.image}
+                image={
+                  event.imageUrl?.startsWith("http")
+                    ? event.imageUrl
+                    : `http://localhost:8081${event.imageUrl}`
+                }
                 alt={event.title}
+
               />
               <CardContent>
                 <Typography variant="body2" color="gray">{event.price}</Typography>
@@ -76,24 +66,24 @@ const FeaturedEvents = () => {
                   {event.title}
                 </Typography>
                 <Typography variant="body2" color="gray" mb={2}>
-                  {event.date} | {event.location}
-                </Typography>
-                <Button
-  onClick={() => navigate("/booking")}
-  disabled={event.disabled}
-  variant={event.disabled ? "outlined" : "contained"}
-  fullWidth
-  endIcon={<OpenInNewIcon />}
-  sx={{
-    color: event.disabled ? '#999' : 'black',
-    backgroundColor: event.disabled ? 'transparent' : 'white',
-    borderColor: event.disabled ? '#444' : 'white',
-    fontWeight: 'bold',
-  }}
->
-  Get Tickets
-</Button>
+  {event.date} | {event.location?.fullAddress}
+</Typography>
 
+                <Button
+                  onClick={() => handleBook(event.id)}
+                  disabled={event.disabled}
+                  variant={event.disabled ? "outlined" : "contained"}
+                  fullWidth
+                  endIcon={<OpenInNewIcon />}
+                  sx={{
+                    color: event.disabled ? '#999' : 'black',
+                    backgroundColor: event.disabled ? 'transparent' : 'white',
+                    borderColor: event.disabled ? '#444' : 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  View Tickets
+                </Button>
               </CardContent>
             </Card>
           </Grid>
