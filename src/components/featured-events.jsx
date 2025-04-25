@@ -44,13 +44,13 @@ const FeaturedEvents = () => {
         params: { userId, eventId },
       });
 
-      navigate("/booking"); // أو أي صفحة بدك تنتقل إلها
+      navigate("/booking-success"); // أو أي صفحة بدك تنتقل إلها
     } catch (error) {
       console.error("❌ Booking error:", error);
       alert("Booking failed. Try again.");
     }
   };
-
+  
   return (
     <Box sx={{ backgroundColor: '#052641', py: 6, px: 4, borderRadius: '24px', mt: 8 }}>
       <Typography variant="h4" color="white" fontWeight="bold" mb={1}>
@@ -79,21 +79,19 @@ const FeaturedEvents = () => {
                   {event.date} | {event.location}
                 </Typography>
                 <Button
-  onClick={() => navigate("/booking")}
-  disabled={event.disabled}
-  variant={event.disabled ? "outlined" : "contained"}
-  fullWidth
-  endIcon={<OpenInNewIcon />}
-  sx={{
-    color: event.disabled ? '#999' : 'black',
-    backgroundColor: event.disabled ? 'transparent' : 'white',
-    borderColor: event.disabled ? '#444' : 'white',
-    fontWeight: 'bold',
-  }}
->
-  Get Tickets
-</Button>
-
+                  variant={event.disabled ? 'outlined' : 'contained'}
+                  disabled={event.disabled}
+                  fullWidth
+                  endIcon={<OpenInNewIcon />}
+                  sx={{
+                    color: event.disabled ? '#999' : 'black',
+                    backgroundColor: event.disabled ? 'transparent' : 'white',
+                    borderColor: event.disabled ? '#444' : 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Get Tickets
+                </Button>
               </CardContent>
             </Card>
           </Grid>

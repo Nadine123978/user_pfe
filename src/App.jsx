@@ -9,7 +9,6 @@ import HowItWorks from './components/how-works';
 import Login from './components/login'; // تأكد من استيراد مكونات تسجيل الدخول والتسجيل
 import SignUp from './components/signup';
 import TrendingCategories from './components/trending-categories';
-import Booking from "./pages/Booking";
 
 function App() {
   return (
@@ -19,7 +18,6 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/booking" element={<Booking />} />0
 
         </Routes>
         <HeroSection />
