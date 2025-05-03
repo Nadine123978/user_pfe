@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import SignUp from './components/signup';
 import Login from './components/login';
 import ExperienceDetails from './pages/ExperienceDetails';
+import ResetPassword from './components/resetpass';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/ExperienceDetails" element={<ExperienceDetails />} />
+        <Route path="/resetpass" element={<ResetPassword />} />
 
         {/* فيك تزيد باقي الصفحات هون */}
       </Routes>

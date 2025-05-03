@@ -58,6 +58,7 @@ navigate("/"); // أو مثلاً "/home"
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        width: '100vw',
       }}
     >
       <Container maxWidth="xs">

@@ -1,31 +1,27 @@
-import React, { useState } from 'react';
-import { Box, Button, Container, TextField, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, TextField, Typography, Container } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
 export default function ResetPassword() {
-  const [email, setEmail] = useState('');
+  const { token } = useParams();
+  const [newPassword, setNewPassword] = useState('');
 
-  const handleResetPassword = async () => {
-    if (!email) {
-      alert('Please enter your email!');
-      return;
-    }
-
-    // إرسال البريد الإلكتروني إلى السيرفر
-    const data = { email };
+  const handleSubmit = async () => {
     try {
-      const response = await fetch('http://localhost:8081/api/users/reset-password', {
+      const response = await fetch(`http://localhost:8081/api/users/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ password: newPassword }),
       });
+
       const result = await response.json();
 
       if (response.ok) {
-        alert('Check your email for the reset link!');
+        alert('Password has been reset successfully.');
       } else {
-        alert(result.message || 'Error resetting password.');
+        alert(result.message || 'Failed to reset password.');
       }
     } catch (error) {
       alert('Error: ' + error.message);
@@ -40,7 +36,6 @@ export default function ResetPassword() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100vw',
       }}
     >
       <Container maxWidth="xs">
@@ -56,14 +51,15 @@ export default function ResetPassword() {
             Reset Password
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary" mb={3}>
-            Check your email for instructions on how to regain access
+            Enter your new password below
           </Typography>
 
           <TextField
             fullWidth
-            label="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
             variant="outlined"
             margin="normal"
           />
@@ -79,14 +75,10 @@ export default function ResetPassword() {
                 backgroundColor: '#33335c',
               },
             }}
-            onClick={handleResetPassword}
+            onClick={handleSubmit}
           >
-            Send Reset Link
+            Reset Password
           </Button>
-
-          <Typography variant="body2" align="center" mt={2}>
-            Remember password? <strong style={{ cursor: 'pointer' }}>Login now</strong>
-          </Typography>
         </Box>
       </Container>
     </Box>
