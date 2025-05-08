@@ -13,20 +13,21 @@ export default function ResetPassword() {
     // إرسال البريد الإلكتروني إلى السيرفر
     const data = { email };
     try {
-      const response = await fetch('http://localhost:8081/auth/reset-password', {
+      const response = await fetch('http://localhost:8081/auth/request-reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
-      const result = await response.json();
+      const result = await response.text();
 
       if (response.ok) {
-        alert('Check your email for the reset link!');
+        alert(result); // بيطبع "Password reset link has been sent"
       } else {
-        alert(result.message || 'Error resetting password.');
+        alert(result || 'Error resetting password.');
       }
+      
     } catch (error) {
       alert('Error: ' + error.message);
     }
