@@ -11,7 +11,7 @@ const Home = () => {
       <HeroSection />
       <FeaturedEvents />
       <TrendingCategories />
-
+      
     </>
   );
 };

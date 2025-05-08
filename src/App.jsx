@@ -3,7 +3,7 @@ import Home from './pages/Home';
 // باقي الصفحات مثلاً:
 import SignUp from './components/signup';
 import Login from './components/login';
-import ExperienceDetails from './pages/ExperienceDetails';
+import ExperienceDetails from './pages/booking';
 import ResetPassword from './components/resetpass';
 
 function App() {
@@ -13,8 +13,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/ExperienceDetails" element={<ExperienceDetails />} />
         <Route path="/resetpass" element={<ResetPassword />} />
+        <Route path="/booking/:eventId" element={<ExperienceDetails />} />
+
 
         {/* فيك تزيد باقي الصفحات هون */}
       </Routes>

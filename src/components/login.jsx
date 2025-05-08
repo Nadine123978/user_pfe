@@ -27,23 +27,20 @@ export default function Login() {
       const response = await fetch('http://localhost:8081/api/users/login', {
         method: 'POST',
         mode: 'cors',
-        credentials: 'include',  // تأكد من أن الخادم يدعم إرسال ملفات تعريف الارتباط
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
   
-      // Log the full response and headers
       console.log('✅ Raw Response:', response);
-      console.log('Status:', response.status);
-      console.log('CORS header:', response.headers.get('Access-Control-Allow-Origin'));
-
+  
       if (!response.ok) {
         throw new Error('Login failed');
       }
-
-      // Attempt to parse the response body if it's JSON
+  
+      // محاولة لتحليل الـ response
       let result = {};
       try {
         const text = await response.text();
@@ -53,7 +50,18 @@ export default function Login() {
       }
   
       console.log("👤 Logged in as:", result.group);
+  
       const group = result.group;
+      const userId = result.userId;  // تأكد من أن السيرفر يعيد الـ userId بعد تسجيل الدخول
+      console.log("User ID from server:", userId);  // تحقق من الـ userId من السيرفر
+  
+      // حفظ الـ userId في localStorage فقط إذا كان موجوداً
+      if (userId) {
+        localStorage.setItem("userId", userId);  // حفظ الـ userId في localStorage
+        console.log("User ID saved to localStorage:", userId);  // تحقق من تخزين الـ userId في localStorage
+      } else {
+        console.warn("User ID is missing from the response");
+      }
   
       if (group === "admin") {
         window.location.href = "http://localhost:5174/";
@@ -65,7 +73,8 @@ export default function Login() {
       alert(error.message || 'An error occurred while logging in');
     }
   };
-
+  
+  
   return (
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)', 
       display: 'flex',

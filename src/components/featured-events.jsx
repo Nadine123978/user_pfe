@@ -22,19 +22,37 @@ const FeaturedEvents = () => {
     fetchFeaturedEvents();
   }, []);
   
-
   const handleBook = async (eventId) => {
+    const userId = localStorage.getItem("userId");
+console.log("Retrieved userId:", userId);  // تحقق من أن الـ userId موجود
+if (!userId) {
+  alert("Please log in first.");
+  navigate("/login");  // توجيه المستخدم إلى صفحة تسجيل الدخول
+  return;
+}
+
     try {
-      const userId = localStorage.getItem("userId");
-      await axios.post("http://localhost:8081/api/bookings/create", null, {
-        params: { userId, eventId },
+      // هنا userId سيكون رقم (Long) وليس string
+      const response = await axios.post(`http://localhost:8081/api/bookings/create?userId=${userId}&eventId=${eventId}`, null, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        withCredentials: true
       });
-      navigate("/booking");
+  
+      if (response.status === 200) {
+        alert("Booking successful!");
+        navigate(`/booking/${eventId}`);
+      } else {
+        alert("Booking failed. Please try again.");
+      }
     } catch (error) {
-      console.error("❌ Booking error:", error);
+      console.error("❌ Booking error:", error.response ? error.response.data : error.message);
       alert("Booking failed. Try again.");
     }
   };
+  
+  
   
   return (
     <Box sx={{ backgroundColor: '#052641', py: 6, px: 4, borderRadius: '24px', mt: 8 }}>
@@ -49,17 +67,24 @@ const FeaturedEvents = () => {
         {events.map((event) => (
           <Grid item xs={12} md={4} key={event.id}>
             <Card sx={{ backgroundColor: '#0B2A4A', color: 'white', border: '1px solid #2e3c4f' }}>
-              <CardMedia
-                component="img"
-                height="180"
-                image={
-                  event.imageUrl?.startsWith("http")
-                    ? event.imageUrl
-                    : `http://localhost:8081${event.imageUrl}`
-                }
-                alt={event.title}
+            <CardMedia
+  component="img"
+  height="180"
+  image={
+    event.imageUrl
+      ? event.imageUrl.startsWith("http")
+        ? event.imageUrl
+        : `http://localhost:8081${event.imageUrl}`
+      : "/default-event.jpg"
+  }
+  alt={event.title}
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = "/default-event.jpg";
+  }}
+/>
 
-              />
+
               <CardContent>
                 <Typography variant="body2" color="gray">{event.price}</Typography>
                 <Typography variant="h6" fontWeight="bold" mt={1} mb={1}>

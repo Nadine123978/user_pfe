@@ -25,30 +25,30 @@ export default function SignUp() {
       alert('Please fill in all fields.');
       return;
     }
-
+  
     if (!agree) {
       alert('You must agree to the terms and conditions.');
       return;
     }
-
+  
     try {
       const response = await axios.post('http://localhost:8081/api/users/create', {
         username,
         email,
         password,
       });
-
-      console.log('✅ User created:', response.data);
+  
+      const userId = response.data.userId;  // تأكد من أن السيرفر يعيد الـ userId بعد إنشاء الحساب
+      localStorage.setItem("userId", userId);  // حفظ الـ userId في localStorage
+  
       alert('Account created successfully!');
-      alert("Account created successfully!");
-navigate("/"); // أو مثلاً "/home"
-
-      // Redirect or clear fields if needed
+      navigate("/");  // أو توجيه المستخدم إلى الصفحة المناسبة
     } catch (error) {
       console.error('❌ Error creating user:', error);
       alert('Error creating account. Please try again.');
     }
   };
+  
 
   return (
     <Box
