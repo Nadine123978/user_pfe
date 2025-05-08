@@ -27,17 +27,23 @@ export default function Login() {
       const response = await fetch('http://localhost:8081/api/users/login', {
         method: 'POST',
         mode: 'cors',
-        credentials: 'include',
+        credentials: 'include',  // تأكد من أن الخادم يدعم إرسال ملفات تعريف الارتباط
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
   
+      // Log the full response and headers
       console.log('✅ Raw Response:', response);
       console.log('Status:', response.status);
       console.log('CORS header:', response.headers.get('Access-Control-Allow-Origin'));
-  
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      // Attempt to parse the response body if it's JSON
       let result = {};
       try {
         const text = await response.text();
@@ -46,25 +52,20 @@ export default function Login() {
         console.warn("⚠️ Couldn't parse JSON:", e);
       }
   
-      if (response.ok) {
-        console.log("👤 Logged in as:", result.group);
-        const group = result.group;
+      console.log("👤 Logged in as:", result.group);
+      const group = result.group;
   
-        if (group === "admin") {
-          window.location.href = "http://localhost:5174/";
-        } else {
-          window.location.href = "http://localhost:5173/";
-        }
+      if (group === "admin") {
+        window.location.href = "http://localhost:5174/";
       } else {
-        const errorMessage = result.message || 'Login failed. Please check your credentials.';
-        alert(errorMessage);
+        window.location.href = "http://localhost:5173/";
       }
     } catch (error) {
-      console.error('❌ Network Error:', error);
-      alert('Network Error: ' + error.message);
+      console.error('❌ Error:', error);
+      alert(error.message || 'An error occurred while logging in');
     }
   };
-  
+
   return (
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)', 
       display: 'flex',

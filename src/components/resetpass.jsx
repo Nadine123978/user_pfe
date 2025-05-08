@@ -13,7 +13,7 @@ export default function ResetPassword() {
     // إرسال البريد الإلكتروني إلى السيرفر
     const data = { email };
     try {
-      const response = await fetch('http://localhost:8081/api/users/reset-password', {
+      const response = await fetch('http://localhost:8081/auth/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
