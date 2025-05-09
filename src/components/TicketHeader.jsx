@@ -3,15 +3,13 @@ import {
   Box,
   Typography,
   InputBase,
-  IconButton,
-  Button
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import LanguageIcon from '@mui/icons-material/Language';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 
-const headerticket = () => {
+const TicketHeader = ({ event }) => {
   return (
     <Box
       sx={{
@@ -29,12 +27,10 @@ const headerticket = () => {
     >
       {/* Left: Logo + Search */}
       <Box display="flex" alignItems="center" gap={2}>
-        {/* Logo */}
         <Typography variant="h5" fontWeight="bold" sx={{ color: '#00c1c1' }}>
-          Tiqets
+          {event?.title || 'Tiqets'}
         </Typography>
 
-        {/* Search Bar */}
         <Box
           sx={{
             display: 'flex',
@@ -73,4 +69,4 @@ const headerticket = () => {
   );
 };
 
-export default headerticket;
+export default TicketHeader;

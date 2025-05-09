@@ -1,16 +1,7 @@
-import React from 'react';
 import { Box, Button } from '@mui/material';
+const GallerySection = ({ images = [] }) => {
+  if (images.length === 0) return null; // أو ترجع placeholder
 
-const images = [
-  "https://cdn.getyourguide.com/img/location/5ffeb8f21795d.jpeg/88.jpg", // الرئيسية
-  "https://cdn.getyourguide.com/img/tour/5ffeb8f21795d.jpeg/88.jpg",
-  "https://cdn.getyourguide.com/img/tour/5ffe9fa7f08dd.jpeg/88.jpg",
-  "https://cdn.getyourguide.com/img/tour/5ffe9d2149089.jpeg/88.jpg",
-  "https://cdn.getyourguide.com/img/tour/5ffe9c2ff325d.jpeg/88.jpg",
-  "https://cdn.getyourguide.com/img/tour/5ffe9c2b7ac6e.jpeg/88.jpg"
-];
-
-const GallerySection = () => {
   return (
     <Box
       sx={{
@@ -36,7 +27,7 @@ const GallerySection = () => {
         }}
       />
 
-      {/* الصور الصغيرة داخل نفس الـ box */}
+      {/* الصور الصغيرة */}
       <Box
         sx={{
           display: 'grid',
@@ -48,14 +39,7 @@ const GallerySection = () => {
         }}
       >
         {images.slice(1, 6).map((img, i) => (
-          <Box
-            key={i}
-            sx={{
-              position: 'relative',
-              overflow: 'hidden',
-              borderRadius: 2
-            }}
-          >
+          <Box key={i} sx={{ position: 'relative', overflow: 'hidden', borderRadius: 2 }}>
             <Box
               component="img"
               src={img}

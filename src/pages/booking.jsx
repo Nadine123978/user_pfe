@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Grid } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+
 import TicketHeader from '../components/TicketHeader';
 import GallerySection from '../components/GallerySection';
 import TicketInfoBox from '../components/TicketInfoBox';
@@ -7,36 +10,41 @@ import BookingDetailsSection from '../components/BookingDetailsSection';
 import ReviewsSection from '../components/ReviewsSection';
 
 const Bookings = () => {
+  const { id } = useParams(); // ⬅️ من URL
+  const [event, setEvent] = useState(null);
+
+  useEffect(() => {
+    axios.get(`http://localhost:8081/api/events/${id}`)
+      .then(response => setEvent(response.data))
+      .catch(error => console.error("❌ Error fetching event:", error));
+  }, [id]);
+
+  console.log("Event in component:", event);
+  if (!event) return <div style={{ padding: '2rem' }}>Loading event details...</div>;
+
   return (
     <>
-      {/* ✅ الهيدر ظاهر فقط في هذه الصفحة */}
-      <TicketHeader/>
+      <TicketHeader event={event} />
 
       <Box sx={{ px: { xs: 2, md: 10 }, py: 4 }}>
-
-        {/* ✅ القسم العلوي: الصور */}
         <Box sx={{ mb: 5 }}>
-          <GallerySection />
+          <GallerySection images={[event.imageUrl]} />
         </Box>
 
-        {/* ✅ التفاصيل والتذكرة جنب بعض */}
         <Grid container spacing={4}>
-          {/* يسار: التفاصيل والمراجعات */}
           <Grid item xs={12} md={8}>
-            <BookingDetailsSection />
+            <BookingDetailsSection event={event} />
             <Box sx={{ mt: 6 }}>
-              <ReviewsSection />
+              <ReviewsSection eventId={event.id} />
             </Box>
           </Grid>
 
-          {/* يمين: صندوق الحجز */}
           <Grid item xs={12} md={4}>
             <Box sx={{ position: { md: 'sticky' }, top: 100 }}>
-              <TicketInfoBox />
+              <TicketInfoBox event={event} />
             </Box>
           </Grid>
         </Grid>
-
       </Box>
     </>
   );
