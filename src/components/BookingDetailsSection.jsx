@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
   Typography,
@@ -14,13 +16,32 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const BookingDetailsSection = () => {
+   const { id } = useParams(); // ⬅️ من URL
+    const [event, setEvent] = useState(null);
+  
+    useEffect(() => {
+      axios.get(`http://localhost:8081/api/events/${id}`)
+        .then(response => setEvent(response.data))
+        .catch(error => console.error("❌ Error fetching event:", error));
+    }, [id]);
   return (
     <Box sx={{ mt: 5 }}>
       {/* العنوان */}
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        La Grande Roue de Montréal: Ferris Wheel Entry Ticket
-      </Typography>
+     <Typography variant="h5" fontWeight="bold" gutterBottom>
+  {event?.title}
+</Typography>
 
+ {/* التاريخ */}
+{event?.startDate && (
+  <Typography variant="body2" color="text.secondary" gutterBottom>
+    {new Date(event.startDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })}
+  </Typography>
+)}
       {/* What’s included */}
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -51,20 +72,10 @@ const BookingDetailsSection = () => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body2" color="text.secondary">
-            Enjoy the Montréal skyline from new heights, and see how far-reaching views at the Grande Roue de Montréal
-            stretch across the city. Located in Old Port, it’s the tallest observation wheel in Canada at 60m.
-            Take stunning pictures, relax in a temperature-controlled cabin, and enjoy this must-see local attraction!
+      {event?.description}
           </Typography>
         </AccordionDetails>
       </Accordion>
-
-      {/* صورة توضيحية */}
-      <Box
-        component="img"
-        src="https://images.unsplash.com/photo-1546039907-7fa05f864c02?auto=format&fit=crop&w=900&q=80"
-        alt="experience"
-        sx={{ width: '100%', borderRadius: 2, mt: 2 }}
-      />
 
       {/* Instructions */}
       <Accordion>

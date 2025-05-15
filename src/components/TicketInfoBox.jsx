@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+  import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -15,7 +18,20 @@ import EventIcon from '@mui/icons-material/Event';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 
 const TicketInfoBox = () => {
-  return (
+    const { id } = useParams(); // ⬅️ من URL
+    const [event, setEvent] = useState(null);
+      const navigate = useNavigate();
+        const handleCheckAvailability = () => {
+    navigate(`/event/${event?.id}/tickets`);
+  };
+  
+    useEffect(() => {
+      axios.get(`http://localhost:8081/api/events/${id}`)
+        .then(response => setEvent(response.data))
+        .catch(error => console.error("❌ Error fetching event:", error));
+    }, [id]);
+
+return (
     <Card sx={{ maxWidth: 300, p: 2, borderRadius: 3, boxShadow: 3 }}>
       <CardContent>
 
@@ -23,14 +39,14 @@ const TicketInfoBox = () => {
           From
         </Typography>
         <Typography variant="h6" fontWeight="bold" mb={2}>
-          €20.60
+          {event?.price}$
         </Typography>
 
         {/* Select Date */}
         <FormControl fullWidth margin="dense">
           <InputLabel>
             <EventIcon fontSize="small" sx={{ mr: 1 }} />
-            Select a date
+        select date
           </InputLabel>
           <Select defaultValue="" displayEmpty>
             <MenuItem value="">Select a date</MenuItem>
@@ -52,6 +68,7 @@ const TicketInfoBox = () => {
         <Button
           fullWidth
           variant="contained"
+                onClick={handleCheckAvailability}
           sx={{
             mt: 2,
             backgroundColor: '#a53894',

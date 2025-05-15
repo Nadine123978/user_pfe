@@ -28,7 +28,7 @@ const Bookings = () => {
 
       <Box sx={{ px: { xs: 2, md: 10 }, py: 4 }}>
         <Box sx={{ mb: 5 }}>
-          <GallerySection images={[event.imageUrl]} />
+        image
         </Box>
 
         <Grid container spacing={4}>

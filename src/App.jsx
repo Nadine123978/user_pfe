@@ -2,8 +2,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import SignUp from './components/signup';
 import Login from './components/login';
-import Bookings from './pages/booking'; // صفحة التفاصيل - صفحة الحجز
+import Bookings from './pages/booking';
+import SeatMap from './pages/SeatMap';
+ // صفحة التفاصيل - صفحة الحجز
 function App() {
+  
   return (
     <Router>
       <Routes>
@@ -15,6 +18,7 @@ function App() {
 
         {/* صفحة تسجيل الدخول */}
         <Route path="/login" element={<Login />} />
+        <Route path="/event/:id/tickets" element={<SeatMap />} />
 
         {/* صفحة حجز التذاكر، فيها ID الحدث */}
         <Route path="/booking/:id" element={<Bookings />} />
