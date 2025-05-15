@@ -1,26 +1,24 @@
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Button } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-
-const categories = [
-  {
-    title: 'Fashion',
-    image: 'https://images.unsplash.com/photo-1586790188481-d1724e186fda'
-  },
-  {
-    title: 'Music',
-    image: 'https://images.unsplash.com/photo-1519671482749-fd09be7ccebf'
-  },
-  {
-    title: 'Lifestyle',
-    image: 'https://images.unsplash.com/photo-1583337130417-3346a1be7dee'
-  },
-  {
-    title: 'Art',
-    image: 'https://images.unsplash.com/photo-1616401787026-6eaa35634719'
-  }
-];
+import axios from 'axios';
 
 const TrendingCategories = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        const res = await axios.get("http://localhost:8081/api/categories/trending");
+        setCategories(res.data);
+        console.log("Trending categories:", res.data); // 👈 console log hon
+      } catch (err) {
+        console.error("Failed to fetch trending categories", err);
+      }
+    };
+    fetchTrending();
+  }, []);
+
   return (
     <Box sx={{ backgroundColor: '#050d30', py: 6, px: 4, mt: 8 }}>
       <Typography variant="h4" color="white" fontWeight="bold" mb={1}>
@@ -30,55 +28,98 @@ const TrendingCategories = () => {
         Be sure not to miss these Event today.
       </Typography>
 
-      <Grid container spacing={2}>
-        {categories.map((category, index) => (
-          <Grid item xs={12} md={6} key={index}>
-            <Box
-              sx={{
-                position: 'relative',
-                height: 250,
-                borderRadius: 1,
-                overflow: 'hidden',
-                backgroundImage: `url(${category.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                border: '1px solid #555'
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 16,
-                  left: 16,
-                  color: 'white',
-                  fontWeight: 'bold',
-                  fontSize: '1.2rem'
-                }}
-              >
-                {category.title}
-              </Box>
-              <Button
-                variant="outlined"
-                endIcon={<OpenInNewIcon />}
-                sx={{
-                  position: 'absolute',
-                  bottom: 16,
-                  right: 16,
-                  color: 'white',
-                  borderColor: 'white',
-                  backdropFilter: 'blur(4px)',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  fontWeight: 'bold',
-                  px: 2,
-                  textTransform: 'none'
-                }}
-              >
-                Preview
-              </Button>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+     <Grid container spacing={2}>
+  {/* الصف العلوي مع 2 صناديق */}
+  {categories.slice(0, 2).map((category, index) => (
+    <Grid item xs={12} md={6} key={index}>
+      <Box
+        sx={{
+          position: 'relative',
+          height: 300,
+          borderRadius: 2,
+          overflow: 'hidden',
+          backgroundImage: `url(https://source.unsplash.com/random/800x600?sig=${index})`, // أو استخدم الصورة الحقيقية
+          backgroundColor: '#222',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          border: '2px solid #444',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          p: 2
+        }}
+      >
+        <Typography variant="h6" color="white" fontWeight="bold">
+          {category.name}
+        </Typography>
+        <Button
+          variant="outlined"
+          endIcon={<OpenInNewIcon />}
+          sx={{
+            alignSelf: 'flex-end',
+            color: 'white',
+            borderColor: 'white',
+            backdropFilter: 'blur(4px)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            fontWeight: 'bold',
+            px: 2,
+            textTransform: 'none',
+            mt: 'auto'
+          }}
+        >
+          Preview
+        </Button>
+      </Box>
+    </Grid>
+  ))}
+</Grid>
+
+{/* الصف السفلي مع 2 صناديق */}
+<Grid container spacing={2} sx={{ mt: 4 }}>
+  {categories.slice(2, 4).map((category, index) => (
+    <Grid item xs={12} md={6} key={index}>
+      <Box
+        sx={{
+          position: 'relative',
+          height: 300,
+          borderRadius: 2,
+          overflow: 'hidden',
+          backgroundImage: `url(https://source.unsplash.com/random/800x600?sig=${index})`, // أو استخدم الصورة الحقيقية
+          backgroundColor: '#222',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          border: '2px solid #444',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          p: 2
+        }}
+      >
+        <Typography variant="h6" color="white" fontWeight="bold">
+          {category.name}
+        </Typography>
+        <Button
+          variant="outlined"
+          endIcon={<OpenInNewIcon />}
+          sx={{
+            alignSelf: 'flex-end',
+            color: 'white',
+            borderColor: 'white',
+            backdropFilter: 'blur(4px)',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            fontWeight: 'bold',
+            px: 2,
+            textTransform: 'none',
+            mt: 'auto'
+          }}
+        >
+          Preview
+        </Button>
+      </Box>
+    </Grid>
+  ))}
+</Grid>
+
     </Box>
   );
 };
