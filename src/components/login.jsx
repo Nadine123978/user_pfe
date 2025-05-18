@@ -1,9 +1,13 @@
 import React from 'react';
-import { Button, TextField, Container, Typography, Box, InputAdornment, IconButton, Checkbox, FormControlLabel } from '@mui/material';
+import {
+  Button, TextField, Container, Typography, Box, InputAdornment,
+  IconButton, Checkbox, FormControlLabel
+} from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link } from 'react-router-dom';
-
+import { signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '../firebase'; // تأكد من المسار الصحيح
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -19,10 +23,10 @@ export default function Login() {
       alert('Please fill in both fields');
       return;
     }
-  
+
     const data = { email, password };
     console.log('🚀 Sending login data:', JSON.stringify(data));
-  
+
     try {
       const response = await fetch('http://localhost:8081/api/users/login', {
         method: 'POST',
@@ -33,14 +37,11 @@ export default function Login() {
         },
         body: JSON.stringify(data),
       });
-  
-      console.log('✅ Raw Response:', response);
-  
+
       if (!response.ok) {
         throw new Error('Login failed');
       }
-  
-      // محاولة لتحليل الـ response
+
       let result = {};
       try {
         const text = await response.text();
@@ -48,21 +49,13 @@ export default function Login() {
       } catch (e) {
         console.warn("⚠️ Couldn't parse JSON:", e);
       }
-  
-      console.log("👤 Logged in as:", result.group);
-  
+
       const group = result.group;
-      const userId = result.userId;  // تأكد من أن السيرفر يعيد الـ userId بعد تسجيل الدخول
-      console.log("User ID from server:", userId);  // تحقق من الـ userId من السيرفر
-  
-      // حفظ الـ userId في localStorage فقط إذا كان موجوداً
+      const userId = result.userId;
       if (userId) {
-        localStorage.setItem("userId", userId);  // حفظ الـ userId في localStorage
-        console.log("User ID saved to localStorage:", userId);  // تحقق من تخزين الـ userId في localStorage
-      } else {
-        console.warn("User ID is missing from the response");
+        localStorage.setItem("userId", userId);
       }
-  
+
       if (group === "admin") {
         window.location.href = "http://localhost:5174/";
       } else {
@@ -73,15 +66,50 @@ export default function Login() {
       alert(error.message || 'An error occurred while logging in');
     }
   };
-  
-  
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const email = result.user.email;
+      const name = result.user.displayName;
+
+      console.log("✅ Google Login Success:", email);
+
+      // إرسال البيانات للسيرفر
+      const response = await fetch("http://localhost:8081/api/users/google-login", {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, username: name }),
+      });
+
+      const resData = await response.json();
+      const userId = resData.userId;
+      const group = resData.group;
+
+      if (userId) {
+        localStorage.setItem("userId", userId);
+      }
+
+      if (group === "admin") {
+        window.location.href = "http://localhost:5174/";
+      } else {
+        window.location.href = "http://localhost:5173/";
+      }
+    } catch (error) {
+      console.error("❌ Google Sign-In Error:", error);
+      alert("Google login failed.");
+    }
+  };
+
   return (
-    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)', 
+    <Box sx={{
+      minHeight: '100vh',
+      background: 'linear-gradient(to bottom, #fce3f1, #dcdde1)',
       display: 'flex',
-       alignItems: 'center', 
-    justifyContent: 'center',
-    width: '100vw',
-     }}>
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100vw',
+    }}>
       <Container maxWidth="xs">
         <Box sx={{ backgroundColor: 'white', padding: 4, borderRadius: 3, boxShadow: 3 }}>
           <Typography variant="h4" align="center" fontWeight="bold" mb={1} color='black'>Log In</Typography>
@@ -117,15 +145,14 @@ export default function Login() {
             }}
           />
 
-
-<Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
-  <FormControlLabel control={<Checkbox />} label="Remember me" />
-  <Link to="/resetpass" style={{ textDecoration: 'none' }}>
-    <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
-      Forgot your password?
-    </Typography>
-  </Link>
-</Box>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+            <FormControlLabel control={<Checkbox />} label="Remember me" />
+            <Link to="/resetpass" style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
+                Forgot your password?
+              </Typography>
+            </Link>
+          </Box>
 
           <Button
             fullWidth
@@ -141,6 +168,24 @@ export default function Login() {
             onClick={handleLogin}
           >
             Login Now
+          </Button>
+
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{
+              mt: 2,
+              borderRadius: '20px',
+              borderColor: '#1c1c3b',
+              color: '#1c1c3b',
+              '&:hover': {
+                borderColor: '#33335c',
+                color: '#33335c',
+              },
+            }}
+            onClick={handleGoogleLogin}
+          >
+            Login with Google
           </Button>
 
           <Typography variant="body2" align="center" mt={2}>

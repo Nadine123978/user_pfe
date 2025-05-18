@@ -10,7 +10,8 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
-
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../firebase";
 
 export default function SignUp() {
   const [username, setUsername] = useState('');
@@ -19,36 +20,50 @@ export default function SignUp() {
   const [agree, setAgree] = useState(false);
   const navigate = useNavigate();
 
-
   const handleSignUp = async () => {
     if (!username || !email || !password) {
       alert('Please fill in all fields.');
       return;
     }
-  
+
     if (!agree) {
       alert('You must agree to the terms and conditions.');
       return;
     }
-  
+
     try {
       const response = await axios.post('http://localhost:8081/api/users/create', {
         username,
         email,
         password,
       });
-  
-      const userId = response.data.userId;  // تأكد من أن السيرفر يعيد الـ userId بعد إنشاء الحساب
-      localStorage.setItem("userId", userId);  // حفظ الـ userId في localStorage
-  
+
+      const userId = response.data.userId;
+      localStorage.setItem("userId", userId);
+
       alert('Account created successfully!');
-      navigate("/");  // أو توجيه المستخدم إلى الصفحة المناسبة
+      navigate("/");
     } catch (error) {
       console.error('❌ Error creating user:', error);
       alert('Error creating account. Please try again.');
     }
   };
-  
+
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("✅ Google user:", user);
+
+      // حفظ uid و redirect
+      localStorage.setItem("userId", user.uid);
+      alert(`Welcome ${user.displayName}`);
+      navigate("/");
+    } catch (error) {
+      console.error("❌ Google Sign-in error:", error);
+      alert("Failed to sign in with Google");
+    }
+  };
 
   return (
     <Box
@@ -127,6 +142,24 @@ export default function SignUp() {
             onClick={handleSignUp}
           >
             Create Account
+          </Button>
+
+          <Button
+            fullWidth
+            variant="outlined"
+            sx={{
+              mt: 2,
+              borderRadius: '20px',
+              borderColor: '#1c1c3b',
+              color: '#1c1c3b',
+              '&:hover': {
+                borderColor: '#33335c',
+                backgroundColor: '#f0f0f0',
+              },
+            }}
+            onClick={handleGoogleSignUp}
+          >
+            Sign Up with Google
           </Button>
 
           <Typography variant="body2" align="center" mt={2}>
