@@ -4,6 +4,9 @@ import SignUp from './components/signup';
 import Login from './components/login';
 import Bookings from './pages/booking';
 import SeatMap from './pages/SeatMap';
+import ContactPage from "./pages/Contact";
+import Forgetpage from "./pages/Forgetpage";
+import ResetPassPage from './pages/ResetPassPage';
  // صفحة التفاصيل - صفحة الحجز
 function App() {
   
@@ -22,6 +25,13 @@ function App() {
 
         {/* صفحة حجز التذاكر، فيها ID الحدث */}
         <Route path="/booking/:id" element={<Bookings />} />
+        <Route path="/contact" element={<ContactPage />} />
+
+         <Route path="/resetpass" element={<Forgetpage />} />
+   
+
+         <Route path="/reset-password" element={<ResetPassPage />} />
+        
       </Routes>
     </Router>
   );

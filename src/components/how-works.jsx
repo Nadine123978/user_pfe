@@ -36,8 +36,8 @@ function HowItWorks() {
       </Typography>
 
       <Grid container spacing={4} justifyContent="center">
-        {steps.map((step, index) => (
-          <Grid item xs={12} md={4} key={index}>
+  {steps.map((step, index) => (
+    <Grid item xs={12} sm={6} md={4} key={index}>
             <Paper
               elevation={3}
               sx={{

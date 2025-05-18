@@ -1,12 +1,23 @@
-// components/Header.jsx
 import React from "react";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import LaunchIcon from "@mui/icons-material/Launch";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ scrollTargets }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isLoggedIn = !!localStorage.getItem("userId");
+
+  const handleScroll = (ref) => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        ref?.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100); // مننطر يرجع على الصفحة
+    } else {
+      ref?.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -31,7 +42,6 @@ const Header = () => {
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        {/* الشعار */}
         <Typography variant="h6" sx={{ fontWeight: "bold", letterSpacing: 2 }}>
           SOCIETHY{" "}
           <Typography component="span" sx={{ fontSize: 10, ml: 0.5 }}>
@@ -39,16 +49,24 @@ const Header = () => {
           </Typography>
         </Typography>
 
-        {/* القائمة */}
         <Box sx={{ display: "flex", gap: 4 }}>
-          {["Home", "Events", "How it Works", "Blogs", "Contact"].map((item) => (
-            <Button key={item} sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
-              {item}
-            </Button>
-          ))}
+          <Button onClick={() => handleScroll(scrollTargets?.homeRef)} sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
+            Home
+          </Button>
+          <Button onClick={() => handleScroll(scrollTargets?.eventsRef)} sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
+            Events
+          </Button>
+          <Button onClick={() => handleScroll(scrollTargets?.howItWorksRef)} sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
+            How it Works
+          </Button>
+          <Link to="/blogs" style={{ textDecoration: "none" }}>
+            <Button sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>Blogs</Button>
+          </Link>
+          <Link to="/contact" style={{ textDecoration: "none" }}>
+            <Button sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>Contact</Button>
+          </Link>
         </Box>
 
-        {/* أزرار الجهة اليمنى */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {!isLoggedIn && (
             <>
