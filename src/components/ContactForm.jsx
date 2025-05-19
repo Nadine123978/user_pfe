@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { Box, Grid, TextField, Button, Typography, Paper } from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
+import React, { useState } from "react";
+import {
+  Box,
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Paper,
+} from "@mui/material";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
 import ReCAPTCHA from "react-google-recaptcha";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -18,18 +26,28 @@ export default function ContactForm() {
   const validateEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const validatePhone = (phone) =>
-    /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/.test(phone);
+  // التحقق من رقم الهاتف للبلد لبنان "LB"
+  const validatePhone = (phone, country = "LB") => {
+    try {
+      return isValidPhoneNumber(phone, country);
+    } catch {
+      return false;
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!formData.fullName.trim())
+      newErrors.fullName = "Full name is required";
+
     if (!formData.email.trim()) newErrors.email = "Email is required";
-    else if (!validateEmail(formData.email)) newErrors.email = "Invalid email format";
+    else if (!validateEmail(formData.email))
+      newErrors.email = "Invalid email format";
 
     if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
-    else if (!validatePhone(formData.phone)) newErrors.phone = "Invalid phone format";
+    else if (!validatePhone(formData.phone, "LB"))
+      newErrors.phone = "Invalid phone number for Lebanon";
 
     if (!formData.message.trim()) newErrors.message = "Message is required";
 
@@ -38,8 +56,8 @@ export default function ContactForm() {
   };
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors(prev => ({ ...prev, [e.target.name]: "" }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
   const handleSubmit = async (e) => {
@@ -72,57 +90,88 @@ export default function ContactForm() {
   };
 
   return (
-    <Box sx={{ py: 6, px: 4, backgroundColor: '#e8f5e9' }}>
-      <Paper elevation={3} sx={{ maxWidth: 600, margin: 'auto', p: 4, backgroundColor: 'white', borderRadius: 2 }}>
-        <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: 'bold' }}>
+    <Box sx={{ py: 6, px: 4, backgroundColor: "#e8f5e9" }}>
+      <Paper
+        elevation={3}
+        sx={{
+          maxWidth: 600,
+          margin: "auto",
+          p: 4,
+          backgroundColor: "white",
+          borderRadius: 2,
+        }}
+      >
+        <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: "bold" }}>
           Get in Touch
         </Typography>
 
         <form onSubmit={handleSubmit}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 2 }}>
             Full Name *
           </Typography>
           <TextField
-            fullWidth required placeholder="Name" name="fullName"
-            value={formData.fullName} onChange={handleChange}
-            error={!!errors.fullName} helperText={errors.fullName}
-            sx={{ mt: 1, mb: 2, '& .MuiInputBase-root': { height: 48 } }}
+            fullWidth
+            required
+            placeholder="Name"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            error={!!errors.fullName}
+            helperText={errors.fullName}
+            sx={{ mt: 1, mb: 2, "& .MuiInputBase-root": { height: 48 } }}
           />
 
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                 Email *
               </Typography>
               <TextField
-                fullWidth required placeholder="Email" name="email"
-                value={formData.email} onChange={handleChange}
-                error={!!errors.email} helperText={errors.email}
-                sx={{ mt: 1, '& .MuiInputBase-root': { height: 48 } }}
+                fullWidth
+                required
+                placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+                sx={{ mt: 1, "& .MuiInputBase-root": { height: 48 } }}
               />
             </Grid>
+
             <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                 Phone *
               </Typography>
               <TextField
-                fullWidth required placeholder="(222) - 222 - 2222" name="phone"
-             value={formData.phone} onChange={handleChange}
-
-                error={!!errors.phone} helperText={errors.phone}
-                sx={{ mt: 1, '& .MuiInputBase-root': { height: 48 } }}
+                fullWidth
+                required
+                placeholder="+961 70 123 456"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                error={!!errors.phone}
+                helperText={errors.phone}
+                sx={{ mt: 1, "& .MuiInputBase-root": { height: 48 } }}
               />
             </Grid>
           </Grid>
 
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mt: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: "bold", mt: 2 }}>
             Message *
           </Typography>
           <TextField
-            fullWidth required placeholder="Your message" multiline rows={4}
-            name="message" value={formData.message} onChange={handleChange}
-            error={!!errors.message} helperText={errors.message}
-            sx={{ mt: 1, '& .MuiInputBase-root': { padding: '14px' } }}
+            fullWidth
+            required
+            placeholder="Your message"
+            multiline
+            rows={4}
+            name="message"
+            value={formData.message}
+            onChange={handleChange}
+            error={!!errors.message}
+            helperText={errors.message}
+            sx={{ mt: 1, "& .MuiInputBase-root": { padding: "14px" } }}
           />
 
           {/* reCAPTCHA */}
@@ -133,16 +182,18 @@ export default function ContactForm() {
             />
           </Box>
 
-          <Box sx={{ borderTop: '1px solid #e0e0e0', mt: 4, pt: 3 }}>
+          <Box sx={{ borderTop: "1px solid #e0e0e0", mt: 4, pt: 3 }}>
             <Button
-              type="submit" variant="contained" fullWidth
+              type="submit"
+              variant="contained"
+              fullWidth
               sx={{
-                backgroundColor: '#f4c542',
-                color: 'black',
-                fontWeight: 'bold',
+                backgroundColor: "#f4c542",
+                color: "black",
+                fontWeight: "bold",
                 py: 1.5,
-                fontSize: '1rem',
-                '&:hover': { backgroundColor: '#e0b43a' }
+                fontSize: "1rem",
+                "&:hover": { backgroundColor: "#e0b43a" },
               }}
             >
               Send a Message
@@ -152,14 +203,19 @@ export default function ContactForm() {
 
         <Grid container spacing={2} mt={4}>
           <Grid item xs={12} md={6}>
-            <Typography variant="subtitle1" fontWeight="bold">Call us anytime</Typography>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Call us anytime
+            </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <PhoneIcon color="success" />
-              <Typography color="textSecondary">‪+1 212 425 8617‬</Typography>
+              <Typography color="textSecondary">‪+961 70 123 456‬</Typography>
             </Box>
           </Grid>
+
           <Grid item xs={12} md={6}>
-            <Typography variant="subtitle1" fontWeight="bold">Direct us anytime</Typography>
+            <Typography variant="subtitle1" fontWeight="bold">
+              Direct us anytime
+            </Typography>
             <Box display="flex" alignItems="center" gap={1}>
               <EmailIcon color="success" />
               <Typography color="textSecondary">info@example.com</Typography>
