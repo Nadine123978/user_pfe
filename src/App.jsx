@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import SignUp from './components/signup';
 import Login from './components/login';
-import Bookings from './pages/booking';
+import Booking from './pages/booking';
 import SeatMap from './pages/SeatMap';
 import ContactPage from "./pages/Contact";
 import Forgetpage from "./pages/Forgetpage";
@@ -24,13 +24,14 @@ function App() {
         <Route path="/event/:id/tickets" element={<SeatMap />} />
 
         {/* صفحة حجز التذاكر، فيها ID الحدث */}
-        <Route path="/booking/:id" element={<Bookings />} />
+<Route path="/booking/:id" element={<Booking />} />
         <Route path="/contact" element={<ContactPage />} />
 
          <Route path="/resetpass" element={<Forgetpage />} />
    
 
          <Route path="/reset-password" element={<ResetPassPage />} />
+         
         
       </Routes>
     </Router>
