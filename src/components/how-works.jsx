@@ -1,77 +1,119 @@
 import React from 'react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const steps = [
   {
-    number: '01',
+    id: '01',
     title: 'Go Event Page',
-    description: 'It is a long established fact that a reader content of a page when Ipsum is that it has a more-or- this is simple less normal.',
-    image: '/images/event-step1.png',
-    backgroundColor: '#fde6c3',
+    description:
+      'It is a long established fact that a reader content of a page when Ipsum is that it has a more–or– this is simple less normal.',
+    image: '/images/step1.png',
+    bgColor: '#fcecd3',
+    rotate: '-3deg',
   },
   {
-    number: '02',
+    id: '02',
     title: 'Choose Your Event',
-    description: 'It is a long established fact that a reader content of a page when Ipsum is that it has a more-or- this is simple less normal.',
-    image: '/images/event-step2.png',
-    backgroundColor: '#dcdcff',
+    description:
+      'It is a long established fact that a reader content of a page when Ipsum is that it has a more–or– this is simple less normal.',
+    image: '/images/step2.png',
+    bgColor: '#e3e4fd',
+    rotate: '0deg',
   },
   {
-    number: '03',
+    id: '03',
     title: 'Complete Payment',
-    description: 'It is a long established fact that a reader content of a page when Ipsum is that it has a more-or- this is simple less normal.',
-    image: '/images/event-step3.png',
-    backgroundColor: '#d9f8d6',
+    description:
+      'It is a long established fact that a reader content of a page when Ipsum is that it has a more–or– this is simple less normal.',
+    image: '/images/step3.png',
+    bgColor: '#dbf7df',
+    rotate: '3deg',
   },
 ];
 
-function HowItWorks() {
+const HowItWorks = () => {
   return (
-    <Box sx={{ textAlign: 'center', py: 8, px: 2 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+    <Box sx={{ px: 4, py: 10, textAlign: 'center', maxWidth: '1300px', mx: 'auto' }}>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2 }}>
         How it Works
       </Typography>
-      <Typography color="text.secondary" sx={{ maxWidth: '600px', mx: 'auto', mb: 6 }}>
-        It is a long established fact that a reader content of a page when Ipsum is that it has a more-or- this is simple less normal.
+      <Typography variant="body1" sx={{ maxWidth: 700, mx: 'auto', color: '#555', mb: 8 }}>
+        It is a long established fact that a reader content of a page when Ipsum is that it has a more–or– this is simple less normal.
       </Typography>
 
-      <Grid container spacing={4} justifyContent="center">
-  {steps.map((step, index) => (
-    <Grid item xs={12} sm={6} md={4} key={index}>
-            <Paper
-              elevation={3}
-              sx={{
-                p: 3,
-                borderRadius: 5,
-                backgroundColor: step.backgroundColor,
-                transform: 'rotate(-2deg)',
-                minHeight: '400px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Box>
-                <Typography variant="h2" sx={{ opacity: 0.1, fontWeight: 'bold' }}>
-                  {step.number}
-                </Typography>
-                <Typography variant="h6" fontWeight="bold" mb={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          gap: 4,
+          overflowX: 'auto',
+          flexWrap: 'nowrap',
+          pb: 2,
+        }}
+      >
+        {steps.map((step) => (
+          <Box
+            key={step.id}
+            sx={{
+              backgroundColor: step.bgColor,
+              borderRadius: '20px',
+              transform: `rotate(${step.rotate})`,
+              padding: 4,
+              width: 360,
+              height: 560,
+              flexShrink: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: `scale(1.03) rotate(${step.rotate})`,
+              },
+            }}
+          >
+            <Box sx={{ position: 'relative', width: '100%' }}>
+              <Typography
+                sx={{
+                  fontSize: '4.5rem',
+                  fontWeight: 'bold',
+                  color: '#c6c6c6',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                }}
+              >
+                {step.id}
+              </Typography>
+              <Box sx={{ pt: 6 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
                   {step.title}
                 </Typography>
-                <Typography color="text.secondary">{step.description}</Typography>
+                <Typography variant="body2" sx={{ color: '#444', lineHeight: 1.7 }}>
+                  {step.description}
+                </Typography>
               </Box>
-              <Box
-                component="img"
+            </Box>
+
+            <Box sx={{ mt: 3, width: '100%', textAlign: 'center' }}>
+              <img
                 src={step.image}
                 alt={step.title}
-                sx={{ width: '100%', height: 'auto', borderRadius: 2, mt: 2 }}
+                style={{
+                  width: '100%',
+                  height: '180px',
+                  objectFit: 'cover',
+                  borderRadius: '12px',
+                }}
               />
-            </Paper>
-          </Grid>
+            </Box>
+          </Box>
         ))}
-      </Grid>
+      </Box>
     </Box>
   );
-}
+};
 
 export default HowItWorks;

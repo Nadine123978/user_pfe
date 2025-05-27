@@ -7,6 +7,7 @@ import SeatMap from './pages/SeatMap';
 import ContactPage from "./pages/Contact";
 import Forgetpage from "./pages/Forgetpage";
 import ResetPassPage from './pages/ResetPassPage';
+
  // صفحة التفاصيل - صفحة الحجز
 function App() {
   
