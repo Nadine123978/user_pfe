@@ -2,42 +2,71 @@ import React from "react";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 
 const HeroSection = () => {
+  const images = [
+    "/Img_1.jpg",
+    "/Img_2.jpg",
+    "/Img_3.jpg",
+    "/Img_4.jpg"
+  ];
+
   return (
-    <Box sx={{ backgroundColor: "#000", color: "#fff", minHeight: "80vh", py: 8 , width:"100vw" }}>
-      <Container maxWidth="xl" sx={{ mt: 10 }}>
+    <Box
+      sx={{
+       background: "linear-gradient(to right, #03045E, #000)",
+        color: "#fff",
+       pt: 0, // أو pt: 1 لو بدكها قريبة جدًا
+    pb: 10, // padding-bottom كما هو إذا بدك
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center"
+      }}
+    >
+      <Container maxWidth="xl">
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={5}
+          spacing={8}
           alignItems="center"
+          justifyContent="space-between"
         >
           {/* Text Section */}
           <Box flex={1}>
-            <Typography variant="body1" sx={{ mb: 1 }}>
+            <Typography variant="body1" sx={{ mb: 1, color: "#aaa" }}>
               All the fun starts here.
             </Typography>
-            <Typography variant="h3" sx={{ fontWeight: "bold", mb: 2 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: "bold",
+                mb: 3,
+                lineHeight: 1.2,
+              }}
+            >
               Book your <br />
               Tickets for Event!
             </Typography>
-            <ul style={{ margin: 0, paddingLeft: "1.2rem" }}>
+            <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: 2 }}>
               <li>Safe, Secure, Reliable ticketing.</li>
               <li>Your ticket to live entertainment!</li>
             </ul>
-            <Button
+         {/*   <Button
               variant="contained"
               sx={{
-                mt: 3,
+                mt: 4,
                 borderRadius: "10px",
-                backgroundColor: "#ffffff",
+                backgroundColor: "#fff",
                 color: "#000",
                 fontWeight: "bold",
+                px: 4,
+                py: 1.5,
+                textTransform: "none",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
               }}
             >
-              View More
-            </Button>
+              View More ↗
+            </Button>  */}
           </Box>
 
-          {/* Images Section */}
+          {/* Image Grid Section */}
           <Box
             flex={1}
             sx={{
@@ -46,13 +75,12 @@ const HeroSection = () => {
               gap: 2,
             }}
           >
-            {[1, 2, 3, 4].map((num) => (
+            {images.map((src, index) => (
               <Box
-                key={num}
+                key={index}
                 sx={{
-                  height: 150,
-                  backgroundColor: "#222",
-                  backgroundImage: `url(https://via.placeholder.com/150?text=Image+${num})`,
+                  height: 200,
+                  backgroundImage: `url(${src})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   borderRadius: 2,

@@ -39,6 +39,7 @@ const Header = ({ scrollTargets }) => {
       sx={{
         background: "linear-gradient(to right, #03045E, #000)",
         boxShadow: "none",
+         borderBottom: "1px solid #fff",
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
