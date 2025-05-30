@@ -90,17 +90,19 @@ export default function ContactForm() {
   };
 
   return (
-    <Box sx={{ py: 6, px: 4, backgroundColor: "#e8f5e9" }}>
+   <Box sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 4 }, backgroundColor: "#e8f5e9" }}>
       <Paper
-        elevation={3}
-        sx={{
-          maxWidth: 600,
-          margin: "auto",
-          p: 4,
-          backgroundColor: "white",
-          borderRadius: 2,
-        }}
-      >
+  elevation={3}
+  sx={{
+    maxWidth: "100%",
+    width: { xs: "100%", sm: "90%", md: 600 },
+    margin: "auto",
+    p: { xs: 2, md: 4 },
+    backgroundColor: "white",
+    borderRadius: 2,
+  }}
+>
+
         <Typography variant="h5" component="h2" gutterBottom sx={{ fontWeight: "bold" }}>
           Get in Touch
         </Typography>
@@ -122,7 +124,7 @@ export default function ContactForm() {
           />
 
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+  <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                 Email *
               </Typography>
@@ -139,7 +141,7 @@ export default function ContactForm() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+             <Grid item xs={12} sm={6}>
               <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                 Phone *
               </Typography>

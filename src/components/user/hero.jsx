@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
+import { Box, Container, Stack, Typography } from "@mui/material";
 
 const HeroSection = () => {
   const images = [
@@ -12,13 +12,13 @@ const HeroSection = () => {
   return (
     <Box
       sx={{
-       background: "linear-gradient(to right, #03045E, #000)",
+        background: "linear-gradient(to right, #03045E, #000)",
         color: "#fff",
-       pt: 0, // أو pt: 1 لو بدكها قريبة جدًا
-    pb: 10, // padding-bottom كما هو إذا بدك
+        pt: 0,
+        pb: 10,
         minHeight: "100vh",
         display: "flex",
-        alignItems: "center"
+        alignItems: "center",
       }}
     >
       <Container maxWidth="xl">
@@ -29,7 +29,7 @@ const HeroSection = () => {
           justifyContent="space-between"
         >
           {/* Text Section */}
-          <Box flex={1}>
+          <Box flex={1} sx={{ textAlign: { xs: "center", md: "left" } }}>
             <Typography variant="body1" sx={{ mb: 1, color: "#aaa" }}>
               All the fun starts here.
             </Typography>
@@ -48,22 +48,6 @@ const HeroSection = () => {
               <li>Safe, Secure, Reliable ticketing.</li>
               <li>Your ticket to live entertainment!</li>
             </ul>
-         {/*   <Button
-              variant="contained"
-              sx={{
-                mt: 4,
-                borderRadius: "10px",
-                backgroundColor: "#fff",
-                color: "#000",
-                fontWeight: "bold",
-                px: 4,
-                py: 1.5,
-                textTransform: "none",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)"
-              }}
-            >
-              View More ↗
-            </Button>  */}
           </Box>
 
           {/* Image Grid Section */}
@@ -71,15 +55,18 @@ const HeroSection = () => {
             flex={1}
             sx={{
               display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
+              gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(2, 1fr)" },
               gap: 2,
+              width: "100%",
+              maxWidth: { xs: "100%", md: "500px" }, // تحكم بعرض الصور في اللابتوب
             }}
           >
             {images.map((src, index) => (
               <Box
                 key={index}
                 sx={{
-                  height: 200,
+                  width: "100%",
+                  height: { xs: 150, md: 200 }, // ارتفاع مرن حسب الجهاز
                   backgroundImage: `url(${src})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
