@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import SignUp from './components/signup';
-import Login from './components/login';
-import Booking from './pages/booking';
-import SeatMap from './pages/SeatMap';
-import ContactPage from "./pages/Contact";
-import Forgetpage from "./pages/Forgetpage";
-import ResetPassPage from './pages/ResetPassPage';
+import Home from './pages/user/Home';
+import SignUp from './components/user/signup';
+import Login from './components/user/login';
+import Booking from './pages/user/booking';
+import SeatMap from './pages/user/SeatMap';
+import ContactPage from "./pages/user/Contact";
+import Forgetpage from "./pages/user/Forgetpage";
+import ResetPassPage from './pages/user/ResetPassPage';
 
  // صفحة التفاصيل - صفحة الحجز
 function App() {
@@ -27,13 +27,8 @@ function App() {
         {/* صفحة حجز التذاكر، فيها ID الحدث */}
 <Route path="/booking/:id" element={<Booking />} />
         <Route path="/contact" element={<ContactPage />} />
-
          <Route path="/resetpass" element={<Forgetpage />} />
-   
-
          <Route path="/reset-password" element={<ResetPassPage />} />
-         
-        
       </Routes>
     </Router>
   );

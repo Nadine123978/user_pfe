@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
-import Header from "../components/Header";
-import HeroSection from "../components/hero";
-import TrendingCategories from "../components/trending-categories";
-import FeaturedEvents from "../components/featured-events";
-import HowItWorks from "../components/how-works";
-import Footer from "../components/footer";
+import Header from "../../components/user/Header";
+import HeroSection from "../../components/user/hero";
+import TrendingCategories from "../../components/user/trending-categories";
+import FeaturedEvents from "../../components/user/featured-events";
+import HowItWorks from "../../components/user/how-works";
+import Footer from "../../components/user/footer";
 
 const Home = () => {
   const homeRef = useRef(null);

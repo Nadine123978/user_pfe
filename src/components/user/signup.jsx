@@ -11,7 +11,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase";
+import { auth, provider } from "../../firebase";
 
 export default function SignUp() {
   const [username, setUsername] = useState('');

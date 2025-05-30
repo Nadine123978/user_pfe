@@ -7,7 +7,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../firebase'; // تأكد من المسار الصحيح
+import { auth, provider } from '../../firebase'; // تأكد من المسار الصحيح
 
 export default function Login() {
   const [showPassword, setShowPassword] = React.useState(false);

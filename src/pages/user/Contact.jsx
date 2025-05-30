@@ -1,7 +1,7 @@
 import React from "react";
-import Header from "../components/Header";
-import ContactHeader from "../components/ContactHeader";
-import ContactForm from "../components/ContactForm";
+import Header from "../../components/user/Header";
+import ContactHeader from "../../components/user/ContactHeader";
+import ContactForm from "../../components/user/ContactForm";
 import { Box } from "@mui/material";
 
 const ContactPage = () => {
