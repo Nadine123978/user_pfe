@@ -5,11 +5,14 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../../firebase'; // تأكد من المسار الصحيح
+import { auth, provider } from '../../firebase';
+
+const ADMIN_ROLE = "admin";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -38,29 +41,23 @@ export default function Login() {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
+      if (!response.ok) throw new Error('Login failed');
 
-      let result = {};
-      try {
-        const text = await response.text();
-        result = text ? JSON.parse(text) : {};
-      } catch (e) {
-        console.warn("⚠️ Couldn't parse JSON:", e);
-      }
+      const text = await response.text();
+      const result = text ? JSON.parse(text) : {};
 
-      const group = result.group;
-      const userId = result.userId;
+      const { group, userId } = result;
       if (userId) {
         localStorage.setItem("userId", userId);
+        localStorage.setItem("role", group);
       }
 
-      if (group === "admin") {
-        window.location.href = "http://localhost:5174/";
+      if (group === ADMIN_ROLE) {
+        navigate("/admin");
       } else {
-        window.location.href = "http://localhost:5173/";
+        navigate("/dashboard");
       }
+
     } catch (error) {
       console.error('❌ Error:', error);
       alert(error.message || 'An error occurred while logging in');
@@ -75,7 +72,6 @@ export default function Login() {
 
       console.log("✅ Google Login Success:", email);
 
-      // إرسال البيانات للسيرفر
       const response = await fetch("http://localhost:8081/api/users/google-login", {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
@@ -83,18 +79,19 @@ export default function Login() {
       });
 
       const resData = await response.json();
-      const userId = resData.userId;
-      const group = resData.group;
+      const { userId, group } = resData;
 
       if (userId) {
         localStorage.setItem("userId", userId);
+        localStorage.setItem("role", group);
       }
 
-      if (group === "admin") {
-        window.location.href = "http://localhost:5174/";
+      if (group === ADMIN_ROLE) {
+        navigate("/admin");
       } else {
-        window.location.href = "http://localhost:5173/";
+        navigate("/dashboard");
       }
+
     } catch (error) {
       console.error("❌ Google Sign-In Error:", error);
       alert("Google login failed.");
