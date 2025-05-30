@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import { wrap } from 'framer-motion';
 
 const steps = [
   {
@@ -44,11 +45,10 @@ const HowItWorks = () => {
       <Box
         sx={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-start',
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
           gap: 4,
-          overflowX: 'auto',
-          flexWrap: 'nowrap',
+          flexWrap: 'wrap',
           pb: 2,
         }}
       >
@@ -61,14 +61,17 @@ const HowItWorks = () => {
               transform: `rotate(${step.rotate})`,
               padding: 4,
               width: 360,
-              height: 560,
               flexShrink: 0,
               display: 'flex',
+              flexwrap : 'wrap',
               flexDirection: 'column',
               justifyContent: 'space-between',
               alignItems: 'center',
               boxShadow: '0 5px 20px rgba(0,0,0,0.1)',
               transition: 'transform 0.3s ease',
+              alignitems: 'center',
+              justifycontent: 'center',
+              height: 'auto',
               '&:hover': {
                 transform: `scale(1.03) rotate(${step.rotate})`,
               },
@@ -83,6 +86,8 @@ const HowItWorks = () => {
                   position: 'absolute',
                   top: 0,
                   left: 0,
+                  height: 'auto' ,
+                  justifyContent:'center',
                 }}
               >
                 {step.id}
