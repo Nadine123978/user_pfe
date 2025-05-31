@@ -74,7 +74,6 @@ function App() {
           <Route path="category/add" element={<AddCategory />} />
           <Route path="category/manage" element={<ManageCategories />} />
           
-  
           {/* هون ضيف باقي الصفحات لاحقًا */}
         </Route>
       </Routes>
