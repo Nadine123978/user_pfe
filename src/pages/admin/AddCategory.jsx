@@ -1,14 +1,31 @@
 import React, { useState } from 'react';
-import { Typography, Box, TextField, Button, Paper } from '@mui/material';
+import { Typography, Box, TextField, Button, Paper, Alert } from '@mui/material';
+import axios from 'axios';
 
 const AddCategory = () => {
   const [category, setCategory] = useState('');
-  const [description, setDescription] = useState('');
+  const [image, setImage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // يمكنك هنا إرسال البيانات إلى الـ backend
-    console.log({ category, description });
+    const formData = new FormData();
+    formData.append("name", category);
+    formData.append("image", image);
+
+    try {
+      await axios.post("http://localhost:8081/api/categories/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      setSuccessMessage("Category created successfully.");
+      setCategory('');
+      setImage(null);
+    } catch (err) {
+      console.error(err);
+      alert("Error adding category");
+    }
   };
 
   return (
@@ -18,6 +35,11 @@ const AddCategory = () => {
       </Typography>
 
       <Paper sx={{ p: 3, mt: 2 }}>
+        {successMessage && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {successMessage}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit}>
           <Typography variant="subtitle1" fontWeight="medium" mb={2}>
             Add Category
@@ -31,15 +53,22 @@ const AddCategory = () => {
             margin="normal"
           />
 
-          <TextField
-            fullWidth
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            margin="normal"
-            multiline
-            rows={3}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
           />
+
+          {/* معاينة الصورة إذا محطوطة */}
+          {image && (
+            <Box mt={2}>
+              <img
+                src={URL.createObjectURL(image)}
+                alt="Preview"
+                style={{ maxWidth: '200px', borderRadius: 5 }}
+              />
+            </Box>
+          )}
 
           <Button type="submit" variant="contained" sx={{ mt: 2 }}>
             Add

@@ -1,7 +1,9 @@
-import React from 'react';
-import { Box, Grid, Paper, Typography, Button, Toolbar, CssBaseline, AppBar } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid, Paper, Typography, Button, Toolbar, CssBaseline } from '@mui/material';
 import { Dashboard, Category, Event, Group, Bookmark, BookOnline, Cancel } from '@mui/icons-material';
 import Sidebar from '../../components/admin/Sidebar';
+import Header from '../../components/admin/Header';
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -38,33 +40,48 @@ const StatCard = ({ title, value, color, icon, onClick }) => (
 );
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    categories: 0,
+    sponsors: 0,
+    events: 0,
+    users: 0,
+    bookings: 0,
+    newBookings: 0,
+    confirmedBookings: 0,
+    cancelledBookings: 0,
+    subscribers: 0
+  });
+
+  useEffect(() => {
+    axios.get('http://localhost:8081/api/admin/stats')
+      .then(res => {
+        const data = res.data;
+        setStats({
+          categories: data.categoryCount,
+          sponsors: data.sponsorCount,
+          events: data.eventCount,
+          users: data.userCount,
+          bookings: data.totalBookingCount,
+          newBookings: data.newBookingCount,
+          confirmedBookings: data.confirmedBookingCount,
+          cancelledBookings: data.cancelledBookingCount,
+          subscribers: data.subscriberCount
+        });
+      })
+      .catch(err => console.error('Error fetching stats:', err));
+  }, []);
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-
-      {/* Header */}
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, backgroundColor: '#2c3e50' }}>
-        <Toolbar>
-          <Typography variant="h6" noWrap component="div">
-            Event Management System | Admin Panel
-          </Typography>
-        </Toolbar>
-      </AppBar>
-
-      {/* Sidebar */}
+      <Header />
       <Sidebar />
-
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           backgroundColor: '#f5f6fa',
           minHeight: '100vh',
-          py: 4,
-          pr: 4,
-          pl: 2,
-          mt: '64px'
         }}
       >
         <Typography variant="h4" fontWeight="bold" mb={3} sx={{ color: '#333' }}>
@@ -72,31 +89,31 @@ export default function AdminDashboard() {
         </Typography>
         <Grid container spacing={2} alignItems="stretch">
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Listed Categories" value={6} color="#2980b9" icon={<Category fontSize="inherit" />} />
+            <StatCard title="Listed Categories" value={stats.categories} color="#2980b9" icon={<Category fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Sponsors" value={4} color="#27ae60" icon={<Dashboard fontSize="inherit" />} />
+            <StatCard title="Sponsors" value={stats.sponsors} color="#27ae60" icon={<Dashboard fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Total Events" value={2} color="#f39c12" icon={<Event fontSize="inherit" />} />
+            <StatCard title="Total Events" value={stats.events} color="#f39c12" icon={<Event fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Total Reg. Users" value={1} color="#c0392b" icon={<Group fontSize="inherit" />} />
+            <StatCard title="Total Reg. Users" value={stats.users} color="#c0392b" icon={<Group fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Total Bookings" value={1} color="#e67e22" icon={<Bookmark fontSize="inherit" />} />
+            <StatCard title="Total Bookings" value={stats.bookings} color="#e67e22" icon={<Bookmark fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="New Booking" value={1} color="#2980b9" icon={<BookOnline fontSize="inherit" />} />
+            <StatCard title="New Booking" value={stats.newBookings} color="#2980b9" icon={<BookOnline fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Confirmed Booking" value={0} color="#27ae60" icon={<BookOnline fontSize="inherit" />} />
+            <StatCard title="Confirmed Booking" value={stats.confirmedBookings} color="#27ae60" icon={<BookOnline fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Cancelled Bookings" value={0} color="#c0392b" icon={<Cancel fontSize="inherit" />} />
+            <StatCard title="Cancelled Bookings" value={stats.cancelledBookings} color="#c0392b" icon={<Cancel fontSize="inherit" />} />
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <StatCard title="Total Reg. Subscriber" value={1} color="#2980b9" icon={<Group fontSize="inherit" />} />
+            <StatCard title="Total Reg. Subscriber" value={stats.subscribers} color="#2980b9" icon={<Group fontSize="inherit" />} />
           </Grid>
         </Grid>
       </Box>

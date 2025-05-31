@@ -11,13 +11,14 @@ import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
 
-// Admin pages
+// Admin layout and pages
+import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AddCategory from './pages/admin/AddCategory';
-
+import ManageCategories from './pages/admin/ManageCategories';
 
 function App() {
- const [role, setRole] = useState(null);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const updateRoleFromStorage = () => {
@@ -37,9 +38,8 @@ function App() {
     return () => window.removeEventListener("storage", updateRoleFromStorage);
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+
   return (
     <Router>
       <Routes>
@@ -55,15 +55,7 @@ function App() {
         <Route path="/event/:id/tickets" element={<SeatMap />} />
         <Route path="/booking/:id" element={<Booking />} />
 
-        {/* صفحة الأدمن محمية */}
-        <Route
-          path="/admin"
-          element={
-            role === "ROLE_ADMIN" ? <AdminDashboard /> : <Navigate to="/login" replace />
-          }
-        />
-
-        {/* صفحة داشبورد المستخدم */}
+        {/* حماية داشبورد المستخدم */}
         <Route
           path="/dashboard"
           element={
@@ -71,13 +63,20 @@ function App() {
           }
         />
 
-        {/* صفحة إضافة التصنيف */}
+        {/* مجموعة صفحات الأدمن داخل AdminLayout */}
         <Route
-          path="/admin/category/add"
+          path="/admin"
           element={
-            role === "admin" ? <AddCategory /> : <Navigate to="/dashboard" />
+            role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />
           }
-        />
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="category/add" element={<AddCategory />} />
+          <Route path="category/manage" element={<ManageCategories />} />
+          
+  
+          {/* هون ضيف باقي الصفحات لاحقًا */}
+        </Route>
       </Routes>
     </Router>
   );
