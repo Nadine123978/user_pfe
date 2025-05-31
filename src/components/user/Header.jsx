@@ -44,19 +44,11 @@ const Header = ({ scrollTargets }) => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:8081/api/users/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.warn("Logout request failed or not needed.");
-    }
-    localStorage.removeItem("userId");
-    navigate("/login");
-  };
-
+  const handleLogout = () => {
+  localStorage.clear(); // أو localStorage.removeItem('token') و غيرها حسب الحاجة
+  // بعد المسح نوجه المستخدم للصفحة العامة (مثلاً صفحة تسجيل الدخول)
+  navigate('/login', { replace: true });
+};
   // الروابط اللي تظهر في القائمة
   const navLinks = [
     { label: "Home", action: () => handleScroll(scrollTargets?.homeRef) },
@@ -184,7 +176,7 @@ const Header = ({ scrollTargets }) => {
 
               {isLoggedIn && (
                 <Button
-                  onClick={handleLogout}
+               onClick={handleLogout}
                   sx={{
                     color: "#fff",
                     border: "1px solid #fff",

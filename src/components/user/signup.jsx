@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";
 
@@ -18,34 +18,50 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [agree, setAgree] = useState(false);
+  const [errors, setErrors] = useState({}); // حالة الأخطاء
+
   const navigate = useNavigate();
 
-  const handleSignUp = async () => {
-    if (!username || !email || !password) {
-      alert('Please fill in all fields.');
-      return;
+  const validate = () => {
+    const newErrors = {};
+
+    if (!username) newErrors.username = 'Username is required.';
+    if (!email) newErrors.email = 'Email is required.';
+    else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) newErrors.email = 'Enter a valid email.';
     }
 
-    if (!agree) {
-      alert('You must agree to the terms and conditions.');
-      return;
-    }
+    if (!password) newErrors.password = 'Password is required.';
+    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters.';
+
+    if (!agree) newErrors.agree = 'You must agree to terms and conditions.';
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSignUp = async () => {
+    if (!validate()) return; // إذا فيه أخطاء ما بكمّل
 
     try {
       const response = await axios.post('http://localhost:8081/api/users/create', {
         username,
         email,
         password,
+        role: "user"
       });
 
       const userId = response.data.userId;
       localStorage.setItem("userId", userId);
+      localStorage.setItem("role", "user");
 
-      alert('Account created successfully!');
+      // ممكن تعرض رسالة نجاح بطريقة غير alert لو بتحب (مثلاً Snackbar أو redirect مباشرة)
       navigate("/");
     } catch (error) {
       console.error('❌ Error creating user:', error);
-      alert('Error creating account. Please try again.');
+      setErrors({ submit: 'Error creating account. Please try again.' });
     }
   };
 
@@ -55,13 +71,13 @@ export default function SignUp() {
       const user = result.user;
       console.log("✅ Google user:", user);
 
-      // حفظ uid و redirect
       localStorage.setItem("userId", user.uid);
-      alert(`Welcome ${user.displayName}`);
+      localStorage.setItem("role", "user");
+
       navigate("/");
     } catch (error) {
       console.error("❌ Google Sign-in error:", error);
-      alert("Failed to sign in with Google");
+      setErrors({ submit: 'Failed to sign in with Google' });
     }
   };
 
@@ -99,6 +115,8 @@ export default function SignUp() {
             onChange={(e) => setUsername(e.target.value)}
             variant="outlined"
             margin="normal"
+            error={!!errors.username}
+            helperText={errors.username}
           />
           <TextField
             fullWidth
@@ -107,6 +125,8 @@ export default function SignUp() {
             onChange={(e) => setEmail(e.target.value)}
             variant="outlined"
             margin="normal"
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <TextField
             fullWidth
@@ -116,17 +136,36 @@ export default function SignUp() {
             onChange={(e) => setPassword(e.target.value)}
             variant="outlined"
             margin="normal"
+            error={!!errors.password}
+            helperText={errors.password}
           />
 
           <FormControlLabel
-            control={<Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)} />}
+            control={
+              <Checkbox
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                color={errors.agree ? "error" : "primary"}
+              />
+            }
             label={
-              <Typography variant="body2">
+              <Typography variant="body2" color={errors.agree ? "error" : "text.primary"}>
                 I agree to the <strong>Terms</strong> and <strong>Conditions of Privacy</strong>
               </Typography>
             }
             sx={{ mt: 1 }}
           />
+          {errors.agree && (
+            <Typography variant="caption" color="error" sx={{ ml: 1 }}>
+              {errors.agree}
+            </Typography>
+          )}
+
+          {errors.submit && (
+            <Typography variant="body2" color="error" align="center" mt={2}>
+              {errors.submit}
+            </Typography>
+          )}
 
           <Button
             fullWidth
@@ -164,7 +203,7 @@ export default function SignUp() {
 
           <Typography variant="body2" align="center" mt={2}>
             Already have an account?{' '}
-            <strong style={{ cursor: 'pointer' }}>Login now</strong>
+            <Link to="/login" style={{ fontWeight: 'bold' }}>Login now</Link>
           </Typography>
         </Box>
       </Container>

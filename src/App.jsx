@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 // User pages
 import Home from './pages/user/Home';
@@ -9,14 +10,34 @@ import SeatMap from './pages/user/SeatMap';
 import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
-import UserDashboard from './pages/user/UserDashboard'; // ⬅️ Create this if not exists
 
 // Admin page
-import AdminDashboard from './pages/admin/AdminDashboard'; // ⬅️ Create this if not exists
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function App() {
-  const role = localStorage.getItem("role");
+ const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  const updateRoleFromStorage = () => {
+    const storedToken = localStorage.getItem("token");
+    const storedRole = localStorage.getItem("role");
+    if (storedToken && storedRole) {
+      setRole(storedRole);
+    } else {
+      setRole(null);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    updateRoleFromStorage();
+    window.addEventListener("storage", updateRoleFromStorage);
+    return () => window.removeEventListener("storage", updateRoleFromStorage);
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <Router>
       <Routes>
@@ -32,18 +53,19 @@ function App() {
         <Route path="/event/:id/tickets" element={<SeatMap />} />
         <Route path="/booking/:id" element={<Booking />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            role === "admin" ? <Navigate to="/admin" /> : <Home />
-          }
-        />
-
-        {/* صفحة المشرف */}
+        {/* صفحة الأدمن محمية */}
         <Route
           path="/admin"
           element={
-            role === "admin" ? <AdminDashboard /> : <Navigate to="/dashboard" />
+            role === "ROLE_ADMIN" ? <AdminDashboard /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* صفحة داشبورد المستخدم */}
+        <Route
+          path="/dashboard"
+          element={
+            role === "ROLE_USER" ? <Home /> : <Navigate to="/login" replace />
           }
         />
       </Routes>

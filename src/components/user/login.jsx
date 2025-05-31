@@ -8,8 +8,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link, useNavigate } from 'react-router-dom';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../../firebase';
+import {jwtDecode} from "jwt-decode";  // صححت الاستيراد
 
-const ADMIN_ROLE = "admin";
+const ADMIN_ROLE = "ROLE_ADMIN";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,21 +18,49 @@ export default function Login() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
+  // حالات الخطأ
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
+  const [generalError, setGeneralError] = React.useState('');
+
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
   };
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   const handleLogin = async () => {
-    if (!email || !password) {
-      alert('Please fill in both fields');
-      return;
+    setEmailError('');
+    setPasswordError('');
+    setGeneralError('');
+
+    let valid = true;
+
+    if (!email) {
+      setEmailError('Email is required');
+      valid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      valid = false;
     }
 
+    if (!password) {
+      setPasswordError('Password is required');
+      valid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      valid = false;
+    }
+
+    if (!valid) return;
+
     const data = { email, password };
-    console.log('🚀 Sending login data:', JSON.stringify(data));
 
     try {
-      const response = await fetch('http://localhost:8081/api/users/login', {
+      const response = await fetch('http://localhost:8081/auth/login', {
         method: 'POST',
         mode: 'cors',
         credentials: 'include',
@@ -43,24 +72,31 @@ export default function Login() {
 
       if (!response.ok) throw new Error('Login failed');
 
-      const text = await response.text();
-      const result = text ? JSON.parse(text) : {};
+      const resData = await response.json();
+      const token = resData.token;
 
-      const { group, userId } = result;
-      if (userId) {
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("role", group);
+      if (!token) {
+        throw new Error("Token not found in response");
       }
 
-      if (group === ADMIN_ROLE) {
+      const decoded = jwtDecode(token);
+      const group = decoded.group || decoded.role || "user";
+      const normalizedRole = "ROLE_" + group.toUpperCase();
+
+      localStorage.setItem("role", normalizedRole);
+      localStorage.setItem("userId", decoded.sub);
+      localStorage.setItem("token", token);
+
+      if (normalizedRole === ADMIN_ROLE) {
         navigate("/admin");
+        window.location.reload();
       } else {
         navigate("/dashboard");
       }
 
     } catch (error) {
       console.error('❌ Error:', error);
-      alert(error.message || 'An error occurred while logging in');
+      setGeneralError(error.message || 'An error occurred while logging in');
     }
   };
 
@@ -70,30 +106,27 @@ export default function Login() {
       const email = result.user.email;
       const name = result.user.displayName;
 
-      console.log("✅ Google Login Success:", email);
-
-      const response = await fetch("http://localhost:8081/api/users/google-login", {
+      const response = await fetch("http://localhost:8082/api/users/google-login", {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username: name }),
       });
 
       const resData = await response.json();
-      const { userId, group } = resData;
+      const userId = resData.userId;
+      const group = resData.group;
 
       if (userId) {
         localStorage.setItem("userId", userId);
-        localStorage.setItem("role", group);
       }
 
-      if (group === ADMIN_ROLE) {
-        navigate("/admin");
+      if (group && group === "admin") {
+        navigate("/secure1234");
       } else {
-        navigate("/dashboard");
+        navigate("/");
       }
-
     } catch (error) {
-      console.error("❌ Google Sign-In Error:", error);
+      console.error("Google Sign-In Error:", error);
       alert("Google login failed.");
     }
   };
@@ -114,14 +147,21 @@ export default function Login() {
             Enter your account details below to log in
           </Typography>
 
-          <TextField
-            fullWidth
-            label="Email Address"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            variant="outlined"
-            margin="normal"
-          />
+      <TextField
+  fullWidth
+  label="Email Address"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  variant="outlined"
+  margin="normal"
+  error={!!emailError}
+  helperText={emailError}
+  sx={{
+    '& .MuiOutlinedInput-root.Mui-error': {
+      backgroundColor: '#fdecea', // خلفية وردية خفيفة للخطأ
+    },
+  }}
+/>
 
           <TextField
             fullWidth
@@ -131,6 +171,8 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             variant="outlined"
             margin="normal"
+            error={!!passwordError}
+            helperText={passwordError}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -143,7 +185,14 @@ export default function Login() {
           />
 
           <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
-            <FormControlLabel control={<Checkbox />} label="Remember me" />
+          <FormControlLabel
+  control={<Checkbox />}
+  label="Remember me"
+  sx={{ 
+    '& .MuiFormControlLabel-label': { color: 'black' }
+  }}
+/>
+
             <Link to="/resetpass" style={{ textDecoration: 'none' }}>
               <Typography variant="body2" color="primary" sx={{ cursor: 'pointer' }}>
                 Forgot your password?
@@ -151,15 +200,23 @@ export default function Login() {
             </Link>
           </Box>
 
+          {generalError && (
+            <Typography color="error" align="center" mt={2}>
+              {generalError}
+            </Typography>
+          )}
+
           <Button
             fullWidth
             variant="contained"
+         
             sx={{
               mt: 2,
               borderRadius: '20px',
               backgroundColor: '#1c1c3b',
               '&:hover': {
                 backgroundColor: '#33335c',
+               
               },
             }}
             onClick={handleLogin}
@@ -185,9 +242,14 @@ export default function Login() {
             Login with Google
           </Button>
 
-          <Typography variant="body2" align="center" mt={2}>
+          <Typography variant="body2" align="center"  color= "primary" mt={2}>
             Don’t have an account?{' '}
-            <strong style={{ cursor: 'pointer' }}>Create an account</strong>
+           <strong
+              style={{ cursor: 'pointer', color: '#1976d2' }}
+              onClick={() => navigate('/signup')}
+            >
+              Create an account
+            </strong>
           </Typography>
         </Box>
       </Container>
