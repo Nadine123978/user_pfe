@@ -16,32 +16,44 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const BookingDetailsSection = () => {
-   const { id } = useParams(); // ⬅️ من URL
-    const [event, setEvent] = useState(null);
-  
-    useEffect(() => {
-      axios.get(`http://localhost:8081/api/events/${id}`)
-        .then(response => setEvent(response.data))
-        .catch(error => console.error("❌ Error fetching event:", error));
-    }, [id]);
-  return (
-    <Box sx={{ mt: 5 }}>
-      {/* العنوان */}
-     <Typography variant="h5" fontWeight="bold" gutterBottom>
-  {event?.title}
-</Typography>
+  const { id } = useParams(); // ⬅️ من URL
+  const [event, setEvent] = useState(null);
 
- {/* التاريخ */}
-{event?.startDate && (
-  <Typography variant="body2" color="text.secondary" gutterBottom>
-    {new Date(event.startDate).toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })}
-  </Typography>
-)}
+  useEffect(() => {
+    axios.get(`http://localhost:8081/api/events/${id}`)
+      .then(response => setEvent(response.data))
+      .catch(error => console.error("❌ Error fetching event:", error));
+  }, [id]);
+
+  return (
+<Box
+  sx={{
+    mt: 5,
+    width: '100%',
+    maxWidth: '100vw',
+    px: 2,
+    boxSizing: 'border-box',
+    backgroundColor: '#f0f0f0', // عشان تشوف الصندوق واضح
+  }}
+>
+
+      {/* العنوان */}
+      <Typography variant="h5" fontWeight="bold" gutterBottom>
+        {event?.title}
+      </Typography>
+
+      {/* التاريخ */}
+      {event?.startDate && (
+        <Typography variant="body2" color="text.secondary" gutterBottom>
+          {new Date(event.startDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </Typography>
+      )}
+
       {/* What’s included */}
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -72,7 +84,7 @@ const BookingDetailsSection = () => {
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body2" color="text.secondary">
-      {event?.description}
+            {event?.description}
           </Typography>
         </AccordionDetails>
       </Accordion>

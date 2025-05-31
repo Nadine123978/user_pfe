@@ -86,7 +86,7 @@ export default function Login() {
       const normalizedRole = "ROLE_" + group.toUpperCase();
 
       localStorage.setItem("role", normalizedRole);
-      localStorage.setItem("userId", decoded.sub);
+localStorage.setItem("userId", decoded.userId); 
       localStorage.setItem("token", token);
 
      if (normalizedRole === SUPER_ADMIN_ROLE) {

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Chip, Stack, TextField } from "@mui/material";
 import axios from "axios";
+import OrderTimer from "./OrderTimer";
+
 
 const SeatingMap = ({ eventId }) => {
   const [sections, setSections] = useState([]);
@@ -181,9 +183,7 @@ const [confirmedSeats, setConfirmedSeats] = useState([]);
           <Typography variant="h6" sx={{ mb: 2 }}>
             Order #25000855988
           </Typography>
-          <Box sx={{ background: "#FFF3CD", color: "#856404", p: 2, borderRadius: 1, mb: 3 }}>
-            This order will expire in 09:45.
-          </Box>
+        <OrderTimer orderNumber="25000855988" onCancel={() => window.location.reload()} />
 
           {selectedSeats.map((seat, index) => (
             <Box

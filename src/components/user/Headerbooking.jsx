@@ -1,4 +1,3 @@
-// headerbooking.jsx
 import React from "react";
 import { AppBar, Toolbar, Typography, IconButton } from "@mui/material";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -9,7 +8,7 @@ const HeaderBooking = () => (
       <Typography variant="h6" sx={{ flexGrow: 1 }}>
         Ihjoz
       </Typography>
-      <IconButton color="inherit">
+      <IconButton color="inherit" aria-label="account">
         <AccountCircle />
       </IconButton>
     </Toolbar>
