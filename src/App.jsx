@@ -21,6 +21,8 @@ import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
 import MainLayout from './components/superadmin/layout/MainLayout';
 
 import ManageCategories from './pages/admin/ManageCategories';
+import EditCategory from './pages/admin/EditCategory';
+
 
 
 function App() {
@@ -101,8 +103,9 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="category/add" element={<AddCategory />} />
           <Route path="category/manage" element={<ManageCategories />} />
+          <Route path="/admin/category/edit/:id" element={<EditCategory />} />
+
           
-  
           {/* هون ضيف باقي الصفحات لاحقًا */}
         </Route>
       </Routes>
