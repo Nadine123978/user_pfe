@@ -9,10 +9,11 @@ import SeatMap from './pages/user/SeatMap';
 import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
-import UserDashboard from './pages/user/UserDashboard'; // ⬅️ Create this if not exists
+import UserDashboard from './pages/user/UserDashboard';
 
-// Admin page
-import AdminDashboard from './pages/admin/AdminDashboard'; // ⬅️ Create this if not exists
+// Admin pages
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AddCategory from './pages/admin/AddCategory';
 
 function App() {
   const role = localStorage.getItem("role");
@@ -44,6 +45,14 @@ function App() {
           path="/admin"
           element={
             role === "admin" ? <AdminDashboard /> : <Navigate to="/dashboard" />
+          }
+        />
+
+        {/* صفحة إضافة التصنيف */}
+        <Route
+          path="/admin/category/add"
+          element={
+            role === "admin" ? <AddCategory /> : <Navigate to="/dashboard" />
           }
         />
       </Routes>
