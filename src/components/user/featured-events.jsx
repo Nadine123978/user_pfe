@@ -32,16 +32,16 @@ const FeaturedEvents = () => {
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:8081/api/bookings/create?userId=${userId}&eventId=${eventId}`,
-        null,
-        {
-          headers: {
-            "Content-Type": "application/json"
-          },
-          withCredentials: true
-        }
-      );
+const response = await axios.post(
+  "http://localhost:8081/api/bookings/create",
+  { userId, eventId },  // ترسلهم كـ JSON body
+  {
+    headers: {
+      "Content-Type": "application/json"
+    },
+    withCredentials: true
+  }
+);
 
       if (response.status === 200) {
         navigate(`/booking/${eventId}`);
@@ -49,8 +49,8 @@ const FeaturedEvents = () => {
         alert("Booking failed. Please try again.");
       }
     } catch (error) {
-      console.error("❌ Booking error:", error.response ? error.response.data : error.message);
-      alert("Booking failed. Try again.");
+  console.error("❌ Booking error:", error.response ? error.response.data : error.message);
+  alert(`Booking failed: ${error.response ? JSON.stringify(error.response.data) : error.message}`);
     }
   };
 

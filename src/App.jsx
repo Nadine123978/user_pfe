@@ -15,7 +15,13 @@ import ResetPassPage from './pages/user/ResetPassPage';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AddCategory from './pages/admin/AddCategory';
+
+
+import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
+import MainLayout from './components/superadmin/layout/MainLayout';
+
 import ManageCategories from './pages/admin/ManageCategories';
+
 
 function App() {
   const [role, setRole] = useState(null);
@@ -55,7 +61,29 @@ function App() {
         <Route path="/event/:id/tickets" element={<SeatMap />} />
         <Route path="/booking/:id" element={<Booking />} />
 
-        {/* حماية داشبورد المستخدم */}
+          <Route
+    path="/secure1234"  // نفس الرابط اللي وضعته في Login عند التنقل
+    element={
+      role === "ROLE_SUPER_ADMIN" ? (
+        <MainLayout>
+        <SuperAdminDashboard />
+        </MainLayout>
+      ) : (
+        <Navigate to="/login" replace />
+      )
+    }
+  />
+
+        {/* صفحة الأدمن محمية */}
+        <Route
+          path="/admin"
+          element={
+            role === "ROLE_ADMIN" ? <AdminDashboard /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* صفحة داشبورد المستخدم */}
+
         <Route
           path="/dashboard"
           element={
