@@ -11,8 +11,12 @@ import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
 
-// Admin page
+import UserDashboard from './pages/user/UserDashboard';
+
+// Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AddCategory from './pages/admin/AddCategory';
+
 
 function App() {
  const [role, setRole] = useState(null);
@@ -66,6 +70,14 @@ function App() {
           path="/dashboard"
           element={
             role === "ROLE_USER" ? <Home /> : <Navigate to="/login" replace />
+          }
+        />
+
+        {/* صفحة إضافة التصنيف */}
+        <Route
+          path="/admin/category/add"
+          element={
+            role === "admin" ? <AddCategory /> : <Navigate to="/dashboard" />
           }
         />
       </Routes>
