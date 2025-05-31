@@ -11,6 +11,8 @@ import { auth, provider } from '../../firebase';
 import {jwtDecode} from "jwt-decode";  // صححت الاستيراد
 
 const ADMIN_ROLE = "ROLE_ADMIN";
+const SUPER_ADMIN_ROLE = "ROLE_SUPER_ADMIN";
+
 
 export default function Login() {
   const navigate = useNavigate();
@@ -87,12 +89,15 @@ export default function Login() {
       localStorage.setItem("userId", decoded.sub);
       localStorage.setItem("token", token);
 
-      if (normalizedRole === ADMIN_ROLE) {
-        navigate("/admin");
-        window.location.reload();
-      } else {
-        navigate("/dashboard");
-      }
+     if (normalizedRole === SUPER_ADMIN_ROLE) {
+  navigate("/secure1234"); // مثلاً هذا هو رابط لوحة تحكم الـ Super Admin
+  window.location.reload();
+} else if (normalizedRole === ADMIN_ROLE) {
+  navigate("/admin");
+  window.location.reload();
+} else {
+  navigate("/dashboard");
+}
 
     } catch (error) {
       console.error('❌ Error:', error);
