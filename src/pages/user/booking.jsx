@@ -33,33 +33,39 @@ const Booking = () => {
   };
 
   return (
-    <Box sx={{ width: "100vw", overflowX: "hidden", m: 0, p: 0 }}>
-      <HeaderBooking />
-      <WhirlingDervishShow 
-        eventId={id} 
-        title={event.title} 
-        date={event.startDate} 
-        location={event.location?.name} 
-      />
+  <Box sx={{ width: "100vw", overflowX: "hidden", m: 0, p: 0 }}>
+    <HeaderBooking />
 
-      <EventDetails event={event} />
+    {event ? (
+      <>
+        <WhirlingDervishShow 
+          eventId={id} 
+          title={event.title} 
+          date={event.startDate} 
+          location={event.location?.name} 
+        />
+        <EventDetails event={event} />
+        <BookingPanel event={event} onAvailabilityConfirmed={handleAvailabilityConfirmed} />
 
-      {/* مرر الدالة لـ BookingPanel */}
-      <BookingPanel event={event} onAvailabilityConfirmed={handleAvailabilityConfirmed} />
+        {!showSeatingMap && (
+          <Button variant="contained" onClick={() => setShowSeatingMap(true)} sx={{ my: 3 }}>
+            Show Seating Map & Book Seats
+          </Button>
+        )}
 
-      {!showSeatingMap && (
-        <Button variant="contained" onClick={() => setShowSeatingMap(true)} sx={{ my: 3 }}>
-          Show Seating Map & Book Seats
-        </Button>
-      )}
+        {showSeatingMap && <SeatingMap eventId={id} />}
 
-      {showSeatingMap && <SeatingMap eventId={id} />}
+        <PriceLegend />
+        <OrganizerInfo organizer={event.organizer} />
+        <VenueMap venue={event.venue} />
+      </>
+    ) : (
+      <div>Loading event details...</div>
+    )}
 
-      <PriceLegend />
-      <OrganizerInfo organizer={event.organizer} />
-      <VenueMap venue={event.venue} />
-      <PaymentFooter />
-    </Box>
-  );
+    <PaymentFooter />
+  </Box>
+);
+
 };
 export default Booking;
