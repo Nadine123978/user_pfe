@@ -1,17 +1,25 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Collapse } from '@mui/material';
 import {
-  Dashboard, Category, Event, Group, Bookmark, BookOnline, Cancel, Newspaper,
-  Settings, SupervisorAccount, Subscriptions, MenuBook, ExpandLess, ExpandMore,
-  Add, ManageAccounts
+  Dashboard, Category, Event, SupervisorAccount, Subscriptions,
+  BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
+  Add, ManageAccounts, Logout
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
 
 const Sidebar = () => {
   const [openCategory, setOpenCategory] = React.useState(false);
   const handleClickCategory = () => setOpenCategory(!openCategory);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // أو امسح الكوكيز إذا كنت تستخدمها
+    // dispatch(logoutUser());
+    navigate("/login", { replace: true }); // منع الرجوع للخلف
+  };
 
   return (
     <Drawer
@@ -60,6 +68,11 @@ const Sidebar = () => {
           <ListItemIcon><Event sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Events" />
         </ListItem>
+        <ListItem button component={Link} to="/admin/gallery">
+  <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon> {/* ممكن تختار أي أيقونة مناسبة */}
+  <ListItemText primary="Gallery" />
+</ListItem>
+
         <ListItem button component={Link} to="/admin/users">
           <ListItemIcon><SupervisorAccount sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Users" />
@@ -79,6 +92,12 @@ const Sidebar = () => {
         <ListItem button component={Link} to="/admin/settings">
           <ListItemIcon><Settings sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Website Setting" />
+        </ListItem>
+
+        {/* ✅ زر تسجيل الخروج */}
+        <ListItem button onClick={handleLogout}>
+          <ListItemIcon><Logout sx={{ color: 'red' }} /></ListItemIcon>
+          <ListItemText primary="Logout" />
         </ListItem>
       </List>
     </Drawer>

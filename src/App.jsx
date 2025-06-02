@@ -10,11 +10,13 @@ import SeatMap from './pages/user/SeatMap';
 import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
+import WhirlingDervishShow from './components/user/WhirlingDervishShow';
 
 // Admin layout and pages
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AddCategory from './pages/admin/AddCategory';
+import AdminEventImagesManager from './/pages/admin/AdminEventImagesManager';
 
 
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
@@ -62,6 +64,8 @@ function App() {
         {/* صفحات المستخدم */}
         <Route path="/event/:id/tickets" element={<SeatMap />} />
         <Route path="/booking/:id" element={<Booking />} />
+        <Route path="/events/:eventId" element={<WhirlingDervishShow />} />
+
 
           <Route
     path="/secure1234"  // نفس الرابط اللي وضعته في Login عند التنقل
@@ -104,6 +108,10 @@ function App() {
           <Route path="category/add" element={<AddCategory />} />
           <Route path="category/manage" element={<ManageCategories />} />
           <Route path="/admin/category/edit/:id" element={<EditCategory />} />
+          <Route path="/admin/gallery" element={<AdminEventImagesManager />} />
+         
+
+
 
           
           {/* هون ضيف باقي الصفحات لاحقًا */}

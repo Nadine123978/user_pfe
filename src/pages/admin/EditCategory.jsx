@@ -34,25 +34,32 @@ const EditCategory = () => {
       .catch(err => console.error('Failed to load category', err));
   }, [id]);
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append('name', category);
-    formData.append('status', status);
-    formData.append('isTrending', isTrending);
-    if (imageFile) formData.append('image', imageFile);
+ const handleUpdate = async (e) => {
+  e.preventDefault();
 
-    try {
-      await axios.put(`http://localhost:8081/api/categories/${id}/update`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      alert("Category updated!");
-      navigate('/admin/category/manage');
-    } catch (err) {
-      console.error(err);
-      alert("Error updating category");
-    }
-  };
+  const formData = new FormData();
+  formData.append('name', category);
+  formData.append('status', status);
+  formData.append('isTrending', isTrending ? 'true' : 'false'); // تأكد من تمريره كـ string
+  if (imageFile) formData.append('image', imageFile);
+
+  const token = localStorage.getItem('token');
+
+  try {
+    await axios.put(`http://localhost:8081/api/categories/${id}/update`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    alert("Category updated!");
+    navigate('/admin/category/manage');
+  } catch (err) {
+    console.error(err);
+    alert("Error updating category");
+  }
+};
 
   return (
     <Box>

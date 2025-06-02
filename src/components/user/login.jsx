@@ -82,7 +82,7 @@ export default function Login() {
       }
 
       const decoded = jwtDecode(token);
-      const group = decoded.group || decoded.role || "user";
+      const group = decoded.group || decoded.role || "USER";
       const normalizedRole = "ROLE_" + group.toUpperCase();
 
       localStorage.setItem("role", normalizedRole);

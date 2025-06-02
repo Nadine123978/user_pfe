@@ -3,14 +3,14 @@ import { Box, Typography, Button, Chip, Stack, TextField } from "@mui/material";
 import axios from "axios";
 import OrderTimer from "./OrderTimer";
 
-
 const SeatingMap = ({ eventId }) => {
   const [sections, setSections] = useState([]);
   const [selectedSection, setSelectedSection] = useState(null);
   const [seats, setSeats] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [confirmed, setConfirmed] = useState(false);
-const [confirmedSeats, setConfirmedSeats] = useState([]);
+  const [confirmedSeats, setConfirmedSeats] = useState([]);
+  const [paymentStarted, setPaymentStarted] = useState(false);
 
   useEffect(() => {
     axios
@@ -32,16 +32,13 @@ const [confirmedSeats, setConfirmedSeats] = useState([]);
     try {
       const seatIds = selectedSeats.map((seat) => seat.id);
       await axios.post("http://localhost:8081/api/seats/confirm", seatIds);
-       setConfirmedSeats(selectedSeats);
-      setConfirmed(true); // ✅ بدل الانتقال نعرض صفحة التسجيل
+      setConfirmedSeats(selectedSeats);
+      setConfirmed(true);
     } catch (error) {
       console.error("Error confirming seats", error);
       alert("Something went wrong.");
     }
   };
-
-  const [paymentStarted, setPaymentStarted] = useState(false);
-
 
   const groupSeatsByRow = (seats) => {
     const grouped = {};
@@ -183,7 +180,7 @@ const [confirmedSeats, setConfirmedSeats] = useState([]);
           <Typography variant="h6" sx={{ mb: 2 }}>
             Order #25000855988
           </Typography>
-        <OrderTimer orderNumber="25000855988" onCancel={() => window.location.reload()} />
+          <OrderTimer orderNumber="25000855988" onCancel={() => window.location.reload()} />
 
           {selectedSeats.map((seat, index) => (
             <Box
@@ -208,15 +205,15 @@ const [confirmedSeats, setConfirmedSeats] = useState([]);
               <TextField fullWidth label="Last Name" defaultValue="Sleiman" />
             </Box>
           ))}
-<Button
-  variant="contained"
-  color="error"
-  sx={{ mt: 2 }}
-  onClick={() => setPaymentStarted(true)}
->
-  Continue to Payment
-</Button>
 
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ mt: 2 }}
+            onClick={() => setPaymentStarted(true)}
+          >
+            Continue to Payment
+          </Button>
         </>
       )}
     </Box>

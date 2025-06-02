@@ -5,6 +5,7 @@ import axios from 'axios';
 
 const TrendingCategories = () => {
   const [categories, setCategories] = useState([]);
+console.log("Trending categories: ", categories);
 
   useEffect(() => {
     const fetchTrending = async () => {

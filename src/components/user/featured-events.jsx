@@ -32,14 +32,19 @@ if (!userId) {
 }
 
 try {
-  const response = await axios.post(
-    "http://localhost:8081/api/bookings/create",
-    { userId: Number(userId), eventId }, // هنا تأكد التحويل لرقم
-    {
-      headers: { "Content-Type": "application/json" },
-      withCredentials: true,
+ const token = localStorage.getItem("token");
+
+const response = await axios.post(
+  "http://localhost:8081/api/bookings/create",
+  { eventId }, // فقط eventId لأن user يُستخرج من التوكن
+  {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
     }
-  );
+  }
+);
+
 
   if (response.status === 200) {
     navigate(`/booking/${eventId}`);

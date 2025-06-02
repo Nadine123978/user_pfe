@@ -6,9 +6,44 @@ const AddCategory = () => {
   const [category, setCategory] = useState('');
   const [image, setImage] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
+      // ✅ تحقق من النوع
+      if (!allowedTypes.includes(file.type)) {
+        setErrorMessage('Only image files are allowed (jpg, jpeg, png, gif).');
+        setImage(null);
+        return;
+      }
+
+      // ✅ تحقق من الحجم
+      const maxSizeKB = 250;
+      if (file.size > maxSizeKB * 1024) {
+        setErrorMessage(`Image size must be less than ${maxSizeKB} KB.`);
+        setImage(null);
+        return;
+      }
+
+      // ✅ إذا كلشي تمام
+      setErrorMessage('');
+      setImage(file);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in first");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", category);
     formData.append("image", image);
@@ -17,6 +52,7 @@ const AddCategory = () => {
       await axios.post("http://localhost:8081/api/categories/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`, // ✅ إضافة التوكن هنا
         },
       });
       setSuccessMessage("Category created successfully.");
@@ -40,11 +76,12 @@ const AddCategory = () => {
             {successMessage}
           </Alert>
         )}
+        {errorMessage && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit}>
-          <Typography variant="subtitle1" fontWeight="medium" mb={2}>
-            Add Category
-          </Typography>
-
           <TextField
             fullWidth
             label="Category"
@@ -56,10 +93,9 @@ const AddCategory = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
+            onChange={handleImageChange}
           />
 
-          {/* معاينة الصورة إذا محطوطة */}
           {image && (
             <Box mt={2}>
               <img
@@ -70,7 +106,12 @@ const AddCategory = () => {
             </Box>
           )}
 
-          <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{ mt: 2 }}
+            disabled={!category || !image}
+          >
             Add
           </Button>
         </form>
