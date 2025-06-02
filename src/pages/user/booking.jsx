@@ -32,18 +32,19 @@ const Booking = () => {
     setShowSeatingMap(true);  // عرض خريطة المقاعد عند التأكد من التوفر
   };
 
-  return (
+return (
   <Box sx={{ width: "100vw", overflowX: "hidden", m: 0, p: 0 }}>
     <HeaderBooking />
 
-    {event ? (
+    {event && event.startDate && event.location ? (
       <>
         <WhirlingDervishShow 
           eventId={id} 
-          title={event.title} 
+          title={event?.title || "Untitled"} 
           date={event.startDate} 
-          location={event.location?.name} 
+          location={event.location?.name || event.location?.fullAddress || "TBD"} 
         />
+
         <EventDetails event={event} />
         <BookingPanel event={event} onAvailabilityConfirmed={handleAvailabilityConfirmed} />
 
@@ -56,8 +57,10 @@ const Booking = () => {
         {showSeatingMap && <SeatingMap eventId={id} />}
 
         <PriceLegend />
-        <OrganizerInfo organizer={event.organizer} />
-        <VenueMap venue={event.venue} />
+
+        {/* تحقق من وجود organizer و venue قبل تمريرهم */}
+        {event.organizer && <OrganizerInfo organizer={event.organizer} />}
+        {event.venue && <VenueMap venue={event.venue} />}
       </>
     ) : (
       <div>Loading event details...</div>
@@ -66,6 +69,7 @@ const Booking = () => {
     <PaymentFooter />
   </Box>
 );
+
 
 };
 export default Booking;

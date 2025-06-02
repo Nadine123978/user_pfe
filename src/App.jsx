@@ -24,7 +24,11 @@ import MainLayout from './components/superadmin/layout/MainLayout';
 
 import ManageCategories from './pages/admin/ManageCategories';
 import EditCategory from './pages/admin/EditCategory';
-
+import AllBookings from './pages/admin/AllBookings';
+import NewBookings from './pages/admin/NewBookings';
+import ConfirmedBookings from './pages/admin/ConfirmedBookings';
+import CancelledBookings from './pages/admin/CancelledBookings';
+import BookingDetails from './pages/admin/BookingDetails';
 
 
 function App() {
@@ -109,11 +113,13 @@ function App() {
           <Route path="category/manage" element={<ManageCategories />} />
           <Route path="/admin/category/edit/:id" element={<EditCategory />} />
           <Route path="/admin/gallery" element={<AdminEventImagesManager />} />
+          <Route path="/admin/bookings/all" element={<AllBookings />} />
+<Route path="/admin/bookings/new" element={<NewBookings />} />
+<Route path="/admin/bookings/cancelled" element={<CancelledBookings />} />
+<Route path="/admin/bookings/confirmed" element={<ConfirmedBookings />} />
+<Route path="/admin/bookings/:id" element={<BookingDetails />} />
+
          
-
-
-
-          
           {/* هون ضيف باقي الصفحات لاحقًا */}
         </Route>
       </Routes>
