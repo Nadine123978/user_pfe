@@ -22,36 +22,52 @@ const BookingPanel = ({ event, onAvailabilityConfirmed }) => {
 
   const totalPeople = adultCount + childCount + infantCount;
 
-  const handleCheckAvailability = async () => {
-    if (totalPeople > 15) {
-      setError("You can select up to 15 travelers in total.");
-      return;
-    }
+ const handleCheckAvailability = async () => {
+  if (totalPeople > 15) {
+    setError("You can select up to 15 travelers in total.");
+    return;
+  }
 
-    try {
-      const response = await axios.post(
-  `http://localhost:8081/api/events/${event.id}/check-availability`,
-{
-          adults: adultCount,
-          children: childCount,
-          infants: infantCount,
-        }
-      );
+  console.log("Checking availability with values:");
+  console.log({
+    adults: adultCount,
+    children: childCount,
+    infants: infantCount,
+    totalPeople,
+  });
 
-      setAvailability(response.data.available);
-      setError("");
-      if (response.data.available) {
-        onAvailabilityConfirmed({
-          adults: adultCount,
-          children: childCount,
-          infants: infantCount,
-        });
+  try {
+    const response = await axios.post(
+      `http://localhost:8081/api/events/${event.id}/check-availability`,
+      {
+        adults: adultCount,
+        children: childCount,
+        infants: infantCount,
       }
-    } catch (err) {
-      setError("Error checking availability. Please try again.");
-      console.error(err);
+    );
+
+    console.log("Backend response:", response.data);
+
+   setAvailability({
+  available: response.data.available,
+  requestedSeats: response.data.requestedSeats,
+  remainingSeats: response.data.remainingSeats,
+});
+
+    setError("");
+    if (response.data.available) {
+      onAvailabilityConfirmed({
+        adults: adultCount,
+        children: childCount,
+        infants: infantCount,
+      });
     }
-  };
+  } catch (err) {
+    console.error("Error checking availability:", err);
+    setError("Error checking availability. Please try again.");
+  }
+};
+
 
   const handleOpenPopover = (event) => {
     setAnchorEl(event.currentTarget);
@@ -160,16 +176,20 @@ const BookingPanel = ({ event, onAvailabilityConfirmed }) => {
       </Button>
 
       {/* Alerts */}
-      {availability === true && (
-        <Alert severity="success" sx={{ mt: 2 }}>
-          Seats are available! You can proceed to booking.
-        </Alert>
-      )}
-      {availability === false && (
-        <Alert severity="error" sx={{ mt: 2 }}>
-          Not enough seats available!
-        </Alert>
-      )}
+      {availability && (
+  <>
+    {availability.available ? (
+      <Alert severity="success" sx={{ mt: 2 }}>
+        Seats are available! You requested {availability.requestedSeats} seats. Remaining seats after booking: {availability.remainingSeats}.
+      </Alert>
+    ) : (
+      <Alert severity="error" sx={{ mt: 2 }}>
+        Not enough seats available! You requested {availability.requestedSeats} seats but only {availability.remainingSeats + availability.requestedSeats} are available.
+      </Alert>
+    )}
+  </>
+)}
+
       {error && (
         <Alert severity="warning" sx={{ mt: 2 }}>
           {error}

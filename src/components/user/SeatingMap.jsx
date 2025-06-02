@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Button, Chip, Stack, TextField } from "@mui/material";
 import axios from "axios";
 import OrderTimer from "./OrderTimer";
+import PriceLegend from "./PriceLegend";
 
 const SeatingMap = ({ eventId }) => {
   const [sections, setSections] = useState([]);
@@ -62,7 +63,7 @@ const SeatingMap = ({ eventId }) => {
     );
   };
 
-  return (
+    return (
     <Box sx={{ textAlign: "center", p: 2 }}>
       {!confirmed ? (
         <>
@@ -100,12 +101,16 @@ const SeatingMap = ({ eventId }) => {
             ))}
           </Box>
 
+          {/* هنا نضيف PriceLegend */}
+          <PriceLegend />
+
           {selectedSection && (
             <>
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Seats in {selectedSection.name}
               </Typography>
 
+              {/* هنا بقية الكود يعرض المقاعد */}
               {Object.entries(groupSeatsByRow(seats)).map(([row, seatsInRow]) => (
                 <Box
                   key={row}
@@ -152,6 +157,7 @@ const SeatingMap = ({ eventId }) => {
                 </Box>
               ))}
 
+              {/* بقية كود اختيار المقاعد وتأكيدها */}
               {selectedSeats.length > 0 && (
                 <>
                   <Typography variant="h6" sx={{ mt: 3 }}>
@@ -176,6 +182,7 @@ const SeatingMap = ({ eventId }) => {
           )}
         </>
       ) : (
+        // الجزء بعد التأكيد
         <>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Order #25000855988

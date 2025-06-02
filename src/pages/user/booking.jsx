@@ -53,7 +53,8 @@ function Booking() {
         onAvailabilityConfirmed={handleAvailabilityConfirmed}
       />
       {showSeatingMap && <SeatingMap eventId={id} />}
-      <PriceLegend />
+{/* <PriceLegend /> */}
+
       <OrganizerInfo organizer={event.organizer} />
       <VenueMap venue={event.venue} />
       <PaymentFooter />
