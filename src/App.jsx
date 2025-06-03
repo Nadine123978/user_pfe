@@ -31,6 +31,11 @@ import CancelledBookings from './pages/admin/CancelledBookings';
 import BookingDetails from './pages/admin/BookingDetails';
 import SelectEventPage from './pages/admin/SelectEventPage';
 import ManageSeatingPage from './pages/admin/ManageSeatingPage';
+import AddEvent from './pages/admin/AddEvent';
+import ManageEvents from './pages/admin/ManageEvents';
+import ManageUsers from './pages/admin/ManageUsers';
+import UserBookings from './pages/admin/UserBookings';
+
 
 
 function App() {
@@ -120,11 +125,16 @@ function App() {
 <Route path="/admin/bookings/cancelled" element={<CancelledBookings />} />
 <Route path="/admin/bookings/confirmed" element={<ConfirmedBookings />} />
 <Route path="/admin/bookings/:id" element={<BookingDetails />} />
+<Route path="/admin/events/add" element={<AddEvent />} />
+<Route path="/admin/events/manage" element={<ManageEvents />} />
 <Route path="/admin/seating" element={<SelectEventPage />} />
 <Route path="/admin/seating/:eventId" element={<ManageSeatingPage />} />
+<Route path="/admin/users" element={<ManageUsers />} />
+<Route path="/admin/users/:userId/bookings" element={<UserBookings />} />
 
 
-         
+
+
           {/* هون ضيف باقي الصفحات لاحقًا */}
         </Route>
       </Routes>

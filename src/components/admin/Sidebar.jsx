@@ -7,7 +7,7 @@ import {
   Dashboard, Category, Event, SupervisorAccount, Subscriptions,
   BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
   Add, ManageAccounts, Logout, EventSeat
-} from '@mui/icons-material';  // استوردنا EventSeat هنا
+} from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -15,9 +15,11 @@ const drawerWidth = 240;
 const Sidebar = () => {
   const [openCategory, setOpenCategory] = React.useState(false);
   const [openBookings, setOpenBookings] = React.useState(false);
+  const [openEvents, setOpenEvents] = React.useState(false); // ✅ جديد
 
   const handleClickCategory = () => setOpenCategory(!openCategory);
   const handleClickBookings = () => setOpenBookings(!openBookings);
+  const handleClickEvents = () => setOpenEvents(!openEvents); // ✅ جديد
 
   const navigate = useNavigate();
 
@@ -42,8 +44,6 @@ const Sidebar = () => {
     >
       <Toolbar />
       <List sx={{ pt: 1 }}>
-
-        {/* Dashboard */}
         <ListItem button component={Link} to="/admin">
           <ListItemIcon><Dashboard sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Dashboard" />
@@ -68,44 +68,53 @@ const Sidebar = () => {
           </List>
         </Collapse>
 
-        {/* New Section: Seating Panel */}
-      <ListItem button component={Link} to="/admin/seating">
-  <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
-  <ListItemText primary="Manage Seating" />
-</ListItem>
+        {/* Seating */}
+        <ListItem button component={Link} to="/admin/seating">
+          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+          <ListItemText primary="Manage Seating" />
+        </ListItem>
 
-
-        {/* Manage Sponsors */}
+        {/* Sponsors */}
         <ListItem button component={Link} to="/admin/sponsors">
           <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Sponsors" />
         </ListItem>
 
-        {/* Events */}
-        <ListItem button component={Link} to="/admin/events">
+        {/* ✅ Events */}
+        <ListItem button onClick={handleClickEvents}>
           <ListItemIcon><Event sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Events" />
+          {openEvents ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
+        <Collapse in={openEvents} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/events/add">
+              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Add Event" />
+            </ListItem>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/events/manage">
+              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Manage Events" />
+            </ListItem>
+          </List>
+        </Collapse>
 
-        {/* Gallery */}
         <ListItem button component={Link} to="/admin/gallery">
           <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Gallery" />
         </ListItem>
 
-        {/* Manage Users */}
         <ListItem button component={Link} to="/admin/users">
           <ListItemIcon><SupervisorAccount sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Users" />
         </ListItem>
 
-        {/* Manage Subscribers */}
         <ListItem button component={Link} to="/admin/subscribers">
           <ListItemIcon><Subscriptions sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Subscribers" />
         </ListItem>
 
-        {/* Manage Bookings */}
+        {/* Bookings */}
         <ListItem button onClick={handleClickBookings}>
           <ListItemIcon><BookOnline sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Bookings" />
@@ -132,19 +141,16 @@ const Sidebar = () => {
           </List>
         </Collapse>
 
-        {/* News */}
         <ListItem button component={Link} to="/admin/news">
           <ListItemIcon><Newspaper sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="News" />
         </ListItem>
 
-        {/* Website Setting */}
         <ListItem button component={Link} to="/admin/settings">
           <ListItemIcon><Settings sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Website Setting" />
         </ListItem>
 
-        {/* Logout */}
         <ListItem button onClick={handleLogout}>
           <ListItemIcon><Logout sx={{ color: 'red' }} /></ListItemIcon>
           <ListItemText primary="Logout" />
