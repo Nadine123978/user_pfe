@@ -16,7 +16,10 @@ const SeatingMap = ({ eventId }) => {
   useEffect(() => {
     axios
       .get(`http://localhost:8081/api/sections/event/${eventId}`)
-      .then((res) => setSections(res.data))
+      .then((res) => {
+        console.log("Sections response:", res.data);
+        setSections(res.data);
+      })
       .catch((err) => console.error("Error fetching sections:", err));
   }, [eventId]);
 
@@ -63,7 +66,7 @@ const SeatingMap = ({ eventId }) => {
     );
   };
 
-    return (
+  return (
     <Box sx={{ textAlign: "center", p: 2 }}>
       {!confirmed ? (
         <>
@@ -101,7 +104,6 @@ const SeatingMap = ({ eventId }) => {
             ))}
           </Box>
 
-          {/* هنا نضيف PriceLegend */}
           <PriceLegend />
 
           {selectedSection && (
@@ -110,7 +112,6 @@ const SeatingMap = ({ eventId }) => {
                 Seats in {selectedSection.name}
               </Typography>
 
-              {/* هنا بقية الكود يعرض المقاعد */}
               {Object.entries(groupSeatsByRow(seats)).map(([row, seatsInRow]) => (
                 <Box
                   key={row}
@@ -140,7 +141,7 @@ const SeatingMap = ({ eventId }) => {
                             ? "#999"
                             : isSelected
                             ? "#4caf50"
-                            : selectedSection.color || "#FFA500",
+                            : seat.color || selectedSection.color || "#FFA500",
                           color: "white",
                           cursor: seat.reserved ? "not-allowed" : "pointer",
                           fontSize: "12px",
@@ -157,7 +158,6 @@ const SeatingMap = ({ eventId }) => {
                 </Box>
               ))}
 
-              {/* بقية كود اختيار المقاعد وتأكيدها */}
               {selectedSeats.length > 0 && (
                 <>
                   <Typography variant="h6" sx={{ mt: 3 }}>
@@ -182,7 +182,6 @@ const SeatingMap = ({ eventId }) => {
           )}
         </>
       ) : (
-        // الجزء بعد التأكيد
         <>
           <Typography variant="h6" sx={{ mb: 2 }}>
             Order #25000855988
