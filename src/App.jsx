@@ -31,6 +31,7 @@ import CancelledBookings from './pages/admin/CancelledBookings';
 import BookingDetails from './pages/admin/BookingDetails';
 import SelectEventPage from './pages/admin/SelectEventPage';
 import ManageSeatingPage from './pages/admin/ManageSeatingPage';
+import EditSeatsPage from './pages/admin/EditSeatsPage';
 
 
 function App() {
@@ -122,6 +123,8 @@ function App() {
 <Route path="/admin/bookings/:id" element={<BookingDetails />} />
 <Route path="/admin/seating" element={<SelectEventPage />} />
 <Route path="/admin/seating/:eventId" element={<ManageSeatingPage />} />
+<Route path="/admin/manage-seats" element={<EditSeatsPage />} />
+
 
 
          

@@ -7,7 +7,7 @@ import {
   Dashboard, Category, Event, SupervisorAccount, Subscriptions,
   BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
   Add, ManageAccounts, Logout, EventSeat
-} from '@mui/icons-material';  // استوردنا EventSeat هنا
+} from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -15,9 +15,11 @@ const drawerWidth = 240;
 const Sidebar = () => {
   const [openCategory, setOpenCategory] = React.useState(false);
   const [openBookings, setOpenBookings] = React.useState(false);
+  const [openSeating, setOpenSeating] = React.useState(false); // ✅ أضفنا هذا
 
   const handleClickCategory = () => setOpenCategory(!openCategory);
   const handleClickBookings = () => setOpenBookings(!openBookings);
+  const handleClickSeating = () => setOpenSeating(!openSeating); // ✅ أضفنا هذا
 
   const navigate = useNavigate();
 
@@ -74,6 +76,24 @@ const Sidebar = () => {
   <ListItemText primary="Manage Seating" />
 </ListItem>
 
+        {/* Seating */}
+        <ListItem button onClick={handleClickSeating}>
+          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+          <ListItemText primary="Manage Seating" />
+          {openSeating ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+        <Collapse in={openSeating} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/manage-seats">
+              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Add Seat" />
+            </ListItem>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating/manag">
+              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Manage Seats" />
+            </ListItem>
+          </List>
+        </Collapse>
 
         {/* Manage Sponsors */}
         <ListItem button component={Link} to="/admin/sponsors">
@@ -149,6 +169,7 @@ const Sidebar = () => {
           <ListItemIcon><Logout sx={{ color: 'red' }} /></ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItem>
+
       </List>
     </Drawer>
   );
