@@ -105,12 +105,13 @@ const ManageCategories = () => {
                 <TableCell>
                   {cat.imageUrl ? (
                     <img
-                      src={`http://localhost:8081${cat.imageUrl}`}
-                      alt={cat.name}
-                      width="60"
-                      height="40"
-                      style={{ objectFit: 'cover' }}
-                    />
+  src={`http://localhost:8081${cat.imageUrl}`}
+  alt={cat.name}
+  width="60"
+  height="40"
+  style={{ objectFit: 'cover' }}
+/>
+
                   ) : (
                     'No Image'
                   )}

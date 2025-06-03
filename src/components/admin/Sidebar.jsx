@@ -15,9 +15,11 @@ const drawerWidth = 240;
 const Sidebar = () => {
   const [openCategory, setOpenCategory] = React.useState(false);
   const [openBookings, setOpenBookings] = React.useState(false);
+  const [openEvents, setOpenEvents] = React.useState(false); // ✅ تمت إضافته
 
   const handleClickCategory = () => setOpenCategory(!openCategory);
   const handleClickBookings = () => setOpenBookings(!openBookings);
+  const handleClickEvents = () => setOpenEvents(!openEvents); // ✅ تمت إضافته
 
   const navigate = useNavigate();
 
@@ -72,14 +74,13 @@ const Sidebar = () => {
           <ListItemText primary="Manage Seating" />
         </ListItem>
 
-
         {/* Manage Sponsors */}
         <ListItem button component={Link} to="/admin/sponsors">
           <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Sponsors" />
         </ListItem>
 
-        {/* ✅ Events */}
+        {/* Events */}
         <ListItem button onClick={handleClickEvents}>
           <ListItemIcon><Event sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Events" />
@@ -154,7 +155,6 @@ const Sidebar = () => {
           <ListItemIcon><Logout sx={{ color: 'red' }} /></ListItemIcon>
           <ListItemText primary="Logout" />
         </ListItem>
-
       </List>
     </Drawer>
   );

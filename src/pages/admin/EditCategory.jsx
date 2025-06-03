@@ -40,7 +40,7 @@ const EditCategory = () => {
   const formData = new FormData();
   formData.append('name', category);
   formData.append('status', status);
-  formData.append('isTrending', isTrending ? 'true' : 'false'); // تأكد من تمريره كـ string
+  formData.append('is_trending', isTrending ? 'true' : 'false'); // تأكد من تمريره كـ string
   if (imageFile) formData.append('image', imageFile);
 
   const token = localStorage.getItem('token');
