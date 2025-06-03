@@ -6,8 +6,8 @@ import {
 import {
   Dashboard, Category, Event, SupervisorAccount, Subscriptions,
   BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
-  Add, ManageAccounts, Logout
-} from '@mui/icons-material';
+  Add, ManageAccounts, Logout, EventSeat
+} from '@mui/icons-material';  // استوردنا EventSeat هنا
 import { Link, useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -68,6 +68,13 @@ const Sidebar = () => {
           </List>
         </Collapse>
 
+        {/* New Section: Seating Panel */}
+      <ListItem button component={Link} to="/admin/seating">
+  <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+  <ListItemText primary="Manage Seating" />
+</ListItem>
+
+
         {/* Manage Sponsors */}
         <ListItem button component={Link} to="/admin/sponsors">
           <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
@@ -98,7 +105,7 @@ const Sidebar = () => {
           <ListItemText primary="Manage Subscribers" />
         </ListItem>
 
-        {/* Manage Bookings with submenu */}
+        {/* Manage Bookings */}
         <ListItem button onClick={handleClickBookings}>
           <ListItemIcon><BookOnline sx={{ color: '#007bff' }} /></ListItemIcon>
           <ListItemText primary="Manage Bookings" />

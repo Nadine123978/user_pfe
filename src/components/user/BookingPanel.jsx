@@ -117,12 +117,14 @@ const BookingPanel = ({ event, onAvailabilityConfirmed }) => {
 
   return (
     <Box sx={{ maxWidth: 400, margin: "auto", p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        {event.title}
-      </Typography>
-      <Typography variant="body2" fontWeight="bold" gutterBottom>
-        Event Date: {event.date}
-      </Typography>
+     <Typography variant="h6" gutterBottom>
+  {event?.title || "Untitled Event"}
+</Typography>
+
+<Typography variant="body2" fontWeight="bold" gutterBottom>
+  Event Date: {event && event.startDate ? new Date(event.startDate).toLocaleDateString() : "Date not available"}
+</Typography>
+
 
       {/* Traveler Selector */}
       <Box sx={{ mt: 2 }}>

@@ -1,7 +1,18 @@
 import React from "react";
 import { Box, Chip, Typography } from "@mui/material";
 
+
 const EventDetails = ({ event }) => {
+  if (!event) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Typography variant="body2" color="error">
+          Event data is not available.
+        </Typography>
+      </Box>
+    );
+  }
+
   const { description, tags = [] } = event;
 
   return (

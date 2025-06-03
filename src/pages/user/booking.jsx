@@ -51,6 +51,7 @@ function Booking() {
         date={event.startDate}
         location={event.location?.name}
         onAvailabilityConfirmed={handleAvailabilityConfirmed}
+          eventData={event} 
       />
       {showSeatingMap && <SeatingMap eventId={id} />}
 {/* <PriceLegend /> */}
