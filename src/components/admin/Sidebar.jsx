@@ -21,7 +21,15 @@ const Sidebar = () => {
   const handleClickBookings = () => setOpenBookings(!openBookings);
   const handleClickEvents = () => setOpenEvents(!openEvents); // ✅ تمت إضافته
 
+  
   const navigate = useNavigate();
+
+ 
+const [openSection, setOpenSection] = React.useState(false);
+const [openSeating, setOpenSeating] = React.useState(false);
+
+const handleClickSection = () => setOpenSection(!openSection);
+const handleClickSeating = () => setOpenSeating(!openSeating);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -68,11 +76,30 @@ const Sidebar = () => {
           </List>
         </Collapse>
 
-        {/* Seating */}
-        <ListItem button component={Link} to="/admin/seating">
-          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Seating" />
-        </ListItem>
+       {/* Seating */}
+<ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating">
+  <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+  <ListItemText primary="Manage Section" />
+</ListItem>
+
+<ListItem button onClick={handleClickSeating}>
+  <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+  <ListItemText primary="Manage Seating" />
+  {openSeating ? <ExpandLess /> : <ExpandMore />}
+</ListItem>
+
+<Collapse in={openSeating} timeout="auto" unmountOnExit>
+  <List component="div" disablePadding>
+    <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/manage-seats">
+      <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
+      <ListItemText primary="Add Seat" />
+    </ListItem>
+    <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating/managee">
+      <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
+      <ListItemText primary="Manage Seats" />
+    </ListItem>
+  </List>
+</Collapse>
 
         {/* Manage Sponsors */}
         <ListItem button component={Link} to="/admin/sponsors">

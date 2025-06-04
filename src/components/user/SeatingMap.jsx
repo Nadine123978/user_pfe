@@ -3,6 +3,7 @@ import { Box, Typography, Button, Chip, Stack, TextField } from "@mui/material";
 import axios from "axios";
 import OrderTimer from "./OrderTimer";
 import PriceLegend from "./PriceLegend";
+import TicketCheckout from "./TicketCheckout"; // تأكد من استيراد هذا المكون
 
 const SeatingMap = ({ eventId }) => {
   const [sections, setSections] = useState([]);
@@ -12,6 +13,7 @@ const SeatingMap = ({ eventId }) => {
   const [confirmed, setConfirmed] = useState(false);
   const [confirmedSeats, setConfirmedSeats] = useState([]);
   const [paymentStarted, setPaymentStarted] = useState(false);
+  const [colorPricePairs, setColorPricePairs] = useState([]);
 
   useEffect(() => {
     axios
@@ -28,7 +30,19 @@ const SeatingMap = ({ eventId }) => {
     setSelectedSeats([]);
     axios
       .get(`http://localhost:8081/api/seats/section/${section.id}`)
-      .then((res) => setSeats(res.data))
+      .then((res) => {
+        setSeats(res.data);
+
+        const uniqueColorPricePairs = Array.from(
+          new Set(res.data.map((seat) => `${seat.color}-${seat.price}`))
+        ).map((pair) => {
+          const [color, price] = pair.split("-");
+          return { color, price };
+        });
+
+        setColorPricePairs(uniqueColorPricePairs);
+        console.log("Color-Price Pairs:", uniqueColorPricePairs);
+      })
       .catch((err) => console.error("Error fetching seats:", err));
   };
 
@@ -104,8 +118,6 @@ const SeatingMap = ({ eventId }) => {
             ))}
           </Box>
 
-          <PriceLegend />
-
           {selectedSection && (
             <>
               <Typography variant="h6" sx={{ mb: 2 }}>
@@ -158,6 +170,8 @@ const SeatingMap = ({ eventId }) => {
                 </Box>
               ))}
 
+              <PriceLegend pairs={colorPricePairs} />
+
               {selectedSeats.length > 0 && (
                 <>
                   <Typography variant="h6" sx={{ mt: 3 }}>
@@ -168,6 +182,7 @@ const SeatingMap = ({ eventId }) => {
                       <Chip key={seat.id} label={seat.code} color="success" />
                     ))}
                   </Stack>
+
                   <Button
                     variant="contained"
                     color="primary"
@@ -183,43 +198,50 @@ const SeatingMap = ({ eventId }) => {
         </>
       ) : (
         <>
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            Order #25000855988
-          </Typography>
-          <OrderTimer orderNumber="25000855988" onCancel={() => window.location.reload()} />
-
-          {selectedSeats.map((seat, index) => (
-            <Box
-              key={seat.id}
-              sx={{
-                background: "#f5f5f5",
-                p: 2,
-                mb: 2,
-                borderRadius: 2,
-                textAlign: "left",
-              }}
-            >
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                Ticket #{index + 1}
+          {!paymentStarted ? (
+            <>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Order #25000855988
               </Typography>
-              <Typography sx={{ mb: 1 }}>
-                Section {selectedSection.name} - {seat.code}
-              </Typography>
-              <Typography sx={{ mb: 1 }}>$ {selectedSection.price}</Typography>
-              <TextField fullWidth label="Email" defaultValue="example@gmail.com" sx={{ mb: 1 }} />
-              <TextField fullWidth label="First Name" defaultValue="Nadim" sx={{ mb: 1 }} />
-              <TextField fullWidth label="Last Name" defaultValue="Sleiman" />
-            </Box>
-          ))}
+              <OrderTimer orderNumber="25000855988" onCancel={() => window.location.reload()} />
 
-          <Button
-            variant="contained"
-            color="error"
-            sx={{ mt: 2 }}
-            onClick={() => setPaymentStarted(true)}
-          >
-            Continue to Payment
-          </Button>
+              {selectedSeats.map((seat, index) => (
+                <Box
+                  key={seat.id}
+                  sx={{
+                    background: "#f5f5f5",
+                    p: 2,
+                    mb: 2,
+                    borderRadius: 2,
+                    textAlign: "left",
+                  }}
+                >
+                  <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+                    Ticket #{index + 1}
+                  </Typography>
+                  <Typography sx={{ mb: 1 }}>
+                    Section {selectedSection.name} - {seat.code}
+                  </Typography>
+                  <Typography sx={{ mb: 1 }}>$ {seat.price}</Typography>
+                  <TextField fullWidth label="Email" defaultValue="example@gmail.com" sx={{ mb: 1 }} />
+                  <TextField fullWidth label="First Name" defaultValue="Nadim" sx={{ mb: 1 }} />
+                  <TextField fullWidth label="Last Name" defaultValue="Sleiman" />
+                </Box>
+              ))}
+
+              <Button
+                variant="contained"
+                color="error"
+                sx={{ mt: 2 }}
+                onClick={() => setPaymentStarted(true)}
+              >
+                Continue to Payment
+              </Button>
+            </>
+          ) : (
+           <TicketCheckout tickets={selectedSeats} />
+
+          )}
         </>
       )}
     </Box>

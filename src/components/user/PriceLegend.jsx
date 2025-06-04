@@ -1,28 +1,30 @@
 // PriceLegend.jsx
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Stack, Tooltip } from "@mui/material";
 
-const prices = [
-  { color: 'yellow', price: '$5' },
-  { color: 'purple', price: '$35' },
-  { color: 'blue', price: '$45' },
-  { color: 'lightblue', price: '$55' },
-  { color: 'green', price: '$65' },
-  { color: 'teal', price: '$70' },
-  { color: 'skyblue', price: '$75' },
-  { color: 'orange', price: '$85' },
-  { color: 'red', price: '$110' },
-];
+const PriceLegend = ({ pairs = [] }) => {
+  if (pairs.length === 0) return null;
 
-const PriceLegend = () => (
-  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, p: 2, justifyContent: 'center' }}>
-    {prices.map(({ color, price }) => (
-      <Box key={price} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Box sx={{ width: 20, height: 20, bgcolor: color, borderRadius: '4px' }}></Box>
-        <Typography variant="body2">{price}</Typography>
-      </Box>
-    ))}
-  </Box>
-);
+  return (
+    <Stack direction="row" spacing={3} sx={{ mb: 3, justifyContent: "center", flexWrap: "wrap" }}>
+      {pairs.map((pair, idx) => (
+        <Box key={idx} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Tooltip title={`Color represents $${pair.price}`}>
+            <Box
+              sx={{
+                width: 20,
+                height: 20,
+                borderRadius: "4px",
+                backgroundColor: pair.color,
+                border: "1px solid #ccc",
+              }}
+            />
+          </Tooltip>
+          <Typography variant="body2">${pair.price}</Typography>
+        </Box>
+      ))}
+    </Stack>
+  );
+};
 
 export default PriceLegend;

@@ -39,13 +39,11 @@ const ManageCategories = () => {
       .catch(err => console.error('Failed to fetch categories', err));
   };
 
-  // لما يضغط على زر الحذف، نفتح الـ Dialog ونخزن الـ id
   const handleClickDelete = (id) => {
     setSelectedId(id);
     setOpenConfirm(true);
   };
 
-  // لما يؤكد المستخدم الحذف
   const handleConfirmDelete = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -71,7 +69,6 @@ const ManageCategories = () => {
     }
   };
 
-  // إغلاق الـ Dialog بدون حذف
   const handleCancelDelete = () => {
     setOpenConfirm(false);
     setSelectedId(null);
@@ -98,47 +95,58 @@ const ManageCategories = () => {
           </TableHead>
 
           <TableBody>
-            {categories.map((cat, index) => (
-              <TableRow key={cat.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{cat.name}</TableCell>
-                <TableCell>
-                  {cat.imageUrl ? (
-                    <img
-  src={`http://localhost:8081${cat.imageUrl}`}
-  alt={cat.name}
-  width="60"
-  height="40"
-  style={{ objectFit: 'cover' }}
-/>
+          {categories.map((cat, index) => {
+  console.log('Category:', cat);
+  console.log('Raw imageUrl from backend:', cat.imageUrl);
+   
+     const imageUrl =
+  cat.imageUrl && typeof cat.imageUrl === 'string'
+    ? `http://localhost:8081${cat.imageUrl.startsWith('/') ? '' : '/'}${cat.imageUrl.replace('/images/', '/uploads/')}`
+    : null;
 
-                  ) : (
-                    'No Image'
-                  )}
-                </TableCell>
-                <TableCell>{cat.isTrending ? 'Yes' : 'No'}</TableCell>
-                <TableCell>{cat.status || 'Inactive'}</TableCell>
-                <TableCell>
-                  {cat.createdAt
-                    ? new Date(cat.createdAt).toLocaleString()
-                    : 'N/A'}
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => navigate(`/admin/category/edit/${cat.id}`)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleClickDelete(cat.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+
+
+  console.log('Constructed full imageUrl:', imageUrl);
+
+  return (
+    <TableRow key={cat.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{cat.name}</TableCell>
+                  <TableCell>
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={cat.name}
+                        width="60"
+                        height="40"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    ) : (
+                      'No Image'
+                    )}
+                  </TableCell>
+                  <TableCell>{cat.isTrending ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>{cat.status || 'Inactive'}</TableCell>
+                  <TableCell>
+                    {cat.createdAt ? new Date(cat.createdAt).toLocaleString() : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => navigate(`/admin/category/edit/${cat.id}`)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleClickDelete(cat.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>

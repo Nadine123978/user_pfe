@@ -13,10 +13,8 @@ const Input = styled('input')({
 const AddEvent = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [soldTickets, setSoldTickets] = useState(0);
-  const [totalTickets, setTotalTickets] = useState(0);
   const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [locationId, setLocationId] = useState('');
   const [file, setFile] = useState(null);
@@ -41,19 +39,17 @@ const AddEvent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-   const formData = new FormData();
-formData.append("title", title);
-formData.append("description", description);
-formData.append("price", price);
-formData.append("soldTickets", soldTickets);
-formData.append("totalTickets", totalTickets);
-formData.append("categoryId", categoryId); // <-- لازم يكون ID
-formData.append("locationId", locationId); // <-- جديد لازم تضيفه
-formData.append("startDate", startDate); // صيغة: "2025-06-13T12:00"
-formData.append("file", file);
-formData.append("isFeatured", isFeatured);
 
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("categoryId", categoryId);
+    formData.append("locationId", locationId);
+    formData.append("startDate", startDate);
+    formData.append("endDate", endDate);
+    formData.append("file", file);
+    formData.append("isFeatured", isFeatured);
 
     try {
       await axios.post('http://localhost:8081/api/events/upload', formData, {
@@ -63,6 +59,15 @@ formData.append("isFeatured", isFeatured);
         },
       });
       alert("Event added successfully");
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setStartDate('');
+      setEndDate('');
+      setCategoryId('');
+      setLocationId('');
+      setFile(null);
+      setIsFeatured(false);
     } catch (err) {
       console.error("Error uploading event:", err);
       alert("Failed to add event");
@@ -75,22 +80,42 @@ formData.append("isFeatured", isFeatured);
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
 
-          <Grid item xs={12}><TextField label="Title" fullWidth required value={title} onChange={(e) => setTitle(e.target.value)} /></Grid>
+          <Grid item xs={12}>
+            <TextField label="Title" fullWidth required value={title} onChange={(e) => setTitle(e.target.value)} />
+          </Grid>
 
-          <Grid item xs={12}><TextField label="Description" fullWidth multiline rows={3} value={description} onChange={(e) => setDescription(e.target.value)} /></Grid>
+          <Grid item xs={12}>
+            <TextField label="Description" fullWidth multiline rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+          </Grid>
 
-          <Grid item xs={6}><TextField label="Price" type="number" fullWidth required value={price} onChange={(e) => setPrice(e.target.value)} /></Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="Start Date"
+              type="datetime-local"
+              fullWidth
+              required
+              InputLabelProps={{ shrink: true }}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </Grid>
 
-          <Grid item xs={6}><TextField label="Sold Tickets" type="number" fullWidth value={soldTickets} onChange={(e) => setSoldTickets(e.target.value)} /></Grid>
-
-          <Grid item xs={6}><TextField label="Total Tickets" type="number" fullWidth required value={totalTickets} onChange={(e) => setTotalTickets(e.target.value)} /></Grid>
-
-          <Grid item xs={6}><TextField label="Start Date" type="datetime-local" fullWidth required InputLabelProps={{ shrink: true }} value={startDate} onChange={(e) => setStartDate(e.target.value)} /></Grid>
+          <Grid item xs={6}>
+            <TextField
+              label="End Date"
+              type="datetime-local"
+              fullWidth
+              required
+              InputLabelProps={{ shrink: true }}
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </Grid>
 
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Category</InputLabel>
-              <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+              <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
                 {categories.map((cat) => (
                   <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
                 ))}
@@ -101,7 +126,7 @@ formData.append("isFeatured", isFeatured);
           <Grid item xs={6}>
             <FormControl fullWidth>
               <InputLabel>Location</InputLabel>
-              <Select value={locationId} onChange={(e) => setLocationId(e.target.value)}>
+              <Select value={locationId} onChange={(e) => setLocationId(e.target.value)} required>
                 {locations.map((loc) => (
                   <MenuItem key={loc.id} value={loc.id}>{loc.name}</MenuItem>
                 ))}
