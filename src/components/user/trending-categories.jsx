@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, Button } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { useNavigate } from 'react-router-dom'; // أضف هذا في الأعلى
+
 import axios from 'axios';
 
 const TrendingCategories = () => {
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate(); // بعد useState
+
 
   useEffect(() => {
     const fetchTrending = async () => {
@@ -62,13 +66,15 @@ const TrendingCategories = () => {
                     {category.name}
                   </Typography>
                   <Button
-                    variant="text"
-                    color="primary"
-                    endIcon={<OpenInNewIcon />}
-                    sx={{ mt: 1 }}
-                  >
-                    Explore
-                  </Button>
+  variant="text"
+  color="primary"
+  endIcon={<OpenInNewIcon />}
+  sx={{ mt: 1 }}
+  onClick={() => navigate(`/category/${category.id}/events`)}
+>
+  Explore
+</Button>
+
                 </Box>
               </Box>
             </Grid>

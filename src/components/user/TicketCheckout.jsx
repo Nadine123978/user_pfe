@@ -8,14 +8,17 @@ import {
   Radio,
   Box,
   Stack,
+  Button,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 
-const TicketCheckout = ({ tickets }) => {
+const TicketCheckout = ({ tickets, onPaymentDone }) => {
   const [selectedPayment, setSelectedPayment] = useState('MPGS');
+  const [isPaying, setIsPaying] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  // لو لم يتم تمرير تذاكر نعرض مصفوفة فارغة لتجنب الأخطاء
   const ticketsList = tickets || [];
-
   const paymentFee = 14.34;
   const subtotal = ticketsList.reduce((sum, t) => sum + t.price, 0);
   const total = subtotal + paymentFee;
@@ -30,6 +33,20 @@ const TicketCheckout = ({ tickets }) => {
     { id: 'CashUnited', label: 'Cash United' },
     { id: 'Tylleum', label: 'Pay with Tylleum' },
   ];
+
+  const handlePayment = () => {
+    setIsPaying(true);
+    setPaymentSuccess(false);
+
+    // Simulate payment processing delay
+    setTimeout(() => {
+      setIsPaying(false);
+      setPaymentSuccess(true);
+
+      // Call the parent callback to notify payment is done
+      if (onPaymentDone) onPaymentDone();
+    }, 2000); // 2 seconds delay to simulate processing
+  };
 
   return (
     <Box maxWidth={600} mx="auto" p={3} display="flex" flexDirection="column" gap={4}>
@@ -126,6 +143,35 @@ const TicketCheckout = ({ tickets }) => {
           </Box>
         </CardContent>
       </Card>
+
+      {/* Pay Button */}
+      <Box textAlign="center">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePayment}
+          disabled={isPaying || paymentSuccess}
+          size="large"
+        >
+          {isPaying ? (
+            <>
+              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+              Processing...
+            </>
+          ) : paymentSuccess ? (
+            "Payment Successful"
+          ) : (
+            "Pay Now"
+          )}
+        </Button>
+      </Box>
+
+      {/* Success Message */}
+      {paymentSuccess && (
+        <Alert severity="success" sx={{ mt: 2 }}>
+          Your payment was successful! Thank you for your purchase.
+        </Alert>
+      )}
     </Box>
   );
 };

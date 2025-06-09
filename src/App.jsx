@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // User pages
 import Home from './pages/user/Home';
@@ -36,7 +38,8 @@ import AddEvent from './pages/admin/AddEvent';
 import ManageEvents from './pages/admin/ManageEvents';
 import ManageUsers from './pages/admin/ManageUsers';
 import UserBookings from './pages/admin/UserBookings';
-
+import CategoryEventsPage from './pages/user/CategoryEventsPage';
+import CheckoutPage from './pages/user/CheckoutPage';
 
 
 function App() {
@@ -64,6 +67,7 @@ function App() {
 
   return (
     <Router>
+            <ToastContainer />
       <Routes>
         {/* صفحات عامة */}
         <Route path="/" element={<Home />} />
@@ -73,10 +77,15 @@ function App() {
         <Route path="/resetpass" element={<Forgetpage />} />
         <Route path="/reset-password" element={<ResetPassPage />} />
 
+  
+
         {/* صفحات المستخدم */}
         <Route path="/event/:id/tickets" element={<SeatMap />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/events/:eventId" element={<WhirlingDervishShow />} />
+          
+        <Route path="/category/:id/events" element={<CategoryEventsPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
 
 
           <Route

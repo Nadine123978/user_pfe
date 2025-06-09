@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardContent, CardMedia, Typography, Button, Grid } from '@mui/material';
+import {
+  Box, Card, CardContent, CardMedia,
+  Typography, Button, Grid
+} from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const FeaturedEvents = () => {
   const [events, setEvents] = useState([]);
@@ -11,53 +15,82 @@ const FeaturedEvents = () => {
   useEffect(() => {
     const fetchFeaturedEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:8081/api/events/featured");
-        console.log("✅ Events:", response.data);
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:8081/api/events/featured", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log("Fetched Events:", response.data);
+
         setEvents(response.data);
       } catch (error) {
         console.error("❌ Error fetching featured events:", error);
+        toast.error("Failed to load events.");
       }
     };
 
     fetchFeaturedEvents();
   }, []);
 
- const handleBook = async (eventId) => {
+const handleBook = (eventId) => {
   const userId = localStorage.getItem("userId");
 
-if (!userId) {
-  alert("Please log in first.");
-  navigate("/login");
-  return;
-}
-
-try {
- const token = localStorage.getItem("token");
-
-const response = await axios.post(
-  "http://localhost:8081/api/bookings/create",
-  { eventId }, // فقط eventId لأن user يُستخرج من التوكن
-  {
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    }
+  if (!userId) {
+    toast.warn("Please log in first.");
+    navigate("/login");
+    return;
   }
-);
 
-
-  if (response.status === 200) {
-    navigate(`/booking/${eventId}`);
-  } else {
-    alert("Booking failed. Please try again.");
-  }
-} catch (error) {
-  console.error("❌ Booking error:", error.response ? error.response.data : error.message);
-  alert("Booking failed. Try again.");
-}
-
+  // توجيه فقط إلى صفحة الحجز
+  navigate(`/booking/${eventId}`);
 };
 
+const handleButtonClick = (event) => {
+  if (event.alreadyBooked) {
+    switch (event.bookingStatus) {
+      case 'PENDING':
+        if (!event.bookingId) {
+          console.error("Missing booking ID for pending booking.");
+          return;
+        }
+        navigate("/checkout", { state: { bookingId: event.bookingId } });
+        break;
+      case 'CANCELLED':
+        navigate(`/booking/${event.id}`);
+        break;
+      case 'PAID':
+      case 'CONFIRMED':
+        toast.info("You cannot book this event again.");
+        break;
+      default:
+        navigate(`/booking/${event.id}`);
+    }
+  } else {
+    navigate(`/booking/${event.id}`);
+  }
+};
+
+
+
+const getButtonLabel = (event) => {
+  if (!event) return "Book Now";
+
+  if (event.alreadyBooked) {
+    switch (event.bookingStatus?.toUpperCase()) {
+      case 'PENDING': return "Continue Booking";
+      case 'CANCELLED': return "Book Now";
+      case 'PAID':
+      case 'CONFIRMED': return "View Tickets";
+      default: return "Book Now";
+    }
+  }
+
+  return "Book Now";
+};
+
+
+  const isButtonDisabled = (event) => {
+    return event.alreadyBooked && (event.bookingStatus === 'PAID' || event.bookingStatus === 'CONFIRMED');
+  };
 
   return (
     <Box sx={{ backgroundColor: '#052641', py: 6, px: 4, borderRadius: '24px', mt: 8 }}>
@@ -65,7 +98,7 @@ const response = await axios.post(
         Featured Events
       </Typography>
       <Typography variant="body1" color="gray" mb={4}>
-        Be sure not to miss these Event today.
+        Be sure not to miss these Events today.
       </Typography>
 
       <Grid container spacing={4}>
@@ -93,24 +126,25 @@ const response = await axios.post(
                 <Typography variant="h6" fontWeight="bold" mt={1} mb={1}>
                   {event.title}
                 </Typography>
-                <Typography variant="body2" color="gray" mb={2}>
-                  {event.date} | {event.location?.fullAddress}
-                </Typography>
+<Typography variant="body2" color="gray" mb={2}>
+  {event.startDate ? new Date(event.startDate).toLocaleDateString() : "Date N/A"} | {event.location?.fullAddress || "Location N/A"}
+</Typography>
+
 
                 <Button
-                  onClick={() => handleBook(event.id)}
-                  disabled={event.disabled}
-                  variant={event.disabled ? "outlined" : "contained"}
+                  onClick={() => handleButtonClick(event)}
+                  variant={isButtonDisabled(event) ? "outlined" : "contained"}
                   fullWidth
                   endIcon={<OpenInNewIcon />}
                   sx={{
-                    color: event.disabled ? '#999' : 'black',
-                    backgroundColor: event.disabled ? 'transparent' : 'white',
-                    borderColor: event.disabled ? '#444' : 'white',
+                    color: isButtonDisabled(event) ? '#999' : 'black',
+                    backgroundColor: isButtonDisabled(event) ? 'transparent' : 'white',
+                    borderColor: isButtonDisabled(event) ? '#444' : 'white',
                     fontWeight: 'bold',
                   }}
+                  disabled={isButtonDisabled(event)}
                 >
-                  View Tickets
+                  {getButtonLabel(event)}
                 </Button>
               </CardContent>
             </Card>
