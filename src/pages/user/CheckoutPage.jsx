@@ -17,37 +17,36 @@ useEffect(() => {
     navigate("/");
     return;
   }
+const fetchBookingDetails = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8081/api/bookings/${bookingId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const booking = response.data;
+    console.log("🔍 Booking Response:", booking);
 
-  const fetchBookingDetails = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8081/api/bookings/${bookingId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-const booking = response.data;
-console.log("🔍 Booking Response:", booking);
-
-if (!booking.seat) {
-  console.error("❌ Booking seat is null");
-  return;
-}
-
-
-const ticket = {
-  id: booking.seat.id,
-  code: booking.seat.code,
-  price: booking.price,
-  section: booking.seat.code,
-  zone: booking.event.location,
-};
-      setSelectedSeats([ticket]);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching booking:", error);
-      navigate("/");
+    if (!booking.seats || booking.seats.length === 0) {
+      console.error("❌ Booking seats is null or empty");
+      return;
     }
-  };
+
+    const tickets = booking.seats.map(seat => ({
+      id: seat.id,
+      code: seat.code,
+      price: seat .price,
+      section: seat.code,
+      zone: booking.event?.location,
+    }));
+
+    setSelectedSeats(tickets);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching booking:", error);
+    navigate("/");
+  }
+};
 
   fetchBookingDetails();
 }, [bookingId, navigate, token]);
@@ -59,10 +58,11 @@ const ticket = {
   return (
     <div style={{ padding: 24 }}>
       <h2>Checkout Page</h2>
-      <TicketCheckout
-        tickets={selectedSeats}
-        onPaymentDone={() => navigate("/success")}
-      />
+     <TicketCheckout
+  tickets={selectedSeats}
+  onPaymentDone={() => setPaymentSuccess(true)}
+/>
+
     </div>
   );
 };

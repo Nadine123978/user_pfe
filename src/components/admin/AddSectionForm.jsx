@@ -2,18 +2,70 @@ import React, { useState, useEffect } from "react";
 import { Box, Button, TextField, Typography, Grid } from "@mui/material";
 import axios from "axios";
 
+// مثال بسيط لمكون SeatGrid لعرض شبكة المقاعد
+const SeatGrid = ({ section }) => {
+  const { rows, cols, name, color, price } = section;
+
+  const seats = [];
+  for (let row = 1; row <= rows; row++) {
+    const rowSeats = [];
+    for (let col = 1; col <= cols; col++) {
+      rowSeats.push(
+        <Box
+          key={`${row}-${col}`}
+          sx={{
+            width: 30,
+            height: 30,
+            backgroundColor: color,
+            margin: 0.5,
+            borderRadius: "4px",
+            display: "inline-block",
+            lineHeight: "30px",
+            textAlign: "center",
+            color: "white",
+            fontWeight: "bold",
+            userSelect: "none",
+          }}
+          title={`Seat ${name}${row}-${col} - $${price.toFixed(2)}`}
+        >
+          {col}
+        </Box>
+      );
+    }
+    seats.push(
+      <Box key={row} sx={{ mb: 1 }}>
+        <Typography variant="body2" component="span" sx={{ mr: 1 }}>
+          Row {row}:
+        </Typography>
+        {rowSeats}
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
+      <Typography variant="subtitle1" gutterBottom>
+        Seats layout for section: {name}
+      </Typography>
+      {seats}
+    </Box>
+  );
+};
+
 const AddSectionForm = ({ eventId }) => {
   const [sectionName, setSectionName] = useState("");
-  const [sectionColor, setSectionColor] = useState("");
+  const [sectionColor, setSectionColor] = useState("#000000");
   const [sectionPrice, setSectionPrice] = useState("");
-  const [numberOfSeats, setNumberOfSeats] = useState("");
+  const [numberOfRows, setNumberOfRows] = useState("");
+  const [numberOfColumns, setNumberOfColumns] = useState("");
   const [sections, setSections] = useState([]);
   const [editingSection, setEditingSection] = useState(null);
+  const [newSection, setNewSection] = useState(null);
 
-  // جلب الأقسام الخاصة بالحدث eventId
   useEffect(() => {
-    if (!eventId) return;
-    fetchSections();
+    if (eventId) {
+      fetchSections();
+    }
   }, [eventId]);
 
   const fetchSections = async () => {
@@ -27,65 +79,71 @@ const AddSectionForm = ({ eventId }) => {
 
   const resetForm = () => {
     setSectionName("");
-    setSectionColor("");
+    setSectionColor("#000000");
     setSectionPrice("");
-    setNumberOfSeats("");
+    setNumberOfRows("");
+    setNumberOfColumns("");
     setEditingSection(null);
   };
 
   const handleAddSection = async () => {
     try {
-      if (!sectionName.trim()) {
-        alert("Please enter a section name");
+      if (!sectionName.trim() || !sectionColor || !sectionPrice || !numberOfRows || !numberOfColumns) {
+        alert("Please fill all required fields");
         return;
       }
-      if (!sectionColor) {
-        alert("Please choose a color");
+
+      const isDuplicate = sections.some(
+        (sec) => sec.name.toLowerCase() === sectionName.trim().toLowerCase()
+      );
+      if (isDuplicate) {
+        alert("A section with this name already exists.");
         return;
       }
-      const seatsCount = parseInt(numberOfSeats, 10);
-      if (isNaN(seatsCount) || seatsCount <= 0) {
-        alert("Please enter a valid number of seats");
+
+      const rows = parseInt(numberOfRows, 10);
+      const cols = parseInt(numberOfColumns, 10);
+      const price = parseFloat(sectionPrice);
+
+      if (isNaN(rows) || isNaN(cols) || rows <= 0 || cols <= 0) {
+        alert("Please enter valid rows and columns");
         return;
       }
-      if (!sectionPrice || Number(sectionPrice) <= 0) {
+      if (isNaN(price) || price <= 0) {
         alert("Please enter a valid price");
         return;
       }
 
-      // إنشاء القسم مع eventId
+      const totalSeats = rows * cols;
       const sectionRes = await axios.post(
         `http://localhost:8081/api/sections/create?eventId=${eventId}`,
-        {
-          name: sectionName,
-          color: sectionColor,
-          totalSeats: seatsCount,
-          price: Number(sectionPrice),
-        }
+        { name: sectionName, color: sectionColor, totalSeats, price }
       );
 
       const sectionId = sectionRes.data.id;
 
-      // إنشاء الكراسي للقسم الجديد
       const seats = [];
-      for (let i = 1; i <= seatsCount; i++) {
-        seats.push({
-          code: `${sectionName}${i}`,
-          reserved: false,
-          available: true,
-          price: Number(sectionPrice),
-          row: 1,
-          number: i,
-        });
+      for (let row = 1; row <= rows; row++) {
+        for (let col = 1; col <= cols; col++) {
+          seats.push({
+            code: `${sectionName}${row}-${col}`,
+            reserved: false,
+            available: true,
+            price,
+            row,
+            number: col,
+          });
+        }
       }
 
-      await axios.post(`http://localhost:8081/api/seats/section/${sectionId}`, seats);
+      await axios.post(`http://localhost:8081/api/seats/section/${sectionId}/generate`, seats);
 
       alert("Section and seats added!");
-
       resetForm();
-
       await fetchSections();
+
+      // عرض القسم الجديد مع عدد الصفوف والأعمدة
+      setNewSection({ ...sectionRes.data, rows, cols });
     } catch (error) {
       console.error("Error adding section/seats:", error);
       alert("Error adding data");
@@ -110,50 +168,39 @@ const AddSectionForm = ({ eventId }) => {
     setSectionName(section.name);
     setSectionColor(section.color);
     setSectionPrice(section.price.toString());
-    setNumberOfSeats(section.totalSeats.toString());
   };
-const handleUpdateSection = async () => {
-  try {
-    if (!editingSection) return;
 
-    if (!sectionName.trim()) {
-      alert("Please enter a section name");
-      return;
+  const handleUpdateSection = async () => {
+    try {
+      if (!editingSection) return;
+
+      if (!sectionName.trim() || !sectionColor || !sectionPrice) {
+        alert("Please fill all required fields");
+        return;
+      }
+
+      const price = parseFloat(sectionPrice);
+      if (isNaN(price) || price <= 0) {
+        alert("Please enter a valid price");
+        return;
+      }
+
+      await axios.put(`http://localhost:8081/api/sections/${editingSection.id}`, {
+        name: sectionName,
+        color: sectionColor,
+        totalSeats: editingSection.totalSeats,
+        price,
+        eventId,
+      });
+
+      alert("Section updated!");
+      resetForm();
+      await fetchSections();
+    } catch (error) {
+      console.error("Error updating section:", error);
+      alert("Error updating data");
     }
-    if (!sectionColor) {
-      alert("Please choose a color");
-      return;
-    }
-    // حذف التحقق من عدد الكراسي:
-    // const seatsCount = parseInt(numberOfSeats, 10);
-    // if (isNaN(seatsCount) || seatsCount <= 0) {
-    //   alert("Please enter a valid number of seats");
-    //   return;
-    // }
-    if (!sectionPrice || Number(sectionPrice) <= 0) {
-      alert("Please enter a valid price");
-      return;
-    }
-
-    // تحديث القسم مع استخدام القيمة الحالية بدون التحقق من عدد الكراسي
-    await axios.put(`http://localhost:8081/api/sections/${editingSection.id}`, {
-      name: sectionName,
-      color: sectionColor,
-     totalSeats: editingSection.totalSeats,
-      price: Number(sectionPrice),
-      eventId: eventId,
-    });
-
-    alert("Section updated!");
-
-    resetForm();
-
-    await fetchSections();
-  } catch (error) {
-    console.error("Error updating section:", error);
-    alert("Error updating data");
-  }
-};
+  };
 
   return (
     <Box sx={{ mb: 4 }}>
@@ -188,16 +235,28 @@ const handleUpdateSection = async () => {
             onChange={(e) => setSectionPrice(e.target.value)}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            label="Number of Seats"
-            type="number"
-            fullWidth
-            value={numberOfSeats}
-            onChange={(e) => setNumberOfSeats(e.target.value)}
-            disabled={!!editingSection} // تعطيل تعديل عدد الكراسي أثناء التعديل
-          />
-        </Grid>
+        {!editingSection && (
+          <>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Number of Rows"
+                type="number"
+                fullWidth
+                value={numberOfRows}
+                onChange={(e) => setNumberOfRows(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Number of Columns"
+                type="number"
+                fullWidth
+                value={numberOfColumns}
+                onChange={(e) => setNumberOfColumns(e.target.value)}
+              />
+            </Grid>
+          </>
+        )}
         <Grid item xs={12}>
           <Button
             variant="contained"
@@ -219,17 +278,18 @@ const handleUpdateSection = async () => {
       <ul>
         {sections.map((sec) => (
           <li key={sec.id} style={{ marginBottom: "8px" }}>
-            {sec.name} - Color:{" "}
+            <strong>{sec.name}</strong> - 
             <span
               style={{
                 display: "inline-block",
                 width: "20px",
                 height: "20px",
                 backgroundColor: sec.color,
-                marginRight: "8px",
+                margin: "0 8px",
                 verticalAlign: "middle",
+                border: "1px solid #ccc"
               }}
-            ></span>{" "}
+            ></span>
             - Price: ${sec.price.toFixed(2)}
             <Button
               size="small"
@@ -239,12 +299,24 @@ const handleUpdateSection = async () => {
             >
               Delete
             </Button>
-            <Button size="small" onClick={() => handleEditClick(sec)} sx={{ ml: 1 }}>
+            <Button
+              size="small"
+              onClick={() => handleEditClick(sec)}
+              sx={{ ml: 1 }}
+            >
               Edit
             </Button>
           </li>
         ))}
       </ul>
+
+      {/* عرض شبكة المقاعد للقسم الجديد */}
+      {newSection && (
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h6">Seats for {newSection.name}</Typography>
+          <SeatGrid section={newSection} />
+        </Box>
+      )}
     </Box>
   );
 };

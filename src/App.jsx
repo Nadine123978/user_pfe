@@ -86,6 +86,7 @@ function App() {
           
         <Route path="/category/:id/events" element={<CategoryEventsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+         
 
 
           <Route

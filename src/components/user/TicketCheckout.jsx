@@ -17,6 +17,7 @@ const TicketCheckout = ({ tickets, onPaymentDone }) => {
   const [selectedPayment, setSelectedPayment] = useState('MPGS');
   const [isPaying, setIsPaying] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const ticketsList = tickets || [];
   const paymentFee = 14.34;
@@ -34,18 +35,42 @@ const TicketCheckout = ({ tickets, onPaymentDone }) => {
     { id: 'Tylleum', label: 'Pay with Tylleum' },
   ];
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setIsPaying(true);
     setPaymentSuccess(false);
+    setErrorMessage('');
 
-    // Simulate payment processing delay
-    setTimeout(() => {
+    // اجمع IDs التذاكر
+    const seatIds = ticketsList.map((t) => t.id);
+
+    try {
+      // إرسال طلب تأكيد الحجز
+     const response = await fetch('http://localhost:8081/api/seats/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(seatIds),
+      });
+
+      if (!response.ok) {
+        // اقرأ رسالة الخطأ من السيرفر
+        const errorMsg = await response.text();
+        setErrorMessage(errorMsg || 'Error confirming seats.');
+        setIsPaying(false);
+        return;
+      }
+
+      // تأكيد الحجز نجح، استكمل عملية الدفع (محاكاة)
+      // هنا ممكن تربط مع API الدفع الحقيقي إذا موجود
+      setTimeout(() => {
+        setIsPaying(false);
+        setPaymentSuccess(true);
+        if (onPaymentDone) onPaymentDone();
+      }, 1500);
+
+    } catch (error) {
+      setErrorMessage('Network or server error.');
       setIsPaying(false);
-      setPaymentSuccess(true);
-
-      // Call the parent callback to notify payment is done
-      if (onPaymentDone) onPaymentDone();
-    }, 2000); // 2 seconds delay to simulate processing
+    }
   };
 
   return (
@@ -66,15 +91,15 @@ const TicketCheckout = ({ tickets, onPaymentDone }) => {
                 borderRadius={1}
               >
                 <Box>
-                  <Typography fontWeight="medium">
-                    Section B, {ticket.section}
-                  </Typography>
+                  <Typography fontWeight="medium">{ticket.section}</Typography>
                   <Typography variant="caption" color="text.secondary">
                     {ticket.zone}
                   </Typography>
                 </Box>
                 <Box textAlign="right">
-                  <Typography fontWeight="medium">${ticket.price.toFixed(2)}</Typography>
+                  <Typography fontWeight="medium">
+                    ${ticket.price != null ? ticket.price.toFixed(2) : '0.00'}
+                  </Typography>
                   <Typography variant="caption" color="text.secondary">
                     $3.46** fees
                   </Typography>
@@ -159,9 +184,9 @@ const TicketCheckout = ({ tickets, onPaymentDone }) => {
               Processing...
             </>
           ) : paymentSuccess ? (
-            "Payment Successful"
+            'Payment Successful'
           ) : (
-            "Pay Now"
+            'Pay Now'
           )}
         </Button>
       </Box>
@@ -170,6 +195,13 @@ const TicketCheckout = ({ tickets, onPaymentDone }) => {
       {paymentSuccess && (
         <Alert severity="success" sx={{ mt: 2 }}>
           Your payment was successful! Thank you for your purchase.
+        </Alert>
+      )}
+
+      {/* Error Message */}
+      {errorMessage && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {errorMessage}
         </Alert>
       )}
     </Box>

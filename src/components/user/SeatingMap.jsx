@@ -24,6 +24,7 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
   const [colorPricePairs, setColorPricePairs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState(null);
+  const [bookingResponse, setBookingResponse] = React.useState(null);
   
 
 
@@ -69,6 +70,14 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
 
     setSelectedSeats(newSelectedSeats);
   };
+
+
+async function createBooking(data, token) {
+  return axios.post("http://localhost:8081/api/bookings/create", data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 const handleConfirmSeats = async () => {
   if (selectedSeats.length === 0) {
     alert("Please select at least one seat");
@@ -81,7 +90,6 @@ const handleConfirmSeats = async () => {
   }
 
   const token = localStorage.getItem("token");
-  console.log("Token:", token);
   if (!token) {
     alert("No token found. Please log in.");
     return;
@@ -93,58 +101,39 @@ const handleConfirmSeats = async () => {
   }
 
   setLoading(true);
+
   try {
     const seatIds = selectedSeats.map((seat) => seat.id);
 
-    // Lock seats
-    await axios.post("http://localhost:8081/api/seats/lock", seatIds, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    // Confirm seats
-    const confirmResponse = await axios.post(
-      "http://localhost:8081/api/seats/confirm",
+    // فقط إنشاء الحجز المؤقت
+    const bookingResponse = await createBooking({
+      eventId,
       seatIds,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+      payNow: false,
+    }, token);
 
-    setBookingId(confirmResponse.data.bookingId);
+    setBookingId(bookingResponse.data.bookingId);
     setConfirmed(true);
-
-    // Create booking
-    const bookingData = {
-      eventId: eventId,
-      seatIds: seatIds,
-      payNow: false
-    };
-
-    const bookingResponse = await axios.post(
-      "http://localhost:8081/api/bookings/create",
-      bookingData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    setBookingResponse(bookingResponse.data);
 
     alert("Booking created successfully!");
-    console.log("Booking Response:", bookingResponse.data);
-
   } catch (error) {
-    console.error("Error during seat confirmation and booking creation", error);
-    alert("Failed to confirm seats and create booking, please try again.");
+    console.error("Error during booking creation", error);
+
+    if (
+      error.response &&
+      error.response.status === 409 &&
+      error.response.data &&
+      error.response.data.message
+    ) {
+      alert(`Conflict: ${error.response.data.message}`);
+    } else {
+      alert("Failed to create booking, please try again.");
+    }
   } finally {
     setLoading(false);
   }
 };
-
 
 
   // دالة إلغاء الحجز وفك قفل المقاعد
@@ -169,6 +158,35 @@ const handleConfirmSeats = async () => {
       setLoading(false);
     }
   };
+const handleGoToCheckout = async () => {
+  const ticketElements = document.querySelectorAll('[data-ticket]');
+  const tickets = [];
+
+  ticketElements.forEach((el, index) => {
+    const email = el.querySelector(`input[name='email-${index}']`)?.value || "";
+    const firstName = el.querySelector(`input[name='firstName-${index}']`)?.value || "";
+    const lastName = el.querySelector(`input[name='lastName-${index}']`)?.value || "";
+
+    tickets.push({
+      seatId: selectedSeats[index].id,
+      email,
+      firstName,
+      lastName,
+    });
+  });
+
+  try {
+    await axios.post("http://localhost:8081/api/emails/save-emails", {
+      bookingId,
+      tickets,
+    });
+
+    navigate("/checkout", { state: { bookingId } });
+  } catch (err) {
+    console.error(err);
+    alert("Failed to process emails!");
+  }
+};
 
   const groupSeatsByRow = (seats) => {
     const grouped = {};
@@ -329,54 +347,55 @@ const handleConfirmSeats = async () => {
             onCancel={() => window.location.reload()}
           />
 
-          {selectedSeats.map((seat, index) => (
-            <Box
-              key={seat.id}
-              sx={{
-                background: "#f5f5f5",
-                p: 2,
-                mb: 2,
-                borderRadius: 2,
-                textAlign: "left",
-              }}
-            >
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
-                Ticket #{index + 1}
-              </Typography>
-              <Typography sx={{ mb: 1 }}>
-                Section {selectedSection.name} - {seat.code}
-              </Typography>
-              <Typography sx={{ mb: 1 }}>${seat.price}</Typography>
-              <TextField
-                fullWidth
-                label="Email"
-                defaultValue="example@gmail.com"
-                sx={{ mb: 1 }}
-              />
-              <TextField
-                fullWidth
-                label="First Name"
-                defaultValue="Nadim"
-                sx={{ mb: 1 }}
-              />
-              <TextField fullWidth label="Last Name" defaultValue="Sleiman" />
-            </Box>
-          ))}
+        {selectedSeats.map((seat, index) => (
+  <Box
+    key={seat.id}
+    data-ticket
+    sx={{
+      background: "#f5f5f5",
+      p: 2,
+      mb: 2,
+      borderRadius: 2,
+      textAlign: "left",
+    }}
+  >
+    <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
+      Ticket #{index + 1}
+    </Typography>
+    <Typography sx={{ mb: 1 }}>
+      Section {selectedSection.name} - {seat.code}
+    </Typography>
+    <Typography sx={{ mb: 1 }}>${seat.price}</Typography>
+    <TextField
+      fullWidth
+      label="Email"
+      defaultValue="example@gmail.com"
+      name={`email-${index}`}    // مهم تحط الاسم الفريد
+      sx={{ mb: 1 }}
+    />
+    <TextField
+      fullWidth
+      label="First Name"
+      defaultValue="Nadim"
+      name={`firstName-${index}`}  // مهم تحط الاسم الفريد
+      sx={{ mb: 1 }}
+    />
+    <TextField
+      fullWidth
+      label="Last Name"
+      defaultValue="Sleiman"
+      name={`lastName-${index}`}   // مهم تحط الاسم الفريد
+    />
+  </Box>
+))}
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               variant="contained"
               color="error"
               sx={{ mt: 2 }}
-              onClick={() => {
-                if (bookingId) {
-                  navigate("/checkout", {
-                    state: { bookingId },
-                  });
-                } else {
-                  alert("Booking ID not found!");
-                }
-              }}
+              onClick={handleGoToCheckout}
+
             >
               Go to Checkout
             </Button>
