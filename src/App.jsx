@@ -144,9 +144,6 @@ function App() {
 <Route path="/admin/users" element={<ManageUsers />} />
 <Route path="/admin/users/:userId/bookings" element={<UserBookings />} />
 
-
-
-
           {/* هون ضيف باقي الصفحات لاحقًا */}
         </Route>
       </Routes>
