@@ -29,7 +29,7 @@ const AddAdminModal = ({ open, onClose, onAdminAdded }) => {
     email,
     username: fullName, // أو أي اسم حابب تعتمده
     password,
-    groupId: role === 'ADMIN' ? 2 : 1  // عدّل حسب نوع الرول إذا عندك mapping
+    groupId: parseInt(role)  // عدّل حسب نوع الرول إذا عندك mapping
   };
 
   try {
@@ -86,17 +86,18 @@ const AddAdminModal = ({ open, onClose, onAdminAdded }) => {
           value={password}
           onChange={e => setPassword(e.target.value)}
         />
-        <TextField
-          fullWidth
-          select
-          label="Role"
-          margin="dense"
-          value={role}
-          onChange={e => setRole(e.target.value)}
-        >
-          <MenuItem value="1">Super Admin</MenuItem>
-          <MenuItem value="2">Admin</MenuItem>
-        </TextField>
+       <TextField
+  fullWidth
+  select
+  label="Role"
+  margin="dense"
+  value={role}
+  onChange={e => setRole(e.target.value)}
+>
+  <MenuItem value="1">Super Admin</MenuItem>
+  <MenuItem value="2">Admin</MenuItem>
+</TextField>
+
 
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
           <Button variant="contained" onClick={handleSave}>Save</Button>

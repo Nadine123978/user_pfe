@@ -59,7 +59,7 @@ const AdminTable = () => {
       return;
     }
 
-    axios.put(`http://localhost:8081/secure1234/super-admin/update-admin/${updatedAdmin.id}`, {
+    axios.put(`http://localhost:8081/secure1234/super-admin/update-user/${updatedAdmin.id}`, {
       fullName: updatedAdmin.fullName,
       email: updatedAdmin.email,
       role: updatedAdmin.role,

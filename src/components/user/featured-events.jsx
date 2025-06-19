@@ -69,8 +69,6 @@ const handleButtonClick = (event) => {
   }
 };
 
-
-
 const getButtonLabel = (event) => {
   if (!event) return "Book Now";
 
@@ -87,27 +85,73 @@ const getButtonLabel = (event) => {
   return "Book Now";
 };
 
-
   const isButtonDisabled = (event) => {
     return event.alreadyBooked && (event.bookingStatus === 'PAID' || event.bookingStatus === 'CONFIRMED');
   };
 
   return (
-    <Box sx={{ backgroundColor: '#052641', py: 6, px: 4, borderRadius: '24px', mt: 8 }}>
-      <Typography variant="h4" color="white" fontWeight="bold" mb={1}>
-        Featured Events
-      </Typography>
-      <Typography variant="body1" color="gray" mb={4}>
-        Be sure not to miss these Events today.
-      </Typography>
+    <Box 
+      sx={{ 
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
+        py: 8, 
+        px: 6, 
+        borderRadius: '0px', // Removed border radius to match hero section
+        mt: 0, // Removed margin to create seamless flow
+        minHeight: '100vh', // Full viewport height like hero section
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
+      }}
+    >
+      {/* Header Section with improved typography hierarchy */}
+      <Box sx={{ mb: 6, textAlign: 'left', maxWidth: '800px' }}>
+        <Typography 
+          variant="h2" 
+          sx={{
+            color: 'white', 
+            fontWeight: 'bold', 
+            mb: 2,
+            fontSize: { xs: '2.5rem', md: '3.5rem' },
+            lineHeight: 1.2
+          }}
+        >
+          Featured Events
+        </Typography>
+        <Typography 
+          variant="h6" 
+          sx={{
+            color: '#B0BEC5', 
+            mb: 4,
+            fontSize: { xs: '1.1rem', md: '1.3rem' },
+            fontWeight: 400
+          }}
+        >
+          Be sure not to miss these Events today.
+        </Typography>
+      </Box>
 
-      <Grid container spacing={4}>
+      {/* Events Grid with improved spacing */}
+      <Grid container spacing={4} sx={{ maxWidth: '1400px', mx: 'auto' }}>
         {events.map((event) => (
-          <Grid item xs={12} md={4} key={event.id}>
-            <Card sx={{ backgroundColor: '#0B2A4A', color: 'white', border: '1px solid #2e3c4f' }}>
+          <Grid item xs={12} sm={6} lg={4} key={event.id}>
+            <Card 
+              sx={{ 
+                background: 'linear-gradient(145deg, #0B2A4A 0%, #1a3a5c 100%)',
+                color: 'white', 
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-8px)',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                }
+              }}
+            >
               <CardMedia
                 component="img"
-                height="180"
+                height="220"
                 image={
                   event.imageUrl
                     ? event.imageUrl.startsWith("http")
@@ -120,16 +164,49 @@ const getButtonLabel = (event) => {
                   e.target.onerror = null;
                   e.target.src = "/default-event.jpg";
                 }}
+                sx={{
+                  transition: 'transform 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'scale(1.05)'
+                  }
+                }}
               />
-              <CardContent>
-                <Typography variant="body2" color="gray">{event.price}</Typography>
-                <Typography variant="h6" fontWeight="bold" mt={1} mb={1}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#81C784', 
+                    fontWeight: 'bold',
+                    mb: 1,
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {event.price}
+                </Typography>
+                
+                <Typography 
+                  variant="h6" 
+                  sx={{
+                    fontWeight: 'bold', 
+                    mt: 1, 
+                    mb: 2,
+                    fontSize: '1.3rem',
+                    lineHeight: 1.3
+                  }}
+                >
                   {event.title}
                 </Typography>
-<Typography variant="body2" color="gray" mb={2}>
-  {event.startDate ? new Date(event.startDate).toLocaleDateString() : "Date N/A"} | {event.location?.fullAddress || "Location N/A"}
-</Typography>
 
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: '#B0BEC5', 
+                    mb: 3,
+                    fontSize: '0.95rem'
+                  }}
+                >
+                  {event.startDate ? new Date(event.startDate).toLocaleDateString() : "Date N/A"} | {event.location?.fullAddress || "Location N/A"}
+                </Typography>
 
                 <Button
                   onClick={() => handleButtonClick(event)}
@@ -137,10 +214,23 @@ const getButtonLabel = (event) => {
                   fullWidth
                   endIcon={<OpenInNewIcon />}
                   sx={{
-                    color: isButtonDisabled(event) ? '#999' : 'black',
+                    color: isButtonDisabled(event) ? '#999' : '#1a1a2e',
                     backgroundColor: isButtonDisabled(event) ? 'transparent' : 'white',
                     borderColor: isButtonDisabled(event) ? '#444' : 'white',
                     fontWeight: 'bold',
+                    py: 1.5,
+                    borderRadius: '12px',
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    transition: 'all 0.3s ease-in-out',
+                    '&:hover': {
+                      backgroundColor: isButtonDisabled(event) ? 'transparent' : '#f5f5f5',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)'
+                    },
+                    '&:disabled': {
+                      opacity: 0.6
+                    }
                   }}
                   disabled={isButtonDisabled(event)}
                 >
@@ -156,3 +246,4 @@ const getButtonLabel = (event) => {
 };
 
 export default FeaturedEvents;
+

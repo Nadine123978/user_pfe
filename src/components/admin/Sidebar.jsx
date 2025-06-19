@@ -6,7 +6,7 @@ import {
 import {
   Dashboard, Category, Event, SupervisorAccount, Subscriptions,
   BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
-  Add, ManageAccounts, Logout, EventSeat
+  Add, ManageAccounts, Logout, EventSeat, LocationOn
 } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -15,26 +15,24 @@ const drawerWidth = 240;
 const Sidebar = () => {
   const [openCategory, setOpenCategory] = React.useState(false);
   const [openBookings, setOpenBookings] = React.useState(false);
-  const [openEvents, setOpenEvents] = React.useState(false); // ✅ تمت إضافته
+  const [openEvents, setOpenEvents] = React.useState(false);
+  const [openLocation, setOpenLocation] = React.useState(false);
+  const [openSection, setOpenSection] = React.useState(false);
+  const [openSeating, setOpenSeating] = React.useState(false);
 
   const handleClickCategory = () => setOpenCategory(!openCategory);
   const handleClickBookings = () => setOpenBookings(!openBookings);
-  const handleClickEvents = () => setOpenEvents(!openEvents); // ✅ تمت إضافته
+  const handleClickEvents = () => setOpenEvents(!openEvents);
+  const handleClickLocation = () => setOpenLocation(!openLocation);
+  const handleClickSection = () => setOpenSection(!openSection);
+  const handleClickSeating = () => setOpenSeating(!openSeating);
 
-  
   const navigate = useNavigate();
-
- 
-const [openSection, setOpenSection] = React.useState(false);
-const [openSeating, setOpenSeating] = React.useState(false);
-
-const handleClickSection = () => setOpenSection(!openSection);
-const handleClickSeating = () => setOpenSeating(!openSeating);
 
   const handleLogout = () => {
     localStorage.removeItem("userId");
-localStorage.removeItem("token");
-localStorage.removeItem("role");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
     navigate("/login", { replace: true });
   };
 
@@ -78,30 +76,49 @@ localStorage.removeItem("role");
           </List>
         </Collapse>
 
-       {/* Seating */}
-<ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating">
-  <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
-  <ListItemText primary="Manage Section" />
-</ListItem>
+        {/* Location */}
+        <ListItem button onClick={handleClickLocation}>
+          <ListItemIcon><LocationOn sx={{ color: '#007bff' }} /></ListItemIcon>
+          <ListItemText primary="Location" />
+          {openLocation ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+        <Collapse in={openLocation} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/location/add">
+              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Add" />
+            </ListItem>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/location/manage">
+              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Manage" />
+            </ListItem>
+          </List>
+        </Collapse>
 
-<ListItem button onClick={handleClickSeating}>
-  <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
-  <ListItemText primary="Manage Seating" />
-  {openSeating ? <ExpandLess /> : <ExpandMore />}
-</ListItem>
+        {/* Seating */}
+        <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating">
+          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+          <ListItemText primary="Manage Section" />
+        </ListItem>
 
-<Collapse in={openSeating} timeout="auto" unmountOnExit>
-  <List component="div" disablePadding>
-    <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/manage-seats">
-      <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
-      <ListItemText primary="Add Seat" />
-    </ListItem>
-    <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating/managee">
-      <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
-      <ListItemText primary="Manage Seats" />
-    </ListItem>
-  </List>
-</Collapse>
+        <ListItem button onClick={handleClickSeating}>
+          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
+          <ListItemText primary="Manage Seating" />
+          {openSeating ? <ExpandLess /> : <ExpandMore />}
+        </ListItem>
+
+        <Collapse in={openSeating} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/manage-seats">
+              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Add Seat" />
+            </ListItem>
+            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating/managee">
+              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
+              <ListItemText primary="Manage Seats" />
+            </ListItem>
+          </List>
+        </Collapse>
 
         {/* Manage Sponsors */}
         <ListItem button component={Link} to="/admin/sponsors">

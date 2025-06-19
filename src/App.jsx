@@ -45,6 +45,7 @@ import CheckoutPage from './pages/user/CheckoutPage';
 import BlogPage from './pages/user/Blogs';
 import AllTrendingCategories from "./pages/user/AllTrendingCategories";
 import MyBookings from './pages/user/MyBookings';
+import AddLocation from './pages/admin/AddLocation';
  // أعلى الملف
 function SessionChecker() {
   const navigate = useNavigate();
@@ -166,6 +167,7 @@ function App() {
 <Route path="/admin/bookings/confirmed" element={<ConfirmedBookings />} />
 <Route path="/admin/bookings/:id" element={<BookingDetails />} />
 <Route path="/admin/events/add" element={<AddEvent />} />
+  <Route path="/admin/location/add" element={<AddLocation />} />
 <Route path="/admin/events/manage" element={<ManageEvents />} />
 <Route path="/admin/seating" element={<SelectEventPage />} />
 <Route path="/admin/seating/:eventId" element={<ManageSeatingPage />} />

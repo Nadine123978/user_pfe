@@ -1,54 +1,188 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, TextField, Typography, Grid } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
 import axios from "axios";
 
-// مثال بسيط لمكون SeatGrid لعرض شبكة المقاعد
 const SeatGrid = ({ section }) => {
-  const { rows, cols, name, color, price } = section;
+  const [seats, setSeats] = useState([]);
+  const [selectedSeat, setSelectedSeat] = useState(null);
+  const [tempPrice, setTempPrice] = useState("");
+  const [tempVIP, setTempVIP] = useState(false);
+  const [error, setError] = useState("");
+  const [tempColor, setTempColor] = useState("");
 
-  const seats = [];
-  for (let row = 1; row <= rows; row++) {
-    const rowSeats = [];
-    for (let col = 1; col <= cols; col++) {
-      rowSeats.push(
-        <Box
-          key={`${row}-${col}`}
-          sx={{
-            width: 30,
-            height: 30,
-            backgroundColor: color,
-            margin: 0.5,
-            borderRadius: "4px",
-            display: "inline-block",
-            lineHeight: "30px",
-            textAlign: "center",
-            color: "white",
-            fontWeight: "bold",
-            userSelect: "none",
-          }}
-          title={`Seat ${name}${row}-${col} - $${price.toFixed(2)}`}
-        >
-          {col}
-        </Box>
-      );
+  useEffect(() => {
+    if (section?.id) {
+      axios
+        .get(`http://localhost:8081/api/seats/section/${section.id}`)
+        .then((res) => {
+          // هنا نتأكد من إضافة لون القسم لكل مقعد إذا كان لون المقعد فارغ
+          const seatsWithColor = res.data.map((seat) => ({
+            ...seat,
+            color: seat.color || section.color || "#6c757d",
+          }));
+          setSeats(seatsWithColor);
+        })
+        .catch((err) => console.error("Error fetching seats:", err));
     }
-    seats.push(
-      <Box key={row} sx={{ mb: 1 }}>
-        <Typography variant="body2" component="span" sx={{ mr: 1 }}>
-          Row {row}:
-        </Typography>
-        {rowSeats}
-      </Box>
-    );
+  }, [section]);
+
+  useEffect(() => {
+    if (selectedSeat) {
+      setTempPrice(selectedSeat.price.toString());
+      setTempVIP(selectedSeat.vip || false);
+      setTempColor(selectedSeat.color || section.color || "#6c757d");
+      setError("");
+    }
+  }, [selectedSeat, section.color]);
+
+  const maxRow = Math.max(...seats.map((s) => s.row), 0);
+  const maxCol = Math.max(...seats.map((s) => s.number), 0);
+  const grid = [];
+
+  for (let r = 1; r <= maxRow; r++) {
+    const rowSeats = [];
+    for (let c = 1; c <= maxCol; c++) {
+      const seat = seats.find((s) => s.row === r && s.number === c);
+      rowSeats.push(seat || null);
+    }
+    grid.push(rowSeats);
   }
 
+  const handleSeatClick = (seat) => {
+    setSelectedSeat(seat);
+  };
+
+  const handleSave = () => {
+    const priceNum = parseFloat(tempPrice);
+    if (isNaN(priceNum) || priceNum <= 0) {
+      setError("Please enter a valid price");
+      return;
+    }
+    if (priceNum > section.price) {
+      setError(`Price cannot exceed section price of $${section.price.toFixed(2)}`);
+      return;
+    }
+
+    axios
+      .put(`http://localhost:8081/api/seats/${selectedSeat.id}`, {
+        ...selectedSeat,
+        price: priceNum,
+        vip: tempVIP,
+        color: tempColor, // نرسل اللون الجديد للباكند
+      })
+      .then(() => {
+        setSeats((prev) =>
+          prev.map((s) =>
+            s.id === selectedSeat.id ? { ...s, price: priceNum, vip: tempVIP, color: tempColor } : s
+          )
+        );
+        setSelectedSeat(null);
+      })
+      .catch((e) => {
+        console.error(e);
+        setError("Failed to update seat");
+      });
+  };
+
+  const handleClose = () => {
+    setSelectedSeat(null);
+    setError("");
+  };
+
   return (
-    <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
-      <Typography variant="subtitle1" gutterBottom>
-        Seats layout for section: {name}
-      </Typography>
-      {seats}
-    </Box>
+    <>
+      <div style={{ display: "inline-block", border: "1px solid #ccc", padding: 10 }}>
+        {grid.map((rowSeats, rowIndex) => (
+          <div key={rowIndex} style={{ display: "flex", gap: 5, marginBottom: 5 }}>
+            {rowSeats.map((seat, colIndex) =>
+              seat ? (
+                <div
+                  key={seat.id}
+                  onClick={() => handleSeatClick(seat)}
+                  style={{
+                    width: selectedSeat?.id === seat.id ? 50 : 40,
+                    height: selectedSeat?.id === seat.id ? 50 : 40,
+                    backgroundColor: seat.vip
+                      ? "#FFD700" // لون ذهبي للمقاعد VIP
+                      : seat.reserved
+                      ? "red"
+                      : seat.color || section.color || "#6c757d",
+                    color: "#000",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 5,
+                    cursor: "pointer",
+                    userSelect: "none",
+                    fontWeight: "bold",
+                    border: seat.vip ? "2px solid orange" : "none",
+                    transition: "all 0.2s ease",
+                    fontSize: selectedSeat?.id === seat.id ? "1.2em" : "1em",
+                  }}
+                  title={`Seat ${seat.code} - ${seat.reserved ? "Reserved" : "Available"}${seat.vip ? " (VIP)" : ""}`}
+                >
+                  {seat.code}
+                </div>
+              ) : (
+                <div key={`empty-${colIndex}`} style={{ width: 40, height: 40 }} />
+              )
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Dialog لتعديل سعر ومميزات المقعد */}
+      <Dialog open={!!selectedSeat} onClose={handleClose}>
+        <DialogTitle>Edit Seat {selectedSeat?.code}</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Price"
+            type="number"
+            fullWidth
+            value={tempPrice}
+            onChange={(e) => setTempPrice(e.target.value)}
+            inputProps={{ min: 0, step: 0.01 }}
+            sx={{ mt: 1, mb: 2 }}
+          />
+          <FormControlLabel
+            control={<Switch checked={tempVIP} onChange={(e) => setTempVIP(e.target.checked)} />}
+            label="VIP Seat"
+          />
+          {/* input لاختيار اللون */}
+          <TextField
+            label="Seat Color"
+            type="color"
+            fullWidth
+            value={tempColor}
+            onChange={(e) => setTempColor(e.target.value)}
+            sx={{ mt: 2, mb: 2 }}
+          />
+          {error && (
+            <Typography color="error" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button variant="contained" onClick={handleSave}>
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
@@ -61,6 +195,8 @@ const AddSectionForm = ({ eventId }) => {
   const [sections, setSections] = useState([]);
   const [editingSection, setEditingSection] = useState(null);
   const [newSection, setNewSection] = useState(null);
+  const [selectedSectionId, setSelectedSectionId] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
 
   useEffect(() => {
     if (eventId) {
@@ -132,6 +268,7 @@ const AddSectionForm = ({ eventId }) => {
             price,
             row,
             number: col,
+            color: sectionColor, // نضيف لون القسم للمقاعد مباشرة
           });
         }
       }
@@ -142,8 +279,9 @@ const AddSectionForm = ({ eventId }) => {
       resetForm();
       await fetchSections();
 
-      // عرض القسم الجديد مع عدد الصفوف والأعمدة
       setNewSection({ ...sectionRes.data, rows, cols });
+      setSelectedSection({ ...sectionRes.data, rows, cols });
+      setSelectedSectionId(sectionId);
     } catch (error) {
       console.error("Error adding section/seats:", error);
       alert("Error adding data");
@@ -157,6 +295,10 @@ const AddSectionForm = ({ eventId }) => {
       await axios.delete(`http://localhost:8081/api/sections/${sectionId}`);
       alert("Section deleted successfully");
       await fetchSections();
+      if (selectedSectionId === sectionId) {
+        setSelectedSection(null);
+        setSelectedSectionId(null);
+      }
     } catch (error) {
       console.error("Failed to delete section:", error);
       alert("Error deleting section");
@@ -258,10 +400,7 @@ const AddSectionForm = ({ eventId }) => {
           </>
         )}
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            onClick={editingSection ? handleUpdateSection : handleAddSection}
-          >
+          <Button variant="contained" onClick={editingSection ? handleUpdateSection : handleAddSection}>
             {editingSection ? "Update Section" : "Add Section + Seats"}
           </Button>
           {editingSection && (
@@ -278,7 +417,26 @@ const AddSectionForm = ({ eventId }) => {
       <ul>
         {sections.map((sec) => (
           <li key={sec.id} style={{ marginBottom: "8px" }}>
-            <strong>{sec.name}</strong> - 
+            <Button
+              variant="text"
+              onClick={() => {
+                // حساب الصفوف والأعمدة (لو غير موجودين)
+                const cols = sec.cols || 10; // ممكن تعدل الافتراضي حسب API
+                const rows = sec.rows || (sec.totalSeats ? Math.ceil(sec.totalSeats / cols) : 10);
+
+                const enrichedSection = {
+                  ...sec,
+                  rows,
+                  cols,
+                };
+
+                setSelectedSection(enrichedSection);
+                setSelectedSectionId(sec.id);
+              }}
+              sx={{ textTransform: "none", fontWeight: "bold" }}
+            >
+              {sec.name}
+            </Button>
             <span
               style={{
                 display: "inline-block",
@@ -287,36 +445,28 @@ const AddSectionForm = ({ eventId }) => {
                 backgroundColor: sec.color,
                 margin: "0 8px",
                 verticalAlign: "middle",
-                border: "1px solid #ccc"
+                border: "1px solid #ccc",
               }}
             ></span>
             - Price: ${sec.price.toFixed(2)}
-            <Button
-              size="small"
-              color="error"
-              onClick={() => handleDeleteSection(sec.id)}
-              sx={{ ml: 2 }}
-            >
+            <Button size="small" color="error" onClick={() => handleDeleteSection(sec.id)} sx={{ ml: 2 }}>
               Delete
             </Button>
-            <Button
-              size="small"
-              onClick={() => handleEditClick(sec)}
-              sx={{ ml: 1 }}
-            >
+            <Button size="small" onClick={() => handleEditClick(sec)} sx={{ ml: 1 }}>
               Edit
             </Button>
+
+            {/* عرض شبكة المقاعد للقسم المختار */}
+            {selectedSectionId === sec.id && selectedSection && (
+              <Box sx={{ mt: 2 }}>
+                <SeatGrid section={selectedSection} />
+              </Box>
+            )}
           </li>
         ))}
       </ul>
 
-      {/* عرض شبكة المقاعد للقسم الجديد */}
-      {newSection && (
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6">Seats for {newSection.name}</Typography>
-          <SeatGrid section={newSection} />
-        </Box>
-      )}
+    
     </Box>
   );
 };

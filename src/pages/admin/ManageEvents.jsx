@@ -12,16 +12,22 @@ import axios from "axios";
 
 const ManageEvents = () => {
   const [events, setEvents] = useState([]);
-  const [selectedTab, setSelectedTab] = useState("active");
+  const [selectedTab, setSelectedTab] = useState("draft");
 
-  const tabs = ["active", "upcoming", "draft", "past"];
+  const tabs = ["draft", "active", "upcoming", "past"];
 
-  // ✅ Function منفصلة لجلب الأحداث حسب الـ tab
   const fetchEvents = async (status) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:8081/api/events/by-status?status=${status}`
+        `http://localhost:8081/api/events/by-status?status=${status}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
+      // فرز الأحداث حسب تاريخ البداية تصاعدي
       setEvents(
         response.data.sort(
           (a, b) => new Date(a.startDate) - new Date(b.startDate)
@@ -32,12 +38,10 @@ const ManageEvents = () => {
     }
   };
 
-  // ✅ بتم الاستدعاء لما تتغير الـ tab
   useEffect(() => {
     fetchEvents(selectedTab);
   }, [selectedTab]);
 
-  // ✅ النشر وتحديث الواجهة
   const handlePublish = async (eventId) => {
     try {
       const token = localStorage.getItem("token");
@@ -51,10 +55,10 @@ const ManageEvents = () => {
         }
       );
 
-      // إعادة جلب الأحداث حسب الـ tab الحالي
-      fetchEvents(selectedTab);
-
       alert("Event published successfully!");
+
+      // إعادة تحميل الأحداث بعد التحديث
+      fetchEvents(selectedTab);
     } catch (error) {
       console.error("Error publishing event:", error);
       alert("Failed to publish event.");
@@ -64,10 +68,10 @@ const ManageEvents = () => {
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Events - {selectedTab.toUpperCase()}
+        Events - {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
       </Typography>
 
-      {/* Tabs */}
+      {/* التابات للتبديل بين الحالات */}
       <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
         {tabs.map((tab) => (
           <Button
@@ -80,7 +84,7 @@ const ManageEvents = () => {
         ))}
       </Box>
 
-      {/* Cards */}
+      {/* عرض الأحداث */}
       <Grid container spacing={3}>
         {events.length === 0 ? (
           <Typography variant="h6" sx={{ m: 2 }}>
@@ -94,16 +98,16 @@ const ManageEvents = () => {
                   component="img"
                   height="200"
                   image={`http://localhost:8081/uploads/${event.image}`}
-                  alt={event.eventName}
+                  alt={event.title || event.eventName}
                   onError={(e) => {
-                    e.target.src = "/placeholder.png"; // صورة افتراضية بحال ما اشتغلت
+                    e.target.src = "/placeholder.png"; // صورة افتراضية لو الصورة مفقودة
                   }}
                 />
                 <CardContent>
-                  <Typography variant="h6">{event.eventName}</Typography>
+                  <Typography variant="h6">{event.title || event.eventName}</Typography>
                   <Typography variant="body2" color="text.secondary">
-                    From: {new Date(event.startDate).toLocaleDateString()} - To:{" "}
-                    {new Date(event.endDate).toLocaleDateString()}
+                    From: {new Date(event.startDate).toLocaleString()} <br />
+                    To: {new Date(event.endDate).toLocaleString()}
                   </Typography>
                   <Typography
                     variant="caption"
@@ -112,7 +116,7 @@ const ManageEvents = () => {
                     Status: {event.status.toUpperCase()}
                   </Typography>
 
-                  {/* زر النشر يظهر فقط إذا لم يكن Active */}
+                  {/* زر النشر فقط للأحداث في المسودة */}
                   {event.status === "draft" && (
                     <Button
                       variant="contained"
