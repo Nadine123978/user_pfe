@@ -21,19 +21,20 @@ const Header = ({ scrollTargets }) => {
   const isLoggedIn = !!localStorage.getItem("userId");
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // شاشة صغيرة أقل من 600px
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
   const handleScroll = (ref) => {
-    handleMenuClose(); // أغلق القائمة لما تختار رابط
+    handleMenuClose();
     if (location.pathname !== "/") {
       navigate("/");
       requestAnimationFrame(() => {
@@ -45,11 +46,12 @@ const Header = ({ scrollTargets }) => {
   };
 
   const handleLogout = () => {
-  localStorage.clear(); // أو localStorage.removeItem('token') و غيرها حسب الحاجة
-  // بعد المسح نوجه المستخدم للصفحة العامة (مثلاً صفحة تسجيل الدخول)
-  navigate('/login', { replace: true });
-};
-  // الروابط اللي تظهر في القائمة
+    localStorage.removeItem("userId");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    navigate('/login', { replace: true });
+  };
+
   const navLinks = [
     { label: "Home", action: () => handleScroll(scrollTargets?.homeRef) },
     { label: "Events", action: () => handleScroll(scrollTargets?.eventsRef) },
@@ -104,6 +106,12 @@ const Header = ({ scrollTargets }) => {
                 )
               )}
 
+              {isLoggedIn && (
+                <MenuItem component={Link} to="/my-bookings" onClick={handleMenuClose}>
+                  My Bookings
+                </MenuItem>
+              )}
+
               {!isLoggedIn ? (
                 <>
                   <MenuItem component={Link} to="/login" onClick={handleMenuClose}>
@@ -126,7 +134,6 @@ const Header = ({ scrollTargets }) => {
             </Menu>
           </>
         ) : (
-          // عرض القائمة عادية على الشاشات الكبيرة
           <>
             <Box sx={{ display: "flex", gap: 4 }}>
               {navLinks.map((link) =>
@@ -146,10 +153,18 @@ const Header = ({ scrollTargets }) => {
                   </Button>
                 )
               )}
+
+              {isLoggedIn && (
+                <Link to="/my-bookings" style={{ textDecoration: "none" }}>
+                  <Button sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
+                    My Bookings
+                  </Button>
+                </Link>
+              )}
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              {!isLoggedIn && (
+              {!isLoggedIn ? (
                 <>
                   <Link to="/login" style={{ textDecoration: "none" }}>
                     <Button sx={{ color: "#fff", textTransform: "none" }}>Login</Button>
@@ -172,11 +187,9 @@ const Header = ({ scrollTargets }) => {
                     </Button>
                   </Link>
                 </>
-              )}
-
-              {isLoggedIn && (
+              ) : (
                 <Button
-               onClick={handleLogout}
+                  onClick={handleLogout}
                   sx={{
                     color: "#fff",
                     border: "1px solid #fff",

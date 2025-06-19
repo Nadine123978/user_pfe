@@ -12,10 +12,16 @@ import {
 } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+
+import { toast } from "react-toastify";
+
 
 const CategoryEventsPage = () => {
-  const { id } = useParams();
+const navigate = useNavigate();
   const [events, setEvents] = useState([]);
+  const { id } = useParams();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,10 +39,18 @@ const CategoryEventsPage = () => {
     fetchEvents();
   }, [id]);
 
-  const handleBook = (eventId) => {
-    // مثلاً: انتقال لصفحة تفاصيل التذاكر
-    window.location.href = `/events/${eventId}/tickets`;
-  };
+const handleBook = (eventId) => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    toast.warn("Please log in first.");
+    navigate("/login");
+    return;
+  }
+
+  // توجيه فقط إلى صفحة الحجز
+  navigate(`/booking/${eventId}`);
+};
 
   if (loading) return <Box textAlign="center"><CircularProgress /></Box>;
 

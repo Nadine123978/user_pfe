@@ -13,6 +13,8 @@ import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
 import WhirlingDervishShow from './components/user/WhirlingDervishShow';
+import { useNavigate } from "react-router-dom";
+
 
 // Admin layout and pages
 import AdminLayout from './pages/admin/AdminLayout';
@@ -40,6 +42,30 @@ import ManageUsers from './pages/admin/ManageUsers';
 import UserBookings from './pages/admin/UserBookings';
 import CategoryEventsPage from './pages/user/CategoryEventsPage';
 import CheckoutPage from './pages/user/CheckoutPage';
+import BlogPage from './pages/user/Blogs';
+import AllTrendingCategories from "./pages/user/AllTrendingCategories";
+import MyBookings from './pages/user/MyBookings';
+ // أعلى الملف
+function SessionChecker() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loginTime = localStorage.getItem("loginTime");
+    const token = localStorage.getItem("token");
+
+    const maxSessionTime = 60 * 60 * 1000; // = 1 ساعة
+
+    if (loginTime && token) {
+      const timePassed = Date.now() - parseInt(loginTime);
+      if (timePassed > maxSessionTime) {
+        localStorage.clear(); // مسح كل شي بعد انتهاء الجلسة
+        navigate("/login"); // رجوع لصفحة الدخول
+      }
+    }
+  }, []);
+
+  return null;
+}
 
 
 function App() {
@@ -67,6 +93,7 @@ function App() {
 
   return (
     <Router>
+          <SessionChecker /> {/* ⬅️ هون تحقق من انتهاء الجلسة */}
             <ToastContainer />
       <Routes>
         {/* صفحات عامة */}
@@ -76,7 +103,9 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/resetpass" element={<Forgetpage />} />
         <Route path="/reset-password" element={<ResetPassPage />} />
-
+        <Route path="/categories" element={<AllTrendingCategories />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+<Route path="/blogs" element={<BlogPage />} />
   
 
         {/* صفحات المستخدم */}
@@ -143,9 +172,6 @@ function App() {
 <Route path="/admin/manage-seats" element={<EditSeatsPage />} />
 <Route path="/admin/users" element={<ManageUsers />} />
 <Route path="/admin/users/:userId/bookings" element={<UserBookings />} />
-
-
-
 
           {/* هون ضيف باقي الصفحات لاحقًا */}
         </Route>

@@ -32,7 +32,9 @@ const handleClickSection = () => setOpenSection(!openSection);
 const handleClickSeating = () => setOpenSeating(!openSeating);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+localStorage.removeItem("token");
+localStorage.removeItem("role");
     navigate("/login", { replace: true });
   };
 

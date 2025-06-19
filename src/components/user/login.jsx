@@ -65,7 +65,6 @@ export default function Login() {
       const response = await fetch('http://localhost:8081/auth/login', {
         method: 'POST',
         mode: 'cors',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -82,19 +81,19 @@ export default function Login() {
       }
 
       const decoded = jwtDecode(token);
-      const group = decoded.group || decoded.role || "USER";
-      const normalizedRole = "ROLE_" + group.toUpperCase();
+const group = decoded.group || decoded.role || "USER";
+const normalizedRole = "ROLE_" + group.toUpperCase();
 
-      localStorage.setItem("role", normalizedRole);
-localStorage.setItem("userId", decoded.userId); 
-      localStorage.setItem("token", token);
+localStorage.setItem("role", normalizedRole);
+localStorage.setItem("userId", decoded.userId);
+localStorage.setItem("token", token);
+localStorage.setItem("loginTime", Date.now()); // 🕒 وقت الدخول
+
 
      if (normalizedRole === SUPER_ADMIN_ROLE) {
   navigate("/secure1234"); // مثلاً هذا هو رابط لوحة تحكم الـ Super Admin
-  window.location.reload();
 } else if (normalizedRole === ADMIN_ROLE) {
   navigate("/admin");
-  window.location.reload();
 } else {
   navigate("/dashboard");
 }
@@ -123,6 +122,7 @@ localStorage.setItem("userId", decoded.userId);
 
       if (userId) {
         localStorage.setItem("userId", userId);
+          localStorage.setItem("loginTime", Date.now()); // 🕒
       }
 
       if (group && group === "admin") {
