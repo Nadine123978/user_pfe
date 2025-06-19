@@ -197,6 +197,10 @@ const AddSectionForm = ({ eventId }) => {
   const [newSection, setNewSection] = useState(null);
   const [selectedSectionId, setSelectedSectionId] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
+  const [selectedSectionId, setSelectedSectionId] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
+
+
 
   useEffect(() => {
     if (eventId) {
@@ -282,6 +286,8 @@ const AddSectionForm = ({ eventId }) => {
       setNewSection({ ...sectionRes.data, rows, cols });
       setSelectedSection({ ...sectionRes.data, rows, cols });
       setSelectedSectionId(sectionId);
+setSelectedSection({ ...sectionRes.data, rows, cols }); // ✅ خليه يبين دغري
+
     } catch (error) {
       console.error("Error adding section/seats:", error);
       alert("Error adding data");
@@ -465,6 +471,52 @@ const AddSectionForm = ({ eventId }) => {
           </li>
         ))}
       </ul>
+ {sections.map((sec) => (
+  <li key={sec.id} style={{ marginBottom: "8px" }}>
+    <Button
+      variant="text"
+      onClick={() => setSelectedSectionId(sec.id)}
+      sx={{ textTransform: "none", fontWeight: "bold" }}
+    >
+      {sec.name}
+    </Button>
+    <span
+      style={{
+        display: "inline-block",
+        width: "20px",
+        height: "20px",
+        backgroundColor: sec.color,
+        margin: "0 8px",
+        verticalAlign: "middle",
+        border: "1px solid #ccc"
+      }}
+    ></span>
+    - Price: ${sec.price.toFixed(2)}
+    <Button
+      size="small"
+      color="error"
+      onClick={() => handleDeleteSection(sec.id)}
+      sx={{ ml: 2 }}
+    >
+      Delete
+    </Button>
+    <Button
+      size="small"
+      onClick={() => handleEditClick(sec)}
+      sx={{ ml: 1 }}
+    >
+      Edit
+    </Button>
+
+    {/* هنا استبدل الـ SeatGrid القديم */}
+    {selectedSectionId === sec.id && (
+      <SeatGrid section={sec} /> 
+    )}
+  </li>
+))}
+
+</ul>
+
 
     
     </Box>
