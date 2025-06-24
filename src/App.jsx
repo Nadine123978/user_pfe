@@ -46,6 +46,7 @@ import BlogPage from './pages/user/Blogs';
 import AllTrendingCategories from "./pages/user/AllTrendingCategories";
 import MyBookings from './pages/user/MyBookings';
 import AddLocation from './pages/admin/AddLocation';
+import EditEvent from './pages/admin/EditEvent';
  // أعلى الملف
 function SessionChecker() {
   const navigate = useNavigate();
@@ -150,33 +151,28 @@ function App() {
         />
 
         {/* مجموعة صفحات الأدمن داخل AdminLayout */}
-        <Route
-          path="/admin"
-          element={
-            role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="category/add" element={<AddCategory />} />
-          <Route path="category/manage" element={<ManageCategories />} />
-          <Route path="/admin/category/edit/:id" element={<EditCategory />} />
-          <Route path="/admin/gallery" element={<AdminEventImagesManager />} />
-          <Route path="/admin/bookings/all" element={<AllBookings />} />
-<Route path="/admin/bookings/new" element={<NewBookings />} />
-<Route path="/admin/bookings/cancelled" element={<CancelledBookings />} />
-<Route path="/admin/bookings/confirmed" element={<ConfirmedBookings />} />
-<Route path="/admin/bookings/:id" element={<BookingDetails />} />
-<Route path="/admin/events/add" element={<AddEvent />} />
-  <Route path="/admin/location/add" element={<AddLocation />} />
-<Route path="/admin/events/manage" element={<ManageEvents />} />
-<Route path="/admin/seating" element={<SelectEventPage />} />
-<Route path="/admin/seating/:eventId" element={<ManageSeatingPage />} />
-<Route path="/admin/manage-seats" element={<EditSeatsPage />} />
-<Route path="/admin/users" element={<ManageUsers />} />
-<Route path="/admin/users/:userId/bookings" element={<UserBookings />} />
+       <Route path="/admin" element={role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />}>
+  <Route index element={<AdminDashboard />} />
+  <Route path="category/add" element={<AddCategory />} />
+  <Route path="category/manage" element={<ManageCategories />} />
+  <Route path="category/edit/:id" element={<EditCategory />} />
+  <Route path="gallery" element={<AdminEventImagesManager />} />
+  <Route path="bookings/all" element={<AllBookings />} />
+  <Route path="bookings/new" element={<NewBookings />} />
+  <Route path="bookings/cancelled" element={<CancelledBookings />} />
+  <Route path="bookings/confirmed" element={<ConfirmedBookings />} />
+  <Route path="bookings/:id" element={<BookingDetails />} />
+  <Route path="events/add" element={<AddEvent />} />
+  <Route path="location/add" element={<AddLocation />} />
+  <Route path="events/manage" element={<ManageEvents />} />
+  <Route path="edit-event/:id" element={<EditEvent />} />
+  <Route path="seating" element={<SelectEventPage />} />
+  <Route path="seating/:eventId" element={<ManageSeatingPage />} />
+  <Route path="manage-seats" element={<EditSeatsPage />} />
+  <Route path="users" element={<ManageUsers />} />
+  <Route path="users/:userId/bookings" element={<UserBookings />} />
+</Route>
 
-          {/* هون ضيف باقي الصفحات لاحقًا */}
-        </Route>
       </Routes>
     </Router>
   );

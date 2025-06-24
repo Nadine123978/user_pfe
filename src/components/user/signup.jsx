@@ -50,7 +50,7 @@ export default function SignUp() {
         username,
         email,
         password,
-        role: "user"
+        role: "USER"
       });
 
       const userId = response.data.userId;

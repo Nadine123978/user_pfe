@@ -7,31 +7,29 @@ import {
   Card,
   CardMedia,
   CardContent,
-  TextField
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import DraftAlerts from "./DraftAlerts";
 
 const ManageEvents = () => {
-  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [selectedTab, setSelectedTab] = useState("draft");
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
   const tabs = ["draft", "active", "upcoming", "past"];
 
+  // جلب الأحداث حسب الحالة المختارة
   const fetchEvents = async (status) => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
         `http://localhost:8081/api/events/by-status?status=${status}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
+      // ترتيب حسب تاريخ البداية
       setEvents(
         response.data.sort(
           (a, b) => new Date(a.startDate) - new Date(b.startDate)
@@ -42,12 +40,13 @@ const ManageEvents = () => {
     }
   };
 
+  // جلب الأحداث كل مرة تتغير التبويبة
   useEffect(() => {
     fetchEvents(selectedTab);
   }, [selectedTab]);
 
+  // دالة نشر الحدث (تغيير الحالة من draft إلى active)
   const handlePublish = async (eventId) => {
-    if (!window.confirm("Are you sure you want to publish this event?")) return;
     try {
       const token = localStorage.getItem("token");
       await axios.put(
@@ -58,7 +57,7 @@ const ManageEvents = () => {
         }
       );
       alert("Event published successfully!");
-      fetchEvents(selectedTab);
+      fetchEvents(selectedTab); // تحديث الأحداث بعد النشر
     } catch (error) {
       console.error("Error publishing event:", error);
       const errMsg = error.response?.data || "Failed to publish event.";
@@ -66,27 +65,11 @@ const ManageEvents = () => {
     }
   };
 
-  const handleDelete = async (eventId) => {
-    if (!window.confirm("Are you sure you want to delete this draft?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:8081/api/events/${eventId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("Event deleted successfully!");
-      fetchEvents(selectedTab);
-    } catch (error) {
-      console.error("Error deleting event:", error);
-      alert("Failed to delete event.");
-    }
-  };
-
-  const filteredEvents = events.filter((event) =>
-    event.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <Box sx={{ p: 4 }}>
+      {/* عرض التنبيه للمسودات القديمة */}
+      <DraftAlerts />
+
       <Typography variant="h4" gutterBottom>
         Events - {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}
       </Typography>
@@ -96,48 +79,22 @@ const ManageEvents = () => {
           <Button
             key={tab}
             variant={selectedTab === tab ? "contained" : "outlined"}
-            onClick={() => {
-              setSearchQuery("");
-              setSelectedTab(tab);
-            }}
+            onClick={() => setSelectedTab(tab)}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </Button>
         ))}
       </Box>
 
-      {selectedTab === "draft" && <DraftAlerts />}
-
-      <Box sx={{ mb: 3 }}>
-        <TextField
-          label="Search by title"
-          variant="outlined"
-          fullWidth
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </Box>
-
       <Grid container spacing={3}>
-        {filteredEvents.length === 0 ? (
+        {events.length === 0 ? (
           <Typography variant="h6" sx={{ m: 2 }}>
             No events found.
           </Typography>
         ) : (
-          filteredEvents.map((event) => (
+          events.map((event) => (
             <Grid item xs={12} sm={6} md={4} key={event.id}>
-              <Card
-                sx={{
-                  backgroundColor:
-                    event.status === "draft"
-                      ? "#f5f5f5"
-                      : event.status === "active"
-                      ? "#e8f5e9"
-                      : event.status === "upcoming"
-                      ? "#e3f2fd"
-                      : "#ffebee",
-                }}
-              >
+              <Card>
                 <CardMedia
                   component="img"
                   height="200"
@@ -153,6 +110,7 @@ const ManageEvents = () => {
                     From: {new Date(event.startDate).toLocaleString()} <br />
                     To: {new Date(event.endDate).toLocaleString()}
                   </Typography>
+
                   <Typography
                     variant="caption"
                     sx={{
@@ -170,40 +128,22 @@ const ManageEvents = () => {
                     Status: {event.status.toUpperCase()}
                   </Typography>
 
-                  <Box sx={{ mt: 1, display: "flex", gap: 1, flexWrap: "wrap" }}>
+                  <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
+                    {event.status === "draft" && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handlePublish(event.id)}
+                      >
+                        Publish
+                      </Button>
+                    )}
                     <Button
                       variant="outlined"
-                      onClick={() =>
-                        navigate(`/admin/edit-event/${event.id}`)
-                      }
+                      onClick={() => navigate(`/edit-event/${event.id}`)}
                     >
                       Edit
                     </Button>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => alert("Preview not implemented yet.")}
-                    >
-                      Preview
-                    </Button>
-                    {event.status === "draft" && (
-                      <>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          onClick={() => handlePublish(event.id)}
-                        >
-                          Publish
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          onClick={() => handleDelete(event.id)}
-                        >
-                          Delete
-                        </Button>
-                      </>
-                    )}
                   </Box>
                 </CardContent>
               </Card>
