@@ -9,8 +9,6 @@ import OrganizerInfo from "../../components/user/OrganizerInfo";
 import VenueMap from "../../components/user/VenueMap";
 import WhirlingDervishShow from "../../components/user/WhirlingDervishShow";
 
-
-
 function Booking() {
   const { id } = useParams();
  

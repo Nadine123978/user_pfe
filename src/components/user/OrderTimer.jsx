@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Button } from "@mui/material";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import axios from "axios";
 
 const OrderTimer = ({ orderNumber, onCancel }) => {
   const [countdown, setCountdown] = useState(3600); // 1 ساعة
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -15,11 +16,10 @@ const OrderTimer = ({ orderNumber, onCancel }) => {
   }, []);
 
   useEffect(() => {
-  if (countdown === 0) {
-    handleCancel();
-  }
-}, [countdown]);
-
+    if (countdown === 0) {
+      handleCancel();
+    }
+  }, [countdown]);
 
   const formatTime = (seconds) => {
     const min = Math.floor(seconds / 60);
@@ -28,12 +28,25 @@ const OrderTimer = ({ orderNumber, onCancel }) => {
   };
 
   const handleCancel = async () => {
+    if (loading) return; // تمنع تنفيذ العملية إذا هي قيد التنفيذ
+    const confirmed = window.confirm("Are you sure you want to cancel this order?");
+    if (!confirmed) return;
+
     setLoading(true);
     try {
-      await axios.put(`http://localhost:8081/api/bookings/cancel/${orderNumber}`);
+      await axios.put(
+        `http://localhost:8081/api/bookings/cancel/${orderNumber}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       onCancel(); // notify parent that it's cancelled
     } catch (error) {
-      console.error('Cancel failed:', error.response?.data || error.message);
+      console.error("Cancel failed:", error.response?.data || error.message);
+      alert("Failed to cancel order. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -48,18 +61,16 @@ const OrderTimer = ({ orderNumber, onCancel }) => {
         sx={{
           mt: 1,
           p: 2,
-          backgroundColor: '#fbc02d',
+          backgroundColor: "#fbc02d",
           borderRadius: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <HourglassEmptyIcon sx={{ mr: 1 }} />
-          <Typography>
-            This order will expire in {formatTime(countdown)}
-          </Typography>
+          <Typography>This order will expire in {formatTime(countdown)}</Typography>
         </Box>
         <Button variant="contained" color="error" onClick={handleCancel} disabled={loading}>
           {loading ? "Cancelling..." : "Cancel Order"}

@@ -47,6 +47,7 @@ import AllTrendingCategories from "./pages/user/AllTrendingCategories";
 import MyBookings from './pages/user/MyBookings';
 import AddLocation from './pages/admin/AddLocation';
 import EditEvent from './pages/admin/EditEvent';
+
  // أعلى الملف
 function SessionChecker() {
   const navigate = useNavigate();
@@ -117,6 +118,8 @@ function App() {
           
         <Route path="/category/:id/events" element={<CategoryEventsPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/Home" element={<Home />} />
+
          
 
 

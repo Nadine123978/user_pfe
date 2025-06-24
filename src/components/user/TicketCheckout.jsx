@@ -13,11 +13,11 @@ import {
   Alert,
 } from '@mui/material';
 
-const TicketCheckout = ({ tickets, onPaymentDone }) => {
+const TicketCheckout = ({ tickets, orderNumber, paymentSuccess, setPaymentSuccess }) => {
+
   const [selectedPayment, setSelectedPayment] = useState('MPGS');
   const [isPaying, setIsPaying] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
   const ticketsList = tickets || [];
   const paymentFee = 14.34;
@@ -35,43 +35,58 @@ const TicketCheckout = ({ tickets, onPaymentDone }) => {
     { id: 'Tylleum', label: 'Pay with Tylleum' },
   ];
 
-  const handlePayment = async () => {
-    setIsPaying(true);
-    setPaymentSuccess(false);
-    setErrorMessage('');
+ const handlePayment = async () => {
+  setIsPaying(true);
+  setPaymentSuccess(false);
+  setErrorMessage('');
 
-    // اجمع IDs التذاكر
-    const seatIds = ticketsList.map((t) => t.id);
+  const seatIds = ticketsList.map((t) => t.id);
+  const token = localStorage.getItem("token");
 
-    try {
-      // إرسال طلب تأكيد الحجز
-     const response = await fetch('http://localhost:8081/api/seats/confirm', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(seatIds),
-      });
+  try {
+    // أولاً: تأكيد الحجز
+    const confirmResponse = await fetch('http://localhost:8081/api/seats/confirm', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(seatIds),
+    });
 
-      if (!response.ok) {
-        // اقرأ رسالة الخطأ من السيرفر
-        const errorMsg = await response.text();
-        setErrorMessage(errorMsg || 'Error confirming seats.');
-        setIsPaying(false);
-        return;
-      }
-
-      // تأكيد الحجز نجح، استكمل عملية الدفع (محاكاة)
-      // هنا ممكن تربط مع API الدفع الحقيقي إذا موجود
-      setTimeout(() => {
-        setIsPaying(false);
-        setPaymentSuccess(true);
-        if (onPaymentDone) onPaymentDone();
-      }, 1500);
-
-    } catch (error) {
-      setErrorMessage('Network or server error.');
+    if (!confirmResponse.ok) {
+      const errorMsg = await confirmResponse.text();
+      setErrorMessage(errorMsg || 'Error confirming seats.');
       setIsPaying(false);
+      return;
     }
-  };
+
+    // ثانياً: إرسال طلب الدفع
+    const payResponse = await fetch(`http://localhost:8081/api/bookings/pay/${orderNumber}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!payResponse.ok) {
+      const errorMsg = await payResponse.text();
+      setErrorMessage(errorMsg || 'Payment failed.');
+      setIsPaying(false);
+      return;
+    }
+
+    // الدفع ناجح
+    setPaymentSuccess(true);
+    if (onPaymentDone) onPaymentDone();
+
+  } catch (error) {
+    setErrorMessage('Network or server error.');
+  } finally {
+    setIsPaying(false);
+  }
+};
 
   return (
     <Box maxWidth={600} mx="auto" p={3} display="flex" flexDirection="column" gap={4}>
