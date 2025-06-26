@@ -1,84 +1,220 @@
 import React from "react";
-import { Box, Container, Stack, Typography } from "@mui/material";
+import { Box, Container, Stack, Typography, Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+// Styled components for enhanced visual appeal
+const HeroContainer = styled(Box)(({ theme }) => ({
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.3)',
+    zIndex: 1,
+  },
+}));
+
+const HeroContent = styled(Box)({
+  position: 'relative',
+  zIndex: 2,
+});
+
+const GradientButton = styled(Button)(({ theme }) => ({
+  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+  border: 0,
+  borderRadius: 25,
+  boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+  color: 'white',
+  height: 48,
+  padding: '0 30px',
+  textTransform: 'none',
+  fontWeight: 'bold',
+  fontSize: '16px',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(255, 105, 135, .4)',
+  },
+}));
+
+const FloatingElement = styled(Box)({
+  position: 'absolute',
+  borderRadius: '50%',
+  background: 'rgba(255, 255, 255, 0.1)',
+  animation: 'float 6s ease-in-out infinite',
+  '@keyframes float': {
+    '0%': {
+      transform: 'translateY(0px)',
+    },
+    '50%': {
+      transform: 'translateY(-20px)',
+    },
+    '100%': {
+      transform: 'translateY(0px)',
+    },
+  },
+});
 
 const HeroSection = () => {
-  const images = [
-    "/Img_1.jpg",
-    "/Img_2.jpg",
-    "/Img_3.jpg",
-    "/Img_4.jpg"
-  ];
-
   return (
-    <Box
+    <HeroContainer
       sx={{
-        background: "linear-gradient(to right, #03045E, #000)",
-        color: "#fff",
-        pt: 0,
-        pb: 10,
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
+        py: { xs: 8, md: 12 },
+        px: 4,
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
       }}
     >
-      <Container maxWidth="xl">
-        <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={8}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          {/* Text Section */}
-          <Box flex={1} sx={{ textAlign: { xs: "center", md: "left" } }}>
-            <Typography variant="body1" sx={{ mb: 1, color: "#aaa" }}>
-              All the fun starts here.
-            </Typography>
-            <Typography
-              variant="h2"
+      {/* Floating decorative elements */}
+      <FloatingElement
+        sx={{
+          width: 80,
+          height: 80,
+          top: '20%',
+          left: '10%',
+          animationDelay: '0s',
+        }}
+      />
+      <FloatingElement
+        sx={{
+          width: 60,
+          height: 60,
+          top: '60%',
+          right: '15%',
+          animationDelay: '2s',
+        }}
+      />
+      <FloatingElement
+        sx={{
+          width: 100,
+          height: 100,
+          bottom: '20%',
+          left: '5%',
+          animationDelay: '4s',
+        }}
+      />
+
+      <Container maxWidth="lg">
+        <HeroContent>
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={6}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            {/* Text Content */}
+            <Box flex={1} sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+              <Typography
+                variant="h1"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: "2.5rem", sm: "3.5rem", md: "4.5rem" },
+                  color: "#ffffff",
+                  lineHeight: 1.1,
+                  mb: 3,
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+                  background: 'linear-gradient(45deg, #ffffff, #f0f0f0)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Your Next Experience{" "}
+                <Typography
+                  component="span"
+                  sx={{
+                    background: 'linear-gradient(45deg, #FE6B8B, #FF8E53)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontWeight: 800,
+                  }}
+                >
+                  Starts Here
+                </Typography>
+              </Typography>
+              
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  color: "rgba(255, 255, 255, 0.9)", 
+                  mb: 4,
+                  fontWeight: 300,
+                  lineHeight: 1.6,
+                  maxWidth: '500px',
+                  mx: { xs: 'auto', md: 0 },
+                }}
+              >
+                Discover, book, and enjoy amazing events near you. Connect with your community and create unforgettable memories.
+              </Typography>
+              
+              <Stack 
+                direction={{ xs: 'column', sm: 'row' }} 
+                spacing={2} 
+                sx={{ justifyContent: { xs: 'center', md: 'flex-start' } }}
+              >
+                <GradientButton size="large">
+                  Explore Events
+                </GradientButton>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                    color: 'white',
+                    borderRadius: 25,
+                    px: 4,
+                    py: 1.5,
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    '&:hover': {
+                      borderColor: 'white',
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                    },
+                  }}
+                >
+                  Learn More
+                </Button>
+              </Stack>
+            </Box>
+
+            {/* Hero Image */}
+            <Box
+              flex={1}
               sx={{
-                fontWeight: "bold",
-                mb: 3,
-                lineHeight: 1.2,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              Book your <br />
-              Tickets for Event!
-            </Typography>
-            <ul style={{ margin: 0, paddingLeft: "1.2rem", lineHeight: 2 }}>
-              <li>Safe, Secure, Reliable ticketing.</li>
-              <li>Your ticket to live entertainment!</li>
-            </ul>
-          </Box>
-
-          {/* Image Grid Section */}
-          <Box
-            flex={1}
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(2, 1fr)" },
-              gap: 2,
-              width: "100%",
-              maxWidth: { xs: "100%", md: "500px" }, // تحكم بعرض الصور في اللابتوب
-            }}
-          >
-            {images.map((src, index) => (
               <Box
-                key={index}
+                component="img"
+                src="/hero-gathering.png"
+                alt="Event Preview"
                 sx={{
-                  width: "100%",
-                  height: { xs: 150, md: 200 }, // ارتفاع مرن حسب الجهاز
-                  backgroundImage: `url(${src})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  borderRadius: 2,
+                  maxWidth: "100%",
+                  height: 'auto',
+                  borderRadius: 4,
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+                  transition: 'transform 0.3s ease',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  },
                 }}
               />
-            ))}
-          </Box>
-        </Stack>
+            </Box>
+          </Stack>
+        </HeroContent>
       </Container>
-    </Box>
+    </HeroContainer>
   );
 };
 
 export default HeroSection;
+

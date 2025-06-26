@@ -12,7 +12,6 @@ import {
   useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import LaunchIcon from "@mui/icons-material/Launch";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Header = ({ scrollTargets }) => {
@@ -21,35 +20,27 @@ const Header = ({ scrollTargets }) => {
   const isLoggedIn = !!localStorage.getItem("userId");
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Changed to md for slightly larger mobile breakpoint
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleScroll = (ref) => {
     handleMenuClose();
     if (location.pathname !== "/") {
       navigate("/");
-      requestAnimationFrame(() => {
-        ref?.current?.scrollIntoView({ behavior: "smooth" });
-      });
+      requestAnimationFrame(() =>
+        ref?.current?.scrollIntoView({ behavior: "smooth" })
+      );
     } else {
       ref?.current?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("userId");
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    navigate('/login', { replace: true });
+    localStorage.clear();
+    navigate("/login", { replace: true });
   };
 
   const navLinks = [
@@ -62,32 +53,53 @@ const Header = ({ scrollTargets }) => {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
+      elevation={4} // Added subtle shadow for depth
       sx={{
-        background: "linear-gradient(to right, #03045E, #000)",
-        boxShadow: "none",
-        borderBottom: "1px solid #fff",
+        backgroundColor: "#ffffff", // Clean white background
+        color: "#333333", // Darker text for better contrast
+        borderBottom: "none", // Removed bottom border for cleaner look
+        py: 1,
+        fontFamily: "'Inter', sans-serif", // Modern sans-serif font
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", letterSpacing: 2 }}>
-          SOCIETHY{" "}
-          <Typography component="span" sx={{ fontSize: 10, ml: 0.5 }}>
-            PARIS
+      <Toolbar sx={{ justifyContent: "space-between", maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            letterSpacing: 1,
+            cursor: "pointer",
+            userSelect: "none",
+            "&:hover": { color: "#6a1b9a" }, // Purple hover color
+            display: 'flex',
+            alignItems: 'center',
+          }}
+          onClick={() => navigate("/")}
+        >
+          SOCIETHY{' '}
+          <Typography component="span" sx={{ fontSize: 14, ml: 0.5, fontWeight: "normal", color: '#6a1b9a' }}>
+            EVENTS
           </Typography>
         </Typography>
 
         {isMobile ? (
           <>
             <IconButton color="inherit" onClick={handleMenuOpen}>
-              <MenuIcon />
+              <MenuIcon sx={{ color: "#333333" }} />
             </IconButton>
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
               onClose={handleMenuClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
+              PaperProps={{
+                sx: {
+                  backgroundColor: "#ffffff",
+                  color: "#333333",
+                  border: "1px solid #e0e0e0",
+                  boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
+                },
+              }}
             >
               {navLinks.map((link) =>
                 link.to ? (
@@ -96,116 +108,191 @@ const Header = ({ scrollTargets }) => {
                     component={Link}
                     to={link.to}
                     onClick={handleMenuClose}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "#f3e5f5", // Light purple hover
+                        color: "#6a1b9a",
+                      },
+                    }}
                   >
                     {link.label}
                   </MenuItem>
                 ) : (
-                  <MenuItem key={link.label} onClick={link.action}>
+                  <MenuItem
+                    key={link.label}
+                    onClick={link.action}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "#f3e5f5",
+                        color: "#6a1b9a",
+                      },
+                    }}
+                  >
                     {link.label}
                   </MenuItem>
                 )
               )}
-
               {isLoggedIn && (
-                <MenuItem component={Link} to="/my-bookings" onClick={handleMenuClose}>
+                <MenuItem
+                  component={Link}
+                  to="/my-bookings"
+                  onClick={handleMenuClose}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#f3e5f5",
+                      color: "#6a1b9a",
+                    },
+                  }}
+                >
                   My Bookings
                 </MenuItem>
               )}
-
               {!isLoggedIn ? (
                 <>
-                  <MenuItem component={Link} to="/login" onClick={handleMenuClose}>
+                  <MenuItem
+                    component={Link}
+                    to="/login"
+                    onClick={handleMenuClose}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "#f3e5f5",
+                        color: "#6a1b9a",
+                      },
+                    }}
+                  >
                     Login
                   </MenuItem>
                   <MenuItem
                     component={Link}
                     to="/signup"
                     onClick={handleMenuClose}
-                    sx={{ fontWeight: "bold" }}
+                    sx={{
+                      fontWeight: "bold",
+                      backgroundColor: "#6a1b9a", // Purple background for signup
+                      color: "#fff",
+                      "&:hover": {
+                        backgroundColor: "#4a148c", // Darker purple on hover
+                        color: "#fff",
+                      },
+                    }}
                   >
-                    SignUP
+                    Sign Up
                   </MenuItem>
                 </>
               ) : (
-                <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>
+                <MenuItem
+                  onClick={() => {
+                    handleLogout();
+                    handleMenuClose();
+                  }}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#f3e5f5",
+                      color: "#6a1b9a",
+                    },
+                  }}
+                >
                   Logout
                 </MenuItem>
               )}
             </Menu>
           </>
         ) : (
-          <>
-            <Box sx={{ display: "flex", gap: 4 }}>
-              {navLinks.map((link) =>
-                link.to ? (
-                  <Link key={link.label} to={link.to} style={{ textDecoration: "none" }}>
-                    <Button sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
-                      {link.label}
-                    </Button>
-                  </Link>
-                ) : (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+            {navLinks.map((link) =>
+              link.to ? (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  style={{ textDecoration: "none", color: "#333333" }}
+                >
                   <Button
-                    key={link.label}
-                    onClick={link.action}
-                    sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}
+                    sx={{
+                      color: "#333333",
+                      textTransform: "none",
+                      fontWeight: "600",
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        color: "#6a1b9a",
+                      },
+                    }}
                   >
                     {link.label}
                   </Button>
-                )
-              )}
-
-              {isLoggedIn && (
-                <Link to="/my-bookings" style={{ textDecoration: "none" }}>
-                  <Button sx={{ color: "#fff", textTransform: "none", fontWeight: 500 }}>
-                    My Bookings
-                  </Button>
                 </Link>
-              )}
-            </Box>
-
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              {!isLoggedIn ? (
-                <>
-                  <Link to="/login" style={{ textDecoration: "none" }}>
-                    <Button sx={{ color: "#fff", textTransform: "none" }}>Login</Button>
-                  </Link>
-                  <Link to="/signup" style={{ textDecoration: "none" }}>
-                    <Button
-                      variant="outlined"
-                      sx={{
-                        color: "#fff",
-                        borderColor: "#fff",
-                        textTransform: "none",
-                        "&:hover": {
-                          borderColor: "#fff",
-                          backgroundColor: "rgba(255,255,255,0.1)",
-                        },
-                      }}
-                      endIcon={<LaunchIcon sx={{ fontSize: 18 }} />}
-                    >
-                      SignUP
-                    </Button>
-                  </Link>
-                </>
               ) : (
                 <Button
-                  onClick={handleLogout}
+                  key={link.label}
+                  onClick={link.action}
                   sx={{
-                    color: "#fff",
-                    border: "1px solid #fff",
-                    borderRadius: "20px",
+                    color: "#333333",
                     textTransform: "none",
-                    px: 2,
+                    fontWeight: "600",
                     "&:hover": {
-                      backgroundColor: "rgba(255,255,255,0.1)",
+                      backgroundColor: "transparent",
+                      color: "#6a1b9a",
                     },
                   }}
                 >
-                  Logout
+                  {link.label}
                 </Button>
-              )}
-            </Box>
-          </>
+              )
+            )}
+
+            {isLoggedIn ? (
+              <Button
+                onClick={handleLogout}
+                sx={{
+                  color: "white",
+                  backgroundColor: "#6a1b9a", // Purple logout button
+                  borderRadius: "25px", // More rounded corners
+                  px: 3,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "#4a148c",
+                  },
+                }}
+              >
+                Logout
+              </Button>
+            ) : (
+              <>
+                <Link to="/login" style={{ textDecoration: "none" }}>
+                  <Button
+                    sx={{
+                      color: "#333333",
+                      textTransform: "none",
+                      fontWeight: "600",
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                        color: "#6a1b9a",
+                      },
+                    }}
+                  >
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup" style={{ textDecoration: "none" }}>
+                  <Button
+                    sx={{
+                      backgroundColor: "#6a1b9a", // Purple signup button
+                      color: "white",
+                      borderRadius: "25px",
+                      px: 3,
+                      textTransform: "none",
+                      fontWeight: "bold",
+                      "&:hover": {
+                        backgroundColor: "#4a148c",
+                      },
+                    }}
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </Box>
         )}
       </Toolbar>
     </AppBar>
@@ -213,3 +300,5 @@ const Header = ({ scrollTargets }) => {
 };
 
 export default Header;
+
+

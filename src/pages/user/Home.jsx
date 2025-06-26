@@ -5,6 +5,7 @@ import TrendingCategories from "../../components/user/trending-categories";
 import FeaturedEvents from "../../components/user/featured-events";
 import HowItWorks from "../../components/user/how-works";
 import Footer from "../../components/user/footer";
+import { Box } from "@mui/material";
 
 const Home = () => {
   const homeRef = useRef(null);
@@ -12,30 +13,41 @@ const Home = () => {
   const howItWorksRef = useRef(null);
 
   return (
-    <>
+    <Box sx={{ margin: 0, padding: 0, backgroundColor: 'transparent' }}>
       <Header scrollTargets={{ homeRef, eventsRef, howItWorksRef }} />
 
-     <main className="w-full overflow-x-hidden">
-  <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+      <Box 
+        component="main"
+        sx={{ 
+          width: '100%',
+          overflowX: 'hidden',
+          backgroundColor: 'transparent',
+          margin: 0,
+          padding: 0,
+          '& > *': {
+            margin: 0,
+            padding: 0,
+          }
+        }}
+      >
+        <Box ref={homeRef}>
+          <HeroSection />
+        </Box>
 
-          <div ref={homeRef}>
-            <HeroSection />
-          </div>
+        <Box ref={eventsRef}>
+          <FeaturedEvents />
+          <TrendingCategories />
+        </Box>
 
-          <div ref={eventsRef}>
-            <FeaturedEvents />
-            <TrendingCategories />
-          </div>
-
-          <div ref={howItWorksRef}>
-            <HowItWorks />
-          </div>
-        </div>
-      </main>
+        <Box ref={howItWorksRef}>
+          <HowItWorks />
+        </Box>
+      </Box>
 
       <Footer />
-    </>
+    </Box>
   );
 };
 
 export default Home;
+
