@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 // Styled components for enhanced visual appeal
 const StyledCard = styled(Card)(({ theme }) => ({
   // Matching the dark background from Header's menu or a slightly lighter version
-  background: 'linear-gradient(145deg, #2C3E50, #3A4A5A)', // Dark blue-grey gradient
+  background:'#ffffff', // Dark blue-grey gradient
   borderRadius: 20,
   overflow: 'hidden',
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
@@ -174,7 +174,7 @@ const FeaturedEvents = () => {
               fontFamily: "'Inter', sans-serif",
             }}
           >
-            Featured Events
+            Upcoming Events
           </Typography>
           <Typography
             variant="h6"
@@ -227,7 +227,7 @@ const FeaturedEvents = () => {
                     variant="h5"
                     sx={{
                       fontWeight: 700,
-                      color: '#ffffff', // White text for card titles
+                      color: ' #200245', // White text for card titles
                       mb: 2,
                       lineHeight: 1.3,
                       fontFamily: "'Inter', sans-serif",
@@ -241,7 +241,7 @@ const FeaturedEvents = () => {
                       <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} /> {/* Vibrant pink accent for icons */}
                       <Typography
                         variant="body2"
-                        sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }} // Lighter text for details
+                        sx={{ color:'  #200245', fontWeight: 500 }} // Lighter text for details
                       >
                         {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
                           weekday: 'short',
@@ -257,7 +257,7 @@ const FeaturedEvents = () => {
                       <Typography
                         variant="body2"
                         sx={{ 
-                          color: 'rgba(255, 255, 255, 0.7)', // Lighter text for details
+                          color: ' #200245', // Lighter text for details
                           fontWeight: 500,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
