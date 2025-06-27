@@ -1,10 +1,15 @@
 import React from "react";
 import { Box, Container, Stack, Typography, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import eventImage from '../../assets/images/img6.jpg';
+
 
 // Styled components for enhanced visual appeal
 const HeroContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  backgroundImage: `url(${eventImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -14,10 +19,11 @@ const HeroContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0, 0, 0, 0.3)',
+    background: 'rgba(0, 0, 0, 0.4)', // darker overlay if needed
     zIndex: 1,
   },
 }));
+
 
 const HeroContent = styled(Box)({
   position: 'relative',
@@ -25,10 +31,10 @@ const HeroContent = styled(Box)({
 });
 
 const GradientButton = styled(Button)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+  background: 'linear-gradient(45deg, #D81B60 30%, #E91E63 90%)',
   border: 0,
   borderRadius: 25,
-  boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+  boxShadow: '0 3px 5px 2px rgba(216, 27, 96, .3)',
   color: 'white',
   height: 48,
   padding: '0 30px',
@@ -38,14 +44,14 @@ const GradientButton = styled(Button)(({ theme }) => ({
   transition: 'all 0.3s ease',
   '&:hover': {
     transform: 'translateY(-2px)',
-    boxShadow: '0 6px 20px rgba(255, 105, 135, .4)',
+    boxShadow: '0 6px 20px rgba(216, 27, 96, .4)',
   },
 }));
 
 const FloatingElement = styled(Box)({
   position: 'absolute',
   borderRadius: '50%',
-  background: 'rgba(255, 255, 255, 0.1)',
+  background: 'rgba(233, 30, 99, 0.2)',
   animation: 'float 6s ease-in-out infinite',
   '@keyframes float': {
     '0%': {
@@ -129,7 +135,7 @@ const HeroSection = () => {
                 <Typography
                   component="span"
                   sx={{
-                    background: 'linear-gradient(45deg, #FE6B8B, #FF8E53)',
+                    background: 'linear-gradient(45deg, #D81B60, #E91E63)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
@@ -174,40 +180,14 @@ const HeroSection = () => {
                     textTransform: 'none',
                     fontWeight: 600,
                     '&:hover': {
-                      borderColor: 'white',
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      borderColor: '#E91E63',
+                      backgroundColor: 'rgba(233, 30, 99, 0.1)',
                     },
                   }}
                 >
                   Learn More
                 </Button>
               </Stack>
-            </Box>
-
-            {/* Hero Image */}
-            <Box
-              flex={1}
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Box
-                component="img"
-                src="/hero-gathering.png"
-                alt="Event Preview"
-                sx={{
-                  maxWidth: "100%",
-                  height: 'auto',
-                  borderRadius: 4,
-                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05)',
-                  },
-                }}
-              />
             </Box>
           </Stack>
         </HeroContent>
@@ -217,4 +197,3 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
-

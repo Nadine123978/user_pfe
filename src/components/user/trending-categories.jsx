@@ -18,7 +18,7 @@ import axios from "axios";
 
 // Styled components for enhanced visual appeal
 const SectionContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 50%, #8E24AA 100%)',
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -55,13 +55,13 @@ const CategoryCard = styled(Card)(({ theme }) => ({
 }));
 
 const ViewButton = styled(IconButton)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #6a1b9a, #8e24aa)',
+  background: 'linear-gradient(45deg, #D81B60, #E91E63)',
   color: 'white',
   width: 40,
   height: 40,
   transition: 'all 0.3s ease',
   '&:hover': {
-    background: 'linear-gradient(45deg, #4a148c, #6a1b9a)',
+    background: 'linear-gradient(45deg, #C2185B, #D81B60)',
     transform: 'scale(1.1)',
   },
 }));
@@ -87,7 +87,7 @@ const SeeAllButton = styled(Button)(({ theme }) => ({
 const FloatingShape = styled(Box)({
   position: 'absolute',
   borderRadius: '50%',
-  background: 'rgba(255, 255, 255, 0.1)',
+  background: 'rgba(233, 30, 99, 0.2)',
   animation: 'float 8s ease-in-out infinite',
   '@keyframes float': {
     '0%, 100%': {
@@ -166,7 +166,7 @@ const TrendingCategories = () => {
               <Typography
                 component="span"
                 sx={{
-                  background: 'linear-gradient(45deg, #FE6B8B, #FF8E53)',
+                  background: 'linear-gradient(45deg, #D81B60, #E91E63)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -271,3 +271,4 @@ const TrendingCategories = () => {
 };
 
 export default TrendingCategories;
+

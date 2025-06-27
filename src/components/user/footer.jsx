@@ -5,7 +5,7 @@ import { Email, Phone, LocationOn, Facebook, Twitter, Instagram, LinkedIn } from
 
 // Styled components for enhanced visual appeal
 const FooterContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)',
+  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
   position: 'relative',
   overflow: 'hidden',
   margin: 0,
@@ -17,7 +17,7 @@ const FooterContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23E91E63" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
     zIndex: 1,
   },
 }));
@@ -41,7 +41,7 @@ const ContactItem = styled(Stack)(({ theme }) => ({
   '&:hover': {
     transform: 'translateX(8px)',
     '& .MuiSvgIcon-root': {
-      color: '#6a1b9a',
+      color: '#E91E63',
     },
   },
 }));
@@ -55,7 +55,7 @@ const FooterLink = styled(Link)(({ theme }) => ({
   transition: 'all 0.3s ease',
   position: 'relative',
   '&:hover': {
-    color: '#6a1b9a',
+    color: '#E91E63',
     transform: 'translateX(8px)',
   },
   '&::before': {
@@ -67,7 +67,7 @@ const FooterLink = styled(Link)(({ theme }) => ({
     width: '4px',
     height: '4px',
     borderRadius: '50%',
-    background: '#6a1b9a',
+    background: '#E91E63',
     opacity: 0,
     transition: 'opacity 0.3s ease',
   },
@@ -84,9 +84,9 @@ const SocialButton = styled(IconButton)(({ theme }) => ({
   margin: '0 8px',
   transition: 'all 0.3s ease',
   '&:hover': {
-    background: '#6a1b9a',
+    background: 'linear-gradient(45deg, #D81B60, #E91E63)',
     transform: 'translateY(-4px) scale(1.1)',
-    boxShadow: '0 8px 25px rgba(106, 27, 154, 0.3)',
+    boxShadow: '0 8px 25px rgba(216, 27, 96, 0.3)',
   },
 }));
 
@@ -111,7 +111,7 @@ const Footer = () => (
                     sx={{
                       fontWeight: 800,
                       letterSpacing: 2,
-                      background: 'linear-gradient(45deg, #6a1b9a, #8e24aa)',
+                      background: 'linear-gradient(45deg, #D81B60, #E91E63)',
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',

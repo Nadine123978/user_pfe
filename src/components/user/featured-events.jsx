@@ -21,14 +21,14 @@ const StyledCard = styled(Card)(({ theme }) => ({
   border: '1px solid rgba(255, 255, 255, 0.2)',
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
-    boxShadow: '0 20px 60px rgba(106, 27, 154, 0.2)',
+    boxShadow: '0 20px 60px rgba(216, 27, 96, 0.2)',
   },
 }));
 
 const GradientButton = styled(Button)(({ theme, disabled }) => ({
   background: disabled 
     ? 'linear-gradient(45deg, #e0e0e0, #bdbdbd)' 
-    : 'linear-gradient(45deg, #6a1b9a, #8e24aa)',
+    : 'linear-gradient(45deg, #D81B60, #E91E63)',
   border: 0,
   borderRadius: 25,
   color: disabled ? '#757575' : 'white',
@@ -41,14 +41,14 @@ const GradientButton = styled(Button)(({ theme, disabled }) => ({
   '&:hover': {
     background: disabled 
       ? 'linear-gradient(45deg, #e0e0e0, #bdbdbd)' 
-      : 'linear-gradient(45deg, #4a148c, #6a1b9a)',
+      : 'linear-gradient(45deg, #C2185B, #D81B60)',
     transform: disabled ? 'none' : 'translateY(-2px)',
-    boxShadow: disabled ? 'none' : '0 8px 25px rgba(106, 27, 154, 0.3)',
+    boxShadow: disabled ? 'none' : '0 8px 25px rgba(216, 27, 96, 0.3)',
   },
 }));
 
 const PriceChip = styled(Chip)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
+  background: 'linear-gradient(45deg, #8E24AA, #D81B60)',
   color: 'white',
   fontWeight: 'bold',
   fontSize: '12px',
@@ -69,7 +69,7 @@ const SectionContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%236a1b9a" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23D81B60" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
     zIndex: 1,
   },
 }));
@@ -160,7 +160,7 @@ const FeaturedEvents = () => {
           <Typography
             variant="h2"
             sx={{
-              background: 'linear-gradient(45deg, #6a1b9a, #8e24aa)',
+              background: 'linear-gradient(45deg, #2C3E50, #4A148C, #8E24AA)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -234,7 +234,7 @@ const FeaturedEvents = () => {
                   
                   <Stack spacing={1.5} sx={{ mb: 3 }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <CalendarTodayIcon sx={{ fontSize: 18, color: '#6a1b9a' }} />
+                      <CalendarTodayIcon sx={{ fontSize: 18, color: '#D81B60' }} />
                       <Typography
                         variant="body2"
                         sx={{ color: '#666', fontWeight: 500 }}
@@ -249,7 +249,7 @@ const FeaturedEvents = () => {
                     </Stack>
                     
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <LocationOnIcon sx={{ fontSize: 18, color: '#6a1b9a' }} />
+                      <LocationOnIcon sx={{ fontSize: 18, color: '#D81B60' }} />
                       <Typography
                         variant="body2"
                         sx={{ 

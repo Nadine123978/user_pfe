@@ -20,7 +20,7 @@ const Header = ({ scrollTargets }) => {
   const isLoggedIn = !!localStorage.getItem("userId");
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md")); // Changed to md for slightly larger mobile breakpoint
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
@@ -54,14 +54,15 @@ const Header = ({ scrollTargets }) => {
   return (
     <AppBar
       position="sticky"
-      elevation={4} // Added subtle shadow for depth
-      sx={{
-        backgroundColor: "#ffffff", // Clean white background
-        color: "#333333", // Darker text for better contrast
-        borderBottom: "none", // Removed bottom border for cleaner look
-        py: 1,
-        fontFamily: "'Inter', sans-serif", // Modern sans-serif font
-      }}
+      elevation={4}
+ sx={{
+  backgroundColor: '#200245',
+  color: "#ffffff",
+  borderBottom: "none",
+  py: 1,
+  fontFamily: "'Inter', sans-serif",
+}}
+
     >
       <Toolbar sx={{ justifyContent: "space-between", maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
         <Typography
@@ -71,14 +72,14 @@ const Header = ({ scrollTargets }) => {
             letterSpacing: 1,
             cursor: "pointer",
             userSelect: "none",
-            "&:hover": { color: "#6a1b9a" }, // Purple hover color
+            "&:hover": { color: "#E91E63" },
             display: 'flex',
             alignItems: 'center',
           }}
           onClick={() => navigate("/")}
         >
           SOCIETHY{' '}
-          <Typography component="span" sx={{ fontSize: 14, ml: 0.5, fontWeight: "normal", color: '#6a1b9a' }}>
+          <Typography component="span" sx={{ fontSize: 14, ml: 0.5, fontWeight: "normal", color: '#E91E63' }}>
             EVENTS
           </Typography>
         </Typography>
@@ -86,7 +87,7 @@ const Header = ({ scrollTargets }) => {
         {isMobile ? (
           <>
             <IconButton color="inherit" onClick={handleMenuOpen}>
-              <MenuIcon sx={{ color: "#333333" }} />
+              <MenuIcon sx={{ color: "#ffffff" }} />
             </IconButton>
             <Menu
               anchorEl={anchorEl}
@@ -94,10 +95,10 @@ const Header = ({ scrollTargets }) => {
               onClose={handleMenuClose}
               PaperProps={{
                 sx: {
-                  backgroundColor: "#ffffff",
-                  color: "#333333",
-                  border: "1px solid #e0e0e0",
-                  boxShadow: '0px 4px 20px rgba(0,0,0,0.1)',
+                  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
+                  color: "#ffffff",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  boxShadow: '0px 4px 20px rgba(0,0,0,0.3)',
                 },
               }}
             >
@@ -110,8 +111,8 @@ const Header = ({ scrollTargets }) => {
                     onClick={handleMenuClose}
                     sx={{
                       "&:hover": {
-                        backgroundColor: "#f3e5f5", // Light purple hover
-                        color: "#6a1b9a",
+                        backgroundColor: "#8E24AA",
+                        color: "#fff",
                       },
                     }}
                   >
@@ -123,8 +124,8 @@ const Header = ({ scrollTargets }) => {
                     onClick={link.action}
                     sx={{
                       "&:hover": {
-                        backgroundColor: "#f3e5f5",
-                        color: "#6a1b9a",
+                        backgroundColor: "#8E24AA",
+                        color: "#fff",
                       },
                     }}
                   >
@@ -139,8 +140,8 @@ const Header = ({ scrollTargets }) => {
                   onClick={handleMenuClose}
                   sx={{
                     "&:hover": {
-                      backgroundColor: "#f3e5f5",
-                      color: "#6a1b9a",
+                      backgroundColor: "#8E24AA",
+                      color: "#fff",
                     },
                   }}
                 >
@@ -155,8 +156,8 @@ const Header = ({ scrollTargets }) => {
                     onClick={handleMenuClose}
                     sx={{
                       "&:hover": {
-                        backgroundColor: "#f3e5f5",
-                        color: "#6a1b9a",
+                        backgroundColor: "#8E24AA",
+                        color: "#fff",
                       },
                     }}
                   >
@@ -168,10 +169,10 @@ const Header = ({ scrollTargets }) => {
                     onClick={handleMenuClose}
                     sx={{
                       fontWeight: "bold",
-                      backgroundColor: "#6a1b9a", // Purple background for signup
+                      background: 'linear-gradient(45deg, #D81B60, #E91E63)',
                       color: "#fff",
                       "&:hover": {
-                        backgroundColor: "#4a148c", // Darker purple on hover
+                        background: 'linear-gradient(45deg, #C2185B, #D81B60)',
                         color: "#fff",
                       },
                     }}
@@ -187,8 +188,8 @@ const Header = ({ scrollTargets }) => {
                   }}
                   sx={{
                     "&:hover": {
-                      backgroundColor: "#f3e5f5",
-                      color: "#6a1b9a",
+                      backgroundColor: "#8E24AA",
+                      color: "#fff",
                     },
                   }}
                 >
@@ -204,16 +205,16 @@ const Header = ({ scrollTargets }) => {
                 <Link
                   key={link.label}
                   to={link.to}
-                  style={{ textDecoration: "none", color: "#333333" }}
+                  style={{ textDecoration: "none", color: "#ffffff" }}
                 >
                   <Button
                     sx={{
-                      color: "#333333",
+                      color: "#ffffff",
                       textTransform: "none",
                       fontWeight: "600",
                       "&:hover": {
                         backgroundColor: "transparent",
-                        color: "#6a1b9a",
+                        color: "#E91E63",
                       },
                     }}
                   >
@@ -225,12 +226,12 @@ const Header = ({ scrollTargets }) => {
                   key={link.label}
                   onClick={link.action}
                   sx={{
-                    color: "#333333",
+                    color: "#ffffff",
                     textTransform: "none",
                     fontWeight: "600",
                     "&:hover": {
                       backgroundColor: "transparent",
-                      color: "#6a1b9a",
+                      color: "#E91E63",
                     },
                   }}
                 >
@@ -244,13 +245,13 @@ const Header = ({ scrollTargets }) => {
                 onClick={handleLogout}
                 sx={{
                   color: "white",
-                  backgroundColor: "#6a1b9a", // Purple logout button
-                  borderRadius: "25px", // More rounded corners
+                  background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+                  borderRadius: "25px",
                   px: 3,
                   textTransform: "none",
                   fontWeight: "bold",
                   "&:hover": {
-                    backgroundColor: "#4a148c",
+                    background: 'linear-gradient(45deg, #C2185B, #D81B60)',
                   },
                 }}
               >
@@ -261,12 +262,12 @@ const Header = ({ scrollTargets }) => {
                 <Link to="/login" style={{ textDecoration: "none" }}>
                   <Button
                     sx={{
-                      color: "#333333",
+                      color: "#ffffff",
                       textTransform: "none",
                       fontWeight: "600",
                       "&:hover": {
                         backgroundColor: "transparent",
-                        color: "#6a1b9a",
+                        color: "#E91E63",
                       },
                     }}
                   >
@@ -276,14 +277,14 @@ const Header = ({ scrollTargets }) => {
                 <Link to="/signup" style={{ textDecoration: "none" }}>
                   <Button
                     sx={{
-                      backgroundColor: "#6a1b9a", // Purple signup button
+                      background: 'linear-gradient(45deg, #D81B60, #E91E63)',
                       color: "white",
                       borderRadius: "25px",
                       px: 3,
                       textTransform: "none",
                       fontWeight: "bold",
                       "&:hover": {
-                        backgroundColor: "#4a148c",
+                        background: 'linear-gradient(45deg, #C2185B, #D81B60)',
                       },
                     }}
                   >
@@ -300,5 +301,4 @@ const Header = ({ scrollTargets }) => {
 };
 
 export default Header;
-
 
