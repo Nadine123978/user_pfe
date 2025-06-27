@@ -5,7 +5,8 @@ import { Email, Phone, LocationOn, Facebook, Twitter, Instagram, LinkedIn } from
 
 // Styled components for enhanced visual appeal
 const FooterContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
+  // Matching Header's AppBar background
+  background: '#200245', // Very dark purple/indigo
   position: 'relative',
   overflow: 'hidden',
   margin: 0,
@@ -17,7 +18,8 @@ const FooterContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23E91E63" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+    // Subtle pattern with vibrant pink
+    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23E91E63" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" )',
     zIndex: 1,
   },
 }));
@@ -28,7 +30,8 @@ const ContentWrapper = styled(Box)({
 });
 
 const BrandSection = styled(Box)({
-  background: 'rgba(255, 255, 255, 0.05)',
+  // Matching Header's menu background or a similar dark blue-grey
+  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
   backdropFilter: 'blur(10px)',
   borderRadius: 16,
   padding: '24px',
@@ -41,7 +44,7 @@ const ContactItem = styled(Stack)(({ theme }) => ({
   '&:hover': {
     transform: 'translateX(8px)',
     '& .MuiSvgIcon-root': {
-      color: '#E91E63',
+      color: '#E91E63', // Vibrant pink accent
     },
   },
 }));
@@ -55,7 +58,7 @@ const FooterLink = styled(Link)(({ theme }) => ({
   transition: 'all 0.3s ease',
   position: 'relative',
   '&:hover': {
-    color: '#E91E63',
+    color: '#E91E63', // Vibrant pink accent
     transform: 'translateX(8px)',
   },
   '&::before': {
@@ -67,7 +70,7 @@ const FooterLink = styled(Link)(({ theme }) => ({
     width: '4px',
     height: '4px',
     borderRadius: '50%',
-    background: '#E91E63',
+    background: '#E91E63', // Vibrant pink accent
     opacity: 0,
     transition: 'opacity 0.3s ease',
   },
@@ -77,16 +80,16 @@ const FooterLink = styled(Link)(({ theme }) => ({
 }));
 
 const SocialButton = styled(IconButton)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.1)',
+  background: 'rgba(255, 255, 255, 0.1)', // Subtle background for dark theme
   color: 'white',
   width: 48,
   height: 48,
   margin: '0 8px',
   transition: 'all 0.3s ease',
   '&:hover': {
-    background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+    background: 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
     transform: 'translateY(-4px) scale(1.1)',
-    boxShadow: '0 8px 25px rgba(216, 27, 96, 0.3)',
+    boxShadow: '0 8px 25px rgba(233, 30, 99, 0.3)', // Vibrant pink shadow
   },
 }));
 
@@ -111,7 +114,7 @@ const Footer = () => (
                     sx={{
                       fontWeight: 800,
                       letterSpacing: 2,
-                      background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+                      background: 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
                       backgroundClip: 'text',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
@@ -123,7 +126,7 @@ const Footer = () => (
                   <Typography
                     variant="subtitle1"
                     sx={{ 
-                      color: 'rgba(255, 255, 255, 0.7)', 
+                      color: '#E91E63', // Vibrant pink accent
                       fontWeight: 300,
                       letterSpacing: 1,
                     }}
@@ -290,4 +293,3 @@ const Footer = () => (
 );
 
 export default Footer;
-

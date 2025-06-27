@@ -13,25 +13,26 @@ import { toast } from 'react-toastify';
 
 // Styled components for enhanced visual appeal
 const StyledCard = styled(Card)(({ theme }) => ({
-  background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+  // Matching the dark background from Header's menu or a slightly lighter version
+  background: 'linear-gradient(145deg, #2C3E50, #3A4A5A)', // Dark blue-grey gradient
   borderRadius: 20,
   overflow: 'hidden',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
   transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
-    boxShadow: '0 20px 60px rgba(216, 27, 96, 0.2)',
+    boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)', // Vibrant pink shadow
   },
 }));
 
 const GradientButton = styled(Button)(({ theme, disabled }) => ({
   background: disabled 
-    ? 'linear-gradient(45deg, #e0e0e0, #bdbdbd)' 
-    : 'linear-gradient(45deg, #D81B60, #E91E63)',
+    ? 'linear-gradient(45deg, #444444, #555555)' 
+    : 'linear-gradient(45deg, #D81B60, #E91E63)', // Matching HeroSection's GradientButton
   border: 0,
   borderRadius: 25,
-  color: disabled ? '#757575' : 'white',
+  color: disabled ? '#999999' : 'white',
   height: 48,
   padding: '0 24px',
   textTransform: 'none',
@@ -40,15 +41,15 @@ const GradientButton = styled(Button)(({ theme, disabled }) => ({
   transition: 'all 0.3s ease',
   '&:hover': {
     background: disabled 
-      ? 'linear-gradient(45deg, #e0e0e0, #bdbdbd)' 
-      : 'linear-gradient(45deg, #C2185B, #D81B60)',
+      ? 'linear-gradient(45deg, #444444, #555555)' 
+      : 'linear-gradient(45deg, #C2185B, #D81B60)', // Matching Header's Sign Up hover
     transform: disabled ? 'none' : 'translateY(-2px)',
-    boxShadow: disabled ? 'none' : '0 8px 25px rgba(216, 27, 96, 0.3)',
+    boxShadow: disabled ? 'none' : '0 8px 25px rgba(233, 30, 99, 0.3)', // Vibrant pink shadow
   },
 }));
 
 const PriceChip = styled(Chip)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #8E24AA, #D81B60)',
+  background: 'linear-gradient(45deg, #E91E63, #D81B60)', // Vibrant pink gradient
   color: 'white',
   fontWeight: 'bold',
   fontSize: '12px',
@@ -59,7 +60,8 @@ const PriceChip = styled(Chip)(({ theme }) => ({
 }));
 
 const SectionContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+  // Matching Header's AppBar background or a similar dark purple
+  background: '#200245', // Very dark purple/indigo
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -69,7 +71,8 @@ const SectionContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23D81B60" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+    // Subtle pattern with vibrant pink
+    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23E91E63" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" )',
     zIndex: 1,
   },
 }));
@@ -98,7 +101,7 @@ const FeaturedEvents = () => {
           {
             headers: { Authorization: `Bearer ${token}` },
           }
-        );
+         );
         setEvents(response.data);
       } catch (error) {
         console.error("❌ Error fetching events:", error);
@@ -160,7 +163,8 @@ const FeaturedEvents = () => {
           <Typography
             variant="h2"
             sx={{
-              background: 'linear-gradient(45deg, #2C3E50, #4A148C, #8E24AA)',
+              // White to purple/pink gradient for text
+              background: 'linear-gradient(45deg, #ffffff, #E91E63, #D81B60)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -175,7 +179,7 @@ const FeaturedEvents = () => {
           <Typography
             variant="h6"
             sx={{ 
-              color: '#555', 
+              color: 'rgba(255, 255, 255, 0.8)', // Lighter text for dark background
               fontWeight: 300,
               maxWidth: '600px',
               mx: 'auto',
@@ -194,13 +198,13 @@ const FeaturedEvents = () => {
                   <CardMedia
                     component="img"
                     height="240"
-                    image={event.imageUrl?.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`}
+                    image={event.imageUrl?.startsWith("http" ) ? event.imageUrl : `http://localhost:8081${event.imageUrl}`}
                     alt={event.title}
                     sx={{ 
                       objectFit: 'cover',
                       transition: 'transform 0.3s ease',
                       '&:hover': {
-                        transform: 'scale(1.05)',
+                        transform: 'scale(1.05 )',
                       },
                     }}
                   />
@@ -223,7 +227,7 @@ const FeaturedEvents = () => {
                     variant="h5"
                     sx={{
                       fontWeight: 700,
-                      color: '#333',
+                      color: '#ffffff', // White text for card titles
                       mb: 2,
                       lineHeight: 1.3,
                       fontFamily: "'Inter', sans-serif",
@@ -234,10 +238,10 @@ const FeaturedEvents = () => {
                   
                   <Stack spacing={1.5} sx={{ mb: 3 }}>
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <CalendarTodayIcon sx={{ fontSize: 18, color: '#D81B60' }} />
+                      <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} /> {/* Vibrant pink accent for icons */}
                       <Typography
                         variant="body2"
-                        sx={{ color: '#666', fontWeight: 500 }}
+                        sx={{ color: 'rgba(255, 255, 255, 0.7)', fontWeight: 500 }} // Lighter text for details
                       >
                         {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
                           weekday: 'short',
@@ -249,11 +253,11 @@ const FeaturedEvents = () => {
                     </Stack>
                     
                     <Stack direction="row" alignItems="center" spacing={1}>
-                      <LocationOnIcon sx={{ fontSize: 18, color: '#D81B60' }} />
+                      <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} /> {/* Vibrant pink accent for icons */}
                       <Typography
                         variant="body2"
                         sx={{ 
-                          color: '#666', 
+                          color: 'rgba(255, 255, 255, 0.7)', // Lighter text for details
                           fontWeight: 500,
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
@@ -284,4 +288,3 @@ const FeaturedEvents = () => {
 };
 
 export default FeaturedEvents;
-

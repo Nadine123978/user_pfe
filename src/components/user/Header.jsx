@@ -72,7 +72,7 @@ const Header = ({ scrollTargets }) => {
             letterSpacing: 1,
             cursor: "pointer",
             userSelect: "none",
-            "&:hover": { color: "#E91E63" },
+            "&:hover": { color: "#1A0237" },
             display: 'flex',
             alignItems: 'center',
           }}

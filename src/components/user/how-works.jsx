@@ -8,6 +8,7 @@ const steps = [
     title: "Go to Event Page",
     description: "Browse available events and discover exciting experiences tailored to your interests.",
     image: "/images/step1.png",
+    // Dark blue-grey gradients for step cards, matching Header's menu background
     bgColor: "linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)",
     rotate: "-3deg",
   },
@@ -16,7 +17,8 @@ const steps = [
     title: "Choose Your Event",
     description: "Select your favorite events and reserve your tickets with our seamless booking system.",
     image: "/images/step2.png",
-    bgColor: "linear-gradient(135deg, #8E24AA 0%, #D81B60 100%)",
+    // Slightly different dark blue-grey gradient for visual variety
+    bgColor: "linear-gradient(135deg, #4A148C 0%, #6A1B9A 100%)",
     rotate: "0deg",
   },
   {
@@ -24,14 +26,16 @@ const steps = [
     title: "Complete Payment",
     description: "Securely complete your payment and get ready to enjoy your unforgettable event experience.",
     image: "/images/step3.png",
-    bgColor: "linear-gradient(135deg, #D81B60 0%, #E91E63 100%)",
+    // Another variation of dark blue-grey gradient
+    bgColor: "linear-gradient(135deg, #6A1B9A 0%, #8E24AA 100%)",
     rotate: "3deg",
   },
 ];
 
 // Styled components for enhanced visual appeal
 const SectionContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+  // Matching Header's AppBar background
+  background: '#200245', // Very dark purple/indigo
   position: 'relative',
   overflow: 'hidden',
   margin: 0,
@@ -43,7 +47,8 @@ const SectionContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23D81B60" fill-opacity="0.05" fill-rule="evenodd"/%3E%3C/svg%3E")',
+    // Subtle pattern with vibrant pink
+    background: 'url("data:image/svg+xml,%3Csvg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z" fill="%23E91E63" fill-opacity="0.03" fill-rule="evenodd"/%3E%3C/svg%3E" )',
     zIndex: 1,
   },
 }));
@@ -60,7 +65,7 @@ const StepCard = styled(Box)(({ bgColor, rotate }) => ({
   width: '100%',
   maxWidth: 350,
   transform: `rotate(${rotate})`,
-  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15)',
+  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)', // Darker shadow
   cursor: 'default',
   transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   position: 'relative',
@@ -72,13 +77,13 @@ const StepCard = styled(Box)(({ bgColor, rotate }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
+    background: 'rgba(255, 255, 255, 0.05)', // Subtle overlay
+    backdropFilter: 'blur(5px)', // Reduced blur
     zIndex: 1,
   },
   '&:hover': {
     transform: `scale(1.05) rotate(${rotate})`,
-    boxShadow: '0 30px 80px rgba(0, 0, 0, 0.25)',
+    boxShadow: '0 30px 80px rgba(233, 30, 99, 0.25)', // Vibrant pink shadow on hover
   },
 }));
 
@@ -143,7 +148,8 @@ const HowItWorks = () => {
               sx={{
                 fontWeight: 800,
                 fontSize: { xs: '2.5rem', md: '3.5rem' },
-                background: 'linear-gradient(45deg, #2C3E50, #4A148C, #8E24AA)',
+                // White to purple/pink gradient for text
+                background: 'linear-gradient(45deg, #ffffff, #E91E63, #D81B60)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -158,7 +164,7 @@ const HowItWorks = () => {
               sx={{
                 maxWidth: 700,
                 mx: "auto",
-                color: "#555",
+                color: "rgba(255, 255, 255, 0.8)", // Lighter text for dark background
                 fontWeight: 300,
                 lineHeight: 1.6,
               }}
@@ -196,4 +202,3 @@ const HowItWorks = () => {
 };
 
 export default HowItWorks;
-

@@ -18,7 +18,8 @@ import axios from "axios";
 
 // Styled components for enhanced visual appeal
 const SectionContainer = styled(Box)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 50%, #8E24AA 100%)',
+  // Matching Header's AppBar background or a similar dark purple
+  background: '#200245', // Very dark purple/indigo
   position: 'relative',
   overflow: 'hidden',
   '&::before': {
@@ -28,8 +29,8 @@ const SectionContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
+    background: 'rgba(255, 255, 255, 0.05)', // Very subtle overlay
+    backdropFilter: 'blur(5px)',
     zIndex: 1,
   },
 }));
@@ -42,34 +43,35 @@ const ContentWrapper = styled(Box)({
 const CategoryCard = styled(Card)(({ theme }) => ({
   borderRadius: 20,
   overflow: 'hidden',
-  background: 'rgba(255, 255, 255, 0.95)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+  // Matching Header's Menu background or a similar dark blue-grey
+  background: 'linear-gradient(145deg, #2C3E50, #3A4A5A)', // Dark blue-grey gradient
+  backdropFilter: 'blur(15px)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
   transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
-    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-    background: 'rgba(255, 255, 255, 1)',
+    boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)', // Vibrant pink shadow
+    background: 'linear-gradient(145deg, #3A4A5A, #4A5A6A)', // Slightly lighter on hover
   },
 }));
 
 const ViewButton = styled(IconButton)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+  background: 'linear-gradient(45deg, #D81B60, #E91E63)', // Matching HeroSection's GradientButton
   color: 'white',
   width: 40,
   height: 40,
   transition: 'all 0.3s ease',
   '&:hover': {
-    background: 'linear-gradient(45deg, #C2185B, #D81B60)',
+    background: 'linear-gradient(45deg, #C2185B, #D81B60)', // Matching Header's Sign Up hover
     transform: 'scale(1.1)',
   },
 }));
 
 const SeeAllButton = styled(Button)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.2)',
-  backdropFilter: 'blur(20px)',
-  border: '1px solid rgba(255, 255, 255, 0.3)',
+  background: 'rgba(255, 255, 255, 0.1)', // More subtle background for dark theme
+  backdropFilter: 'blur(10px)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
   color: 'white',
   borderRadius: 25,
   padding: '12px 30px',
@@ -78,16 +80,16 @@ const SeeAllButton = styled(Button)(({ theme }) => ({
   fontSize: '16px',
   transition: 'all 0.3s ease',
   '&:hover': {
-    background: 'rgba(255, 255, 255, 0.3)',
+    background: 'rgba(255, 255, 255, 0.2)',
     transform: 'translateY(-2px)',
-    boxShadow: '0 8px 25px rgba(255, 255, 255, 0.2)',
+    boxShadow: '0 8px 25px rgba(255, 255, 255, 0.1)',
   },
 }));
 
 const FloatingShape = styled(Box)({
   position: 'absolute',
   borderRadius: '50%',
-  background: 'rgba(233, 30, 99, 0.2)',
+  background: 'rgba(233, 30, 99, 0.15)', // Vibrant pink rgba
   animation: 'float 8s ease-in-out infinite',
   '@keyframes float': {
     '0%, 100%': {
@@ -108,7 +110,7 @@ const TrendingCategories = () => {
       try {
         const res = await axios.get(
           "http://localhost:8081/api/categories/trending?limit=4"
-        );
+         );
         setCategories(res.data);
       } catch (err) {
         console.error("Failed to fetch trending categories", err);
@@ -166,7 +168,7 @@ const TrendingCategories = () => {
               <Typography
                 component="span"
                 sx={{
-                  background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+                  background: 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
@@ -202,7 +204,7 @@ const TrendingCategories = () => {
               cleanedUrl = cleanedUrl
                 .replace("//", "/")
                 .replace("/images/", "/uploads/");
-              const fullImageUrl = cleanedUrl.startsWith("http")
+              const fullImageUrl = cleanedUrl.startsWith("http" )
                 ? cleanedUrl
                 : `http://localhost:8081${cleanedUrl}`;
 
@@ -219,7 +221,7 @@ const TrendingCategories = () => {
                           objectFit: 'cover',
                           transition: 'transform 0.3s ease',
                           '&:hover': {
-                            transform: 'scale(1.1)',
+                            transform: 'scale(1.1 )',
                           },
                         }}
                       />
@@ -230,7 +232,7 @@ const TrendingCategories = () => {
                           left: 0,
                           right: 0,
                           bottom: 0,
-                          background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%)',
+                          background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 100%)', // Darker overlay
                         }}
                       />
                     </Box>
@@ -245,7 +247,7 @@ const TrendingCategories = () => {
                           variant="h6"
                           sx={{
                             fontWeight: 700,
-                            color: '#333',
+                            color: '#ffffff', // White text for card titles
                             fontFamily: "'Inter', sans-serif",
                           }}
                         >
@@ -271,4 +273,3 @@ const TrendingCategories = () => {
 };
 
 export default TrendingCategories;
-
