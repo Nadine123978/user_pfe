@@ -44,7 +44,7 @@ const CategoryCard = styled(Card)(({ theme }) => ({
   borderRadius: 20,
   overflow: 'hidden',
   // Matching Header's Menu background or a similar dark blue-grey
-  background: 'linear-gradient(145deg, #2C3E50, #3A4A5A)', // Dark blue-grey gradient
+  background: 'white', // Dark blue-grey gradient
   backdropFilter: 'blur(15px)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
@@ -52,7 +52,7 @@ const CategoryCard = styled(Card)(({ theme }) => ({
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
     boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)', // Vibrant pink shadow
-    background: 'linear-gradient(145deg, #3A4A5A, #4A5A6A)', // Slightly lighter on hover
+   backgroundColor: 'white',  // Slightly lighter on hover
   },
 }));
 
@@ -247,7 +247,7 @@ const TrendingCategories = () => {
                           variant="h6"
                           sx={{
                             fontWeight: 700,
-                            color: '#ffffff', // White text for card titles
+                            color: '#200245', // White text for card titles
                             fontFamily: "'Inter', sans-serif",
                           }}
                         >
