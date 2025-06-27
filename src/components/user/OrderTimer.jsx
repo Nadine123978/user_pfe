@@ -2,6 +2,30 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import axios from "axios";
+import { styled } from "@mui/material/styles"; // Import styled for custom button
+
+// Styled Button for consistency with Header/HeroSection
+const GradientButton = styled(Button)(({ theme, disabled }) => ({
+  background: disabled
+    ? 'linear-gradient(45deg, #444444, #555555)' // Darker disabled state
+    : 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
+  border: 0,
+  borderRadius: 25,
+  color: disabled ? '#999999' : 'white',
+  height: 48, // Consistent height
+  padding: '0 24px', // Consistent padding
+  textTransform: 'none',
+  fontWeight: 'bold',
+  fontSize: '14px',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    background: disabled
+      ? 'linear-gradient(45deg, #444444, #555555)'
+      : 'linear-gradient(45deg, #C2185B, #D81B60)', // Darker pink gradient on hover
+    transform: disabled ? 'none' : 'translateY(-2px)',
+    boxShadow: disabled ? 'none' : '0 8px 25px rgba(233, 30, 99, 0.3)', // Vibrant pink shadow
+  },
+}));
 
 const OrderTimer = ({ orderNumber, onCancel }) => {
   const [countdown, setCountdown] = useState(3600); // 1 ساعة
@@ -42,7 +66,7 @@ const OrderTimer = ({ orderNumber, onCancel }) => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+       );
       onCancel(); // notify parent that it's cancelled
     } catch (error) {
       console.error("Cancel failed:", error.response?.data || error.message);
@@ -54,27 +78,31 @@ const OrderTimer = ({ orderNumber, onCancel }) => {
 
   return (
     <>
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6" sx={{ mb: 2, color: 'white' }}> {/* White text */}
         Order #{orderNumber}
       </Typography>
       <Box
         sx={{
           mt: 1,
           p: 2,
-          backgroundColor: "#fbc02d",
+          // Background matching Header's menu background or similar dark blue-grey
+          background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
           borderRadius: 2,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          boxShadow: '0 4px 15px rgba(0,0,0,0.2)', // Subtle shadow
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <HourglassEmptyIcon sx={{ mr: 1 }} />
-          <Typography>This order will expire in {formatTime(countdown)}</Typography>
+          <HourglassEmptyIcon sx={{ mr: 1, color: '#E91E63' }} /> {/* Vibrant pink icon */}
+          <Typography sx={{ color: 'white' }}> {/* White text */}
+            This order will expire in {formatTime(countdown)}
+          </Typography>
         </Box>
-        <Button variant="contained" color="error" onClick={handleCancel} disabled={loading}>
+        <GradientButton onClick={handleCancel} disabled={loading}> {/* Use GradientButton */}
           {loading ? "Cancelling..." : "Cancel Order"}
-        </Button>
+        </GradientButton>
       </Box>
     </>
   );
