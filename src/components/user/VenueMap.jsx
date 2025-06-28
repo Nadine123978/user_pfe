@@ -134,7 +134,7 @@ const VenueMap = ({ venue }) => {
 
   const getGoogleMapsEmbedUrl = () => {
     const query = encodeURIComponent(venueData.address);
-    return `https://www.google.com/maps/embed/v1/place?key=YOUR_GOOGLE_MAPS_API_KEY&q=${query}&zoom=15&maptype=roadmap`;
+    return `https://www.google.com/maps/embed/v1/place?key=AIzaSyCyEBqWuZFfvqKP40iWQcDgYsIAQ5DJT8I&q=${query}&zoom=15&maptype=roadmap`;
   };
 
   const getDirectionsUrl = () => {
