@@ -10,30 +10,31 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import OrderTimer from "./OrderTimer";
-import PriceLegend from "./PriceLegend";
-import TicketCheckout from "./TicketCheckout";
-import { styled } from "@mui/material/styles"; // Import styled
+import PriceLegend from "./PriceLegend"; // Assuming this component will be styled separately to match
+import TicketCheckout from "./TicketCheckout"; // Assuming this component will be styled separately to match
+import { styled } from "@mui/material/styles";
 
 // Styled Button for consistency with Header/HeroSection
 const GradientButton = styled(Button)(({ theme, disabled }) => ({
   background: disabled
     ? 'linear-gradient(45deg, #444444, #555555)'
-    : 'linear-gradient(45deg, #D81B60, #E91E63)',
+    : 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
   border: 0,
-  borderRadius: 25,
+  borderRadius: 30, // More rounded
   color: disabled ? '#999999' : 'white',
-  height: 48,
-  padding: '0 24px',
-  textTransform: 'none',
+  height: 50, // Slightly taller
+  padding: '0 30px', // More padding
+  textTransform: 'uppercase', // Uppercase text
   fontWeight: 'bold',
-  fontSize: '14px',
+  fontSize: '1rem', // Slightly larger font
   transition: 'all 0.3s ease',
+  boxShadow: disabled ? 'none' : '0 8px 20px rgba(0, 0, 0, 0.5)', // Stronger shadow
   '&:hover': {
     background: disabled
       ? 'linear-gradient(45deg, #444444, #555555)'
-      : 'linear-gradient(45deg, #C2185B, #D81B60)',
-    transform: disabled ? 'none' : 'translateY(-2px)',
-    boxShadow: disabled ? 'none' : '0 8px 25px rgba(233, 30, 99, 0.3)',
+      : 'linear-gradient(45deg, #C2185B, #D81B60)', // Darker pink on hover
+    transform: disabled ? 'none' : 'translateY(-3px)', // More lift on hover
+    boxShadow: disabled ? 'none' : '0 12px 25px rgba(0, 0, 0, 0.6)', // More intense shadow on hover
   },
 }));
 
@@ -234,11 +235,27 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
   }
 
   return (
-    <Box sx={{ textAlign: "center", p: 2, background: '#200245', color: 'white' }}> {/* Main container background */}
+    <Box
+      sx={{
+        textAlign: "center",
+        p: { xs: 2, md: 4 }, // Responsive padding
+        background: '#200245', // Main container background (dark purple)
+        color: 'white',
+        borderRadius: '16px', // Rounded corners for the entire map section
+        boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.6)', // Strong shadow
+        border: '1px solid rgba(255, 255, 255, 0.1)', // Subtle border
+        mt: 4, // Margin top to separate from previous sections
+        mb: 4, // Margin bottom
+        maxWidth: 1200, // Max width for the map section
+        mx: 'auto', // Center the map section
+      }}
+    >
       {!confirmed ? (
         <>
-          <Typography variant="h6" sx={{ color: 'white' }}>Pick a section:</Typography>
-          <Typography variant="h5" sx={{ my: 2, color: '#E91E63' }}> {/* Accent color for STAGE */}
+          <Typography variant="h5" fontWeight="bold" sx={{ color: '#E0E0E0', mb: 2 }}>
+            Pick a Section
+          </Typography>
+          <Typography variant="h4" fontWeight="bold" sx={{ my: 2, color: '#E91E63' }}>
             STAGE
           </Typography>
 
@@ -248,7 +265,7 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
               flexWrap: "wrap",
               justifyContent: "center",
               gap: 2,
-              mb: 3,
+              mb: 4, // Increased margin bottom
             }}
           >
             {sections.map((sec) => (
@@ -256,16 +273,20 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
                 key={sec.id}
                 onClick={() => handleSectionSelect(sec)}
                 sx={{
-                  width: 100,
-                  height: 50,
-                  // Background matching Header's menu background
-                  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
+                  width: 120, // Wider buttons
+                  height: 60, // Taller buttons
+                  background: selectedSection?.id === sec.id
+                    ? 'linear-gradient(45deg, #E91E63, #D81B60)' // Selected state gradient
+                    : 'linear-gradient(135deg, #3A0060 0%, #4A148C 100%)', // Darker purple gradient
                   color: "white",
                   fontWeight: "bold",
-                  borderRadius: 2,
-                  "&:hover": { 
-                    opacity: 0.8,
-                    background: 'linear-gradient(135deg, #4A148C 0%, #2C3E50 100%)', // Reverse gradient on hover
+                  borderRadius: '12px', // More rounded
+                  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.4)', // Shadow for buttons
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #4A148C 0%, #3A0060 100%)', // Reverse gradient on hover
+                    transform: 'translateY(-2px)', // Lift effect
+                    boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.5)',
                   },
                 }}
               >
@@ -276,81 +297,104 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
 
           {selectedSection && (
             <>
-              <Typography variant="h6" sx={{ mb: 2, color: 'white' }}>
+              <Typography variant="h5" fontWeight="bold" sx={{ mb: 2, color: '#E0E0E0' }}>
                 Seats in {selectedSection.name}
               </Typography>
 
-              <Typography sx={{ mt: 1, mb: 2, color: 'rgba(255, 255, 255, 0.8)' }}>
+              <Typography sx={{ mt: 1, mb: 3, color: 'rgba(255, 255, 255, 0.8)' }}>
                 Selected {selectedSeats.length} of {requestedSeats} seat
                 {requestedSeats > 1 ? "s" : ""}
               </Typography>
 
-              {Object.entries(groupSeatsByRow(seats)).map(([row, seatsInRow]) => (
-                <Box
-                  key={row}
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    mb: 1,
-                  }}
-                >
-                  <Typography variant="body2" sx={{ width: 20, color: 'rgba(255, 255, 255, 0.7)' }}>
-                    {row}
-                  </Typography>
-                  {seatsInRow.map((seat) => {
-                    const isSelected = selectedSeats.some((s) => s.id === seat.id);
-                    return (
-                      <Box
-                        key={seat.id}
-                        onClick={() => toggleSeatSelection(seat)}
-                        sx={{
-                          width: 30,
-                          height: 30,
-                          lineHeight: "30px",
-                          textAlign: "center",
-                          borderRadius: "3px",
-                          backgroundColor: seat.reserved
-                            ? "#555" // Darker grey for reserved
-                            : seat.locked
-                            ? "#777" // Medium grey for locked
-                            : isSelected
-                            ? "#E91E63" // Vibrant pink for selected
-                            : seat.color || selectedSection.color || "#4A148C", // Default to a purple from your theme
-                          color: "white",
-                          cursor:
-                            seat.reserved || seat.locked ? "not-allowed" : "pointer",
-                          fontSize: "12px",
-                          mx: "2px",
-                        }}
-                      >
-                        {seat.code.slice(1)}
-                      </Box>
-                    );
-                  })}
-                  <Typography variant="body2" sx={{ width: 20, ml: 1, color: 'rgba(255, 255, 255, 0.7)' }}>
-                    {row}
-                  </Typography>
-                </Box>
-              ))}
+              {/* Seat Map Grid */}
+              <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 1, // Gap between rows
+                p: 2,
+                backgroundColor: 'rgba(0, 0, 0, 0.2)', // Subtle background for the seat map area
+                borderRadius: '12px',
+                boxShadow: 'inset 0px 0px 10px rgba(0, 0, 0, 0.3)', // Inner shadow
+              }}>
+                {Object.entries(groupSeatsByRow(seats)).map(([row, seatsInRow]) => (
+                  <Box
+                    key={row}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      mb: 0.5, // Smaller margin between rows
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ width: 25, color: 'rgba(255, 255, 255, 0.7)', fontWeight: 'bold' }}>
+                      {row}
+                    </Typography>
+                    {seatsInRow.map((seat) => {
+                      const isSelected = selectedSeats.some((s) => s.id === seat.id);
+                      return (
+                        <Box
+                          key={seat.id}
+                          onClick={() => toggleSeatSelection(seat)}
+                          sx={{
+                            width: 35, // Larger seats
+                            height: 35, // Larger seats
+                            lineHeight: "35px",
+                            textAlign: "center",
+                            borderRadius: "5px", // Slightly more rounded seats
+                            backgroundColor: seat.reserved
+                              ? "#444" // Darker grey for reserved
+                              : seat.locked
+                              ? "#666" // Medium grey for locked
+                              : isSelected
+                              ? "#E91E63" // Vibrant pink for selected
+                              : seat.color || selectedSection.color || "#6A1B9A", // Default to a thematic purple
+                            color: "white",
+                            cursor:
+                              seat.reserved || seat.locked ? "not-allowed" : "pointer",
+                            fontSize: "13px", // Slightly larger font for seat numbers
+                            fontWeight: 'bold',
+                            mx: "3px", // More spacing between seats
+                            boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.3)', // Shadow for seats
+                            transition: 'all 0.2s ease-in-out',
+                            '&:hover': {
+                              transform: seat.reserved || seat.locked ? 'none' : 'scale(1.05)', // Slight scale on hover
+                              boxShadow: seat.reserved || seat.locked ? 'none' : '0px 4px 8px rgba(0, 0, 0, 0.4)',
+                            }
+                          }}
+                        >
+                          {seat.code.slice(1)}
+                        </Box>
+                      );
+                    })}
+                    <Typography variant="body2" sx={{ width: 25, ml: 1, color: 'rgba(255, 255, 255, 0.7)', fontWeight: 'bold' }}>
+                      {row}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
 
-              <PriceLegend pairs={colorPricePairs} />
+              <PriceLegend pairs={colorPricePairs} /> {/* Assuming PriceLegend is styled externally */}
 
               {selectedSeats.length > 0 && (
                 <>
-                  <Typography variant="h6" sx={{ mt: 3, color: 'white' }}>
+                  <Typography variant="h5" fontWeight="bold" sx={{ mt: 4, color: '#E0E0E0' }}>
                     Selected Seats
                   </Typography>
-                  <Stack spacing={1} alignItems="center" sx={{ mt: 1 }}>
+                  <Stack direction="row" spacing={1} justifyContent="center" flexWrap="wrap" sx={{ mt: 2, mb: 3 }}>
                     {selectedSeats.map((seat) => (
-                      <Chip 
-                        key={seat.id} 
-                        label={seat.code} 
-                        sx={{ 
+                      <Chip
+                        key={seat.id}
+                        label={`${seat.code} ($${seat.price})`}
+                        sx={{
                           background: 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
                           color: 'white',
                           fontWeight: 'bold',
-                        }} 
+                          borderRadius: '15px', // More rounded chip
+                          px: 1.5, // Padding inside chip
+                          py: 0.5,
+                          boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.3)',
+                        }}
                       />
                     ))}
                   </Stack>
@@ -380,46 +424,57 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
               key={seat.id}
               data-ticket
               sx={{
-                background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)', // Dark blue-grey to purple gradient
-                p: 2,
-                mb: 2,
-                borderRadius: 2,
+                background: 'linear-gradient(135deg, #2C0050 0%, #4A0070 100%)', // Dark purple gradient for ticket box
+                p: 3, // More padding
+                mb: 3, // More margin bottom
+                borderRadius: '12px', // Rounded corners
                 textAlign: "left",
-                color: 'white', // Text color for this box
+                color: 'white',
+                boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.4)', // Shadow for ticket box
               }}
             >
-              <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1, color: '#E91E63' }}> {/* Accent color */}
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 1.5, color: '#E91E63' }}>
                 Ticket #{index + 1}
               </Typography>
-              <Typography sx={{ mb: 1 }}>
-                Section {selectedSection.name} - {seat.code}
+              <Typography variant="body1" sx={{ mb: 0.5, color: '#E0E0E0' }}>
+                Section {selectedSection.name} - Seat {seat.code}
               </Typography>
-              <Typography sx={{ mb: 1 }}>${seat.price}</Typography>
+              <Typography variant="body1" sx={{ mb: 2, color: '#B0B0B0' }}>Price: ${seat.price}</Typography>
               <TextField
                 fullWidth
                 label="Email"
                 defaultValue="example@gmail.com"
                 name={`email-${index}`}
-                sx={{ mb: 1, 
-                  '& .MuiInputBase-input': { color: 'white' }, // Input text color
-                  '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' }, // Label color
-                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' }, // Border color
-                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' }, // Hover border color
-                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' }, // Focused border color
+                variant="outlined" // Ensure outlined variant for consistent styling
+                sx={{ mb: 2,
+                  '& .MuiInputBase-input': { color: 'white' },
+                  '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
+                  '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
+                  '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px', // Rounded input fields
+                    backgroundColor: 'rgba(0,0,0,0.1)', // Subtle background for input
+                  }
                 }}
-                InputLabelProps={{ shrink: true }} // Keep label visible
+                InputLabelProps={{ shrink: true }}
               />
               <TextField
                 fullWidth
                 label="First Name"
                 defaultValue="Nadim"
                 name={`firstName-${index}`}
-                sx={{ mb: 1, 
+                variant="outlined"
+                sx={{ mb: 2,
                   '& .MuiInputBase-input': { color: 'white' },
                   '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
                   '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' },
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(0,0,0,0.1)',
+                  }
                 }}
                 InputLabelProps={{ shrink: true }}
               />
@@ -428,21 +483,26 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
                 label="Last Name"
                 defaultValue="Sleiman"
                 name={`lastName-${index}`}
-                sx={{ 
+                variant="outlined"
+                sx={{
                   '& .MuiInputBase-input': { color: 'white' },
                   '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.7)' },
                   '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.5)' },
                   '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' },
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#E91E63' },
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(0,0,0,0.1)',
+                  }
                 }}
                 InputLabelProps={{ shrink: true }}
               />
             </Box>
           ))}
 
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
             <GradientButton
-              sx={{ mt: 2 }}
+              sx={{ mr: 2 }} // Margin right for spacing
               onClick={handleGoToCheckout}
             >
               Go to Checkout
@@ -450,18 +510,22 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
 
             <Button
               variant="outlined"
-              sx={{ 
-                mt: 2, ml: 2, 
+              sx={{
                 borderColor: 'rgba(255, 255, 255, 0.5)',
                 color: 'white',
-                borderRadius: 25,
+                borderRadius: 30, // More rounded
                 px: 4,
                 py: 1.5,
-                textTransform: 'none',
-                fontWeight: 600,
+                textTransform: 'uppercase', // Uppercase text
+                fontWeight: 'bold',
+                fontSize: '1rem',
+                transition: 'all 0.3s ease',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', // Subtle shadow
                 '&:hover': {
-                  borderColor: '#E91E63',
-                  backgroundColor: 'rgba(233, 30, 99, 0.1)',
+                  borderColor: '#E91E63', // Vibrant pink border on hover
+                  backgroundColor: 'rgba(233, 30, 99, 0.1)', // Subtle pink background on hover
+                  transform: 'translateY(-2px)', // Lift effect
+                  boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.4)',
                 },
               }}
               onClick={handleCancelBooking}
