@@ -171,7 +171,12 @@ function Booking() {
         />
       )}
       <OrganizerInfo organizer={event.organizer} />
-      <VenueMap venue={event.venue} />
+<VenueMap 
+  latitude={event.location?.latitude}
+  longitude={event.location?.longitude}
+  venueName={event.location?.venueName}
+/>
+
     </Box>
   );
 }
