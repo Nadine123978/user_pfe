@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, Paper, Grid, IconButton, Chip, Divider } from "@mui/material";
+import { Box, Typography, Paper, Grid, IconButton, Chip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { 
   LocationOn, 
@@ -13,8 +13,9 @@ import {
   Wifi,
   AcUnit
 } from "@mui/icons-material";
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 
-// Styled components for enhanced visual appeal
+// Styled components (كما في كودك السابق)
 const StyledPaper = styled(Paper)(({ theme }) => ({
   background: 'linear-gradient(145deg, rgba(44, 62, 80, 0.95), rgba(74, 20, 140, 0.95))',
   backdropFilter: 'blur(15px)',
@@ -41,27 +42,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const MapContainer = styled(Box)(({ theme }) => ({
-  borderRadius: 16,
-  overflow: 'hidden',
-  position: 'relative',
-  height: 300,
-  background: 'linear-gradient(135deg, #2C3E50, #4A148C)',
-  border: '2px solid rgba(255, 255, 255, 0.1)',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    transform: 'scale(1.02)',
-    boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4)',
-  },
-  '& iframe': {
-    width: '100%',
-    height: '100%',
-    border: 'none',
-    borderRadius: 16,
-  },
-}));
-
 const ActionButton = styled(IconButton)(({ theme }) => ({
   background: 'linear-gradient(135deg, #E91E63, #9C27B0)',
   color: 'white',
@@ -74,20 +54,39 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const FeatureChip = styled(Chip)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.15)',
-  color: 'white',
-  margin: theme.spacing(0.5),
-  backdropFilter: 'blur(10px)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  transition: 'all 0.3s ease',
-  '&:hover': {
-    background: 'rgba(233, 30, 99, 0.3)',
-    transform: 'scale(1.05)',
-  },
-}));
+const containerStyle = {
+  width: '100%',
+  height: '100%',
+  borderRadius: '16px',
+};
 
-const InfoItem = styled(Box)(({ theme }) => ({
+const VenueMap = ({ latitude, longitude, venueName }) => {
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  // استخدم بيانات افتراضية لو ما وصل شيء
+  const defaultLatitude = 33.8547;
+  const defaultLongitude = 35.9016;
+  const defaultVenueName = "Unknown Venue";
+
+  // تحميل مكتبة الخرائط
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyCyEBqWuZFfvqKP40iWQcDgYsIAQ5DJT8I',
+  });
+
+  if (loadError) return <div>حدث خطأ أثناء تحميل الخريطة</div>;
+  if (!isLoaded) return <div>جاري تحميل الخريطة...</div>;
+
+  const position = {
+    lat: latitude || defaultLatitude,
+    lng: longitude || defaultLongitude,
+  };
+
+  const getDirectionsUrl = () => {
+    const query = encodeURIComponent(venueName || defaultVenueName);
+    return `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+  };
+
+  const InfoItem = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1.5),
@@ -102,89 +101,65 @@ const InfoItem = styled(Box)(({ theme }) => ({
   },
 }));
 
-const VenueMap = ({ venue }) => {
-  const [mapLoaded, setMapLoaded] = useState(false);
-
-  // Default venue data if prop is not provided
-  const defaultVenue = {
-    name: "Park Joseph Tohme Skaff",
-    address: "Park Joseph Tohme Skaff, Zahle, Lebanon",
-    city: "Zahle",
-    country: "Lebanon",
-    phone: "+961 8 123 456",
-    coordinates: {
-      lat: 33.8547,
-      lng: 35.9016
-    },
-    features: [
-      "Free Parking",
-      "Restaurant",
-      "Restrooms",
-      "Wheelchair Accessible",
-      "Free WiFi",
-      "Air Conditioning"
-    ],
-    openingHours: "24/7 Access",
-    description: "A beautiful outdoor venue perfect for cultural events and performances, located in the heart of Zahle with stunning mountain views.",
-    capacity: "500+ guests",
-    type: "Outdoor Park"
-  };
-
-  const venueData = venue || defaultVenue;
-
-  const getGoogleMapsEmbedUrl = () => {
-    const query = encodeURIComponent(venueData.address);
-    return `https://www.google.com/maps/embed/v1/place?key=AIzaSyCyEBqWuZFfvqKP40iWQcDgYsIAQ5DJT8I&q=${query}&zoom=15&maptype=roadmap`;
-  };
-
-  const getDirectionsUrl = () => {
-    const query = encodeURIComponent(venueData.address);
-    return `https://www.google.com/maps/dir/?api=1&destination=${query}`;
-  };
-
-  const featureIcons = {
-    "Free Parking": <LocalParking />,
-    "Restaurant": <Restaurant />,
-    "Restrooms": <Wc />,
-    "Wheelchair Accessible": <Accessible />,
-    "Free WiFi": <Wifi />,
-    "Air Conditioning": <AcUnit />
-  };
-
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, background: '#200245' }}>
       <StyledPaper elevation={0}>
         <Grid container spacing={4}>
-          {/* Venue Information */}
-          <Grid item xs={12} md={6}>
-            <Box sx={{ mb: 3 }}>
-              <Typography 
-                variant="h4" 
-                sx={{ 
-                  color: '#E91E63', 
-                  fontWeight: 'bold',
-                  mb: 1,
-                  background: 'linear-gradient(45deg, #E91E63, #9C27B0)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                Venue Details
-              </Typography>
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: 'white', 
-                  fontWeight: 'bold',
-                  mb: 2 
-                }}
-              >
-                {venueData.name}
-              </Typography>
-            </Box>
 
-            {/* Venue Information Items */}
-            <Box sx={{ mb: 3 }}>
+          {/* بيانات المكان مبسطة فقط الاسم */}
+          <Grid item xs={12} md={6}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                color: '#E91E63', 
+                fontWeight: 'bold',
+                mb: 1,
+                background: 'linear-gradient(45deg, #E91E63, #9C27B0)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              Venue Details
+            </Typography>
+            <Typography variant="h5" sx={{ color: 'white', fontWeight: 'bold', mb: 2 }}>
+              {venueName || defaultVenueName}
+            </Typography>
+          </Grid>
+
+          {/* الخريطة */}
+          <Grid item xs={12} md={6}>
+            <Box sx={{ position: 'sticky', top: 20, height: 300, borderRadius: 16, overflow: 'hidden' }}>
+              <Typography 
+                variant="h6" 
+                sx={{ color: '#E91E63', mb: 2, fontWeight: 'bold', textAlign: 'center' }}
+              >
+                Location Map
+              </Typography>
+
+              {!mapLoaded && (
+                <Box 
+                  sx={{ 
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, #2C3E50, #4A148C)',
+                    zIndex: 1,
+                    borderRadius: 16,
+                  }}
+                >
+                  <Box sx={{ textAlign: 'center' }}>
+                    <LocationOn sx={{ fontSize: 48, color: '#E91E63', mb: 2 }} />
+                    <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
+                      {venueName || defaultVenueName}
+                    </Typography>
+                  </Box>
+
+                    <Box sx={{ mb: 3 }}>
               <InfoItem>
                 <LocationOn sx={{ color: '#E91E63', fontSize: 24 }} />
                 <Box>
@@ -226,148 +201,43 @@ const VenueMap = ({ venue }) => {
               )}
             </Box>
 
-            {/* Venue Description */}
             {venueData.description && (
               <Box sx={{ mb: 3 }}>
                 <Typography 
                   variant="body1" 
-                  sx={{ 
-                    color: 'rgba(255, 255, 255, 0.9)', 
-                    lineHeight: 1.7,
-                    fontSize: '1.1rem'
-                  }}
+                  sx={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.7, fontSize: '1.1rem' }}
                 >
                   {venueData.description}
                 </Typography>
               </Box>
             )}
 
-            {/* Quick Stats */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-              {venueData.capacity && (
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                    Capacity
-                  </Typography>
-                  <Typography variant="h6" sx={{ color: '#E91E63', fontWeight: 'bold' }}>
-                    {venueData.capacity}
-                  </Typography>
-                </Grid>
-              )}
-              {venueData.type && (
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                    Venue Type
-                  </Typography>
-                  <Typography variant="h6" sx={{ color: '#E91E63', fontWeight: 'bold' }}>
-                    {venueData.type}
-                  </Typography>
-                </Grid>
-              )}
-            </Grid>
 
-            {/* Action Buttons */}
-            <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+                </Box>
+              )}
+
+              <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={position}
+                zoom={16}
+                onLoad={() => setMapLoaded(true)}
+                options={{ disableDefaultUI: true }}
+              >
+                <Marker position={position} />
+              </GoogleMap>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
               <ActionButton 
                 onClick={() => window.open(getDirectionsUrl(), '_blank')}
-                title="Get Directions"
+                sx={{ px: 3 }}
               >
-                <Directions />
-              </ActionButton>
-              <ActionButton 
-                onClick={() => window.open(`tel:${venueData.phone}`, '_blank')}
-                title="Call Venue"
-              >
-                <Phone />
+                <Directions sx={{ mr: 1 }} />
+                Get Directions
               </ActionButton>
             </Box>
-
-            {/* Venue Features */}
-            {venueData.features && venueData.features.length > 0 && (
-              <Box>
-                <Typography variant="h6" sx={{ color: '#E91E63', mb: 2, fontWeight: 'bold' }}>
-                  Venue Features
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {venueData.features.map((feature, index) => (
-                    <FeatureChip 
-                      key={index} 
-                      icon={featureIcons[feature] || <LocationOn />}
-                      label={feature} 
-                      size="small" 
-                    />
-                  ))}
-                </Box>
-              </Box>
-            )}
           </Grid>
 
-          {/* Map */}
-          <Grid item xs={12} md={6}>
-            <Box sx={{ position: 'sticky', top: 20 }}>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  color: '#E91E63', 
-                  mb: 2, 
-                  fontWeight: 'bold',
-                  textAlign: 'center'
-                }}
-              >
-                Location Map
-              </Typography>
-              <MapContainer>
-                {!mapLoaded && (
-                  <Box 
-                    sx={{ 
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'linear-gradient(135deg, #2C3E50, #4A148C)',
-                      zIndex: 1
-                    }}
-                  >
-                    <Box sx={{ textAlign: 'center' }}>
-                      <LocationOn sx={{ fontSize: 48, color: '#E91E63', mb: 2 }} />
-                      <Typography variant="h6" sx={{ color: 'white', mb: 1 }}>
-                        {venueData.name}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                        {venueData.city}, {venueData.country}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )}
-                <iframe
-                  title="venue-map"
-                  src={getGoogleMapsEmbedUrl()}
-                  loading="lazy"
-                  allowFullScreen
-                  onLoad={() => setMapLoaded(true)}
-                  style={{ 
-                    opacity: mapLoaded ? 1 : 0,
-                    transition: 'opacity 0.5s ease'
-                  }}
-                />
-              </MapContainer>
-              
-              {/* Map Actions */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <ActionButton 
-                  onClick={() => window.open(getDirectionsUrl(), '_blank')}
-                  sx={{ px: 3 }}
-                >
-                  <Directions sx={{ mr: 1 }} />
-                  Get Directions
-                </ActionButton>
-              </Box>
-            </Box>
-          </Grid>
         </Grid>
       </StyledPaper>
     </Box>
@@ -375,4 +245,3 @@ const VenueMap = ({ venue }) => {
 };
 
 export default VenueMap;
-
