@@ -11,28 +11,27 @@ const center = {
   lng: 35.49548
 };
 
+const LOCATIONIQ_TOKEN = 'YOUR_LOCATIONIQ_TOKEN'; // ⬅ استبدلها بمفتاحك من LocationIQ
+
 export default function LocationPicker() {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyCyEBqWuZFfvqKP40iWQcDgYsIAQ5DJT8I'
+    googleMapsApiKey: 'AIzaSyAhYcftcBcRbJnpSO0wcWryScwNqEXrdtc' // هذا فقط لتحميل الخريطة، مو للتعريب
   });
 
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [venueName, setVenueName] = useState('');
 
-  // دالة جلب العنوان من الإحداثيات
+  // ✅ استخدام LocationIQ للـ Reverse Geocoding
   const getAddressFromCoords = async (lat, lng) => {
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyCyEBqWuZFfvqKP40iWQcDgYsIAQ5DJT8I`
+        https://us1.locationiq.com/v1/reverse?key=${LOCATIONIQ_TOKEN}&lat=${lat}&lon=${lng}&format=json
       );
       const data = await response.json();
-      if (data.status === 'OK') {
-        const address = data.results[0]?.formatted_address;
-        return address || '';
-      }
-      return '';
+      console.log('LocationIQ data:', data);
+      return data.display_name || '';
     } catch (err) {
-      console.error('خطأ في جلب العنوان:', err);
+      console.error('خطأ في جلب العنوان من LocationIQ:', err);
       return '';
     }
   };
@@ -44,7 +43,7 @@ export default function LocationPicker() {
     setSelectedPosition({ lat, lng });
 
     const address = await getAddressFromCoords(lat, lng);
-    setVenueName(address); // نعبي input تلقائيًا
+    setVenueName(address); // إدخال تلقائي للاسم
   };
 
   // الحفظ
@@ -82,11 +81,9 @@ export default function LocationPicker() {
       });
   };
 
-  // التعامل مع تحميل الخريطة
   if (loadError) return <div>حدث خطأ أثناء تحميل الخريطة</div>;
   if (!isLoaded) return <div>جاري تحميل الخريطة...</div>;
 
-  // واجهة المستخدم (return JSX)
   return (
     <div>
       <input

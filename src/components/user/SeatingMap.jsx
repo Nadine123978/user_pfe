@@ -363,7 +363,8 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
                             }
                           }}
                         >
-                          {seat.code.slice(1)}
+                          {seat.code}
+
                         </Box>
                       );
                     })}
