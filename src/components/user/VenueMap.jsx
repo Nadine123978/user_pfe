@@ -54,6 +54,14 @@ const ActionButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const venueData = {
+  address: "No address available",
+  city: "Unknown City",
+  country: "Unknown Country",
+  phone: null,
+  openingHours: null,
+};
+
 const containerStyle = {
   width: '100%',
   height: '100%',
@@ -201,16 +209,7 @@ const VenueMap = ({ latitude, longitude, venueName }) => {
               )}
             </Box>
 
-            {venueData.description && (
-              <Box sx={{ mb: 3 }}>
-                <Typography 
-                  variant="body1" 
-                  sx={{ color: 'rgba(255, 255, 255, 0.9)', lineHeight: 1.7, fontSize: '1.1rem' }}
-                >
-                  {venueData.description}
-                </Typography>
-              </Box>
-            )}
+           
 
 
                 </Box>
@@ -244,4 +243,4 @@ const VenueMap = ({ latitude, longitude, venueName }) => {
   );
 };
 
-export default VenueMap;
+export default VenueMap;  
