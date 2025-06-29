@@ -47,6 +47,7 @@ import AllTrendingCategories from "./pages/user/AllTrendingCategories";
 import MyBookings from './pages/user/MyBookings';
 import AddLocation from './pages/admin/AddLocation';
 import EditEvent from './pages/admin/EditEvent';
+import EmailInterface from './pages/admin/EmailInterface';
 
  // أعلى الملف
 function SessionChecker() {
@@ -175,6 +176,8 @@ function App() {
   <Route path="manage-seats" element={<EditSeatsPage />} />
   <Route path="users" element={<ManageUsers />} />
   <Route path="users/:userId/bookings" element={<UserBookings />} />
+  <Route path="/admin/inbox" element={<EmailInterface />} />
+
 </Route>
 
       </Routes>

@@ -6,7 +6,7 @@ import {
 import {
   Dashboard, Category, Event, SupervisorAccount, Subscriptions,
   BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
-  Add, ManageAccounts, Logout, EventSeat, LocationOn
+  Add, ManageAccounts, Logout, EventSeat, LocationOn, Inbox
 } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -186,6 +186,12 @@ const Sidebar = () => {
             </ListItem>
           </List>
         </Collapse>
+
+        {/* Inbox Added Here */}
+        <ListItem button component={Link} to="/admin/inbox">
+          <ListItemIcon><Inbox sx={{ color: '#007bff' }} /></ListItemIcon>
+          <ListItemText primary="Inbox" />
+        </ListItem>
 
         <ListItem button component={Link} to="/admin/news">
           <ListItemIcon><Newspaper sx={{ color: '#007bff' }} /></ListItemIcon>
