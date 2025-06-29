@@ -24,9 +24,10 @@ export default function LocationPicker() {
   // ✅ استخدام LocationIQ للـ Reverse Geocoding
   const getAddressFromCoords = async (lat, lng) => {
     try {
-      const response = await fetch(
-        https://us1.locationiq.com/v1/reverse?key=${LOCATIONIQ_TOKEN}&lat=${lat}&lon=${lng}&format=json
-      );
+    const response = await fetch(
+  `https://us1.locationiq.com/v1/reverse?key=pk.d083c2bfeb1564d1f877e7bc3d93cf2c&lat=${lat}&lon=${lng}&format=json`
+);
+
       const data = await response.json();
       console.log('LocationIQ data:', data);
       return data.display_name || '';
