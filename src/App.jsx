@@ -117,6 +117,7 @@ function App() {
         <Route path="/events/:eventId" element={<WhirlingDervishShow />} />
           
         <Route path="/category/:id/events" element={<CategoryEventsPage />} />
+        <Route path="/all-trending-categories" element={<AllTrendingCategories />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/Home" element={<Home />} />
 

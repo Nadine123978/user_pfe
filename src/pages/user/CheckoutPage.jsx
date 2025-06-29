@@ -3,6 +3,33 @@ import TicketCheckout from "../../components/user/TicketCheckout";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import OrderTimer from "../../components/user/OrderTimer";
+import { Box, Typography, Button, CircularProgress } from "@mui/material"; // Import Material-UI components
+import { Home as HomeIcon } from "@mui/icons-material"; // Import Home icon
+import { styled } from "@mui/material/styles"; // Import styled for custom button
+
+// Re-using the GradientButton styled component for consistency
+const GradientButton = styled(Button)(({ theme, disabled }) => ({
+  background: disabled
+    ? 'linear-gradient(45deg, #444444, #555555)'
+    : 'linear-gradient(45deg, #D81B60, #E91E63)', // Vibrant pink gradient
+  border: 0,
+  borderRadius: 30, // Very rounded button
+  color: disabled ? '#999999' : 'white',
+  height: 50, // Taller button
+  padding: '0 30px', // More padding
+  textTransform: 'uppercase', // Uppercase text
+  fontWeight: 'bold',
+  fontSize: '1rem', // Larger font size
+  transition: 'all 0.3s ease',
+  boxShadow: disabled ? 'none' : '0 8px 20px rgba(0, 0, 0, 0.5)', // Stronger shadow
+  '&:hover': {
+    background: disabled
+      ? 'linear-gradient(45deg, #444444, #555555)'
+      : 'linear-gradient(45deg, #C2185B, #D81B60)', // Darker pink on hover
+    transform: disabled ? 'none' : 'translateY(-3px)', // Lift effect on hover
+    boxShadow: disabled ? 'none' : '0 12px 25px rgba(0, 0, 0, 0.6)', // More intense shadow on hover
+  },
+}));
 
 const CheckoutPage = () => {
   const location = useLocation();
@@ -25,7 +52,7 @@ const CheckoutPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        } );
         const booking = response.data;
         console.log("🔍 Booking Response:", booking);
 
@@ -67,7 +94,7 @@ const CheckoutPage = () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
+       );
       setSelectedSeats([]);
       navigate("/");
     } catch (error) {
@@ -78,20 +105,39 @@ const CheckoutPage = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!selectedSeats || selectedSeats.length === 0) return <p>No tickets found.</p>;
+  if (loading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#200245', color: 'white' }}>
+      <CircularProgress color="inherit" sx={{ mr: 2 }} />
+      <Typography variant="h6">Loading...</Typography>
+    </Box>
+  );
+  if (!selectedSeats || selectedSeats.length === 0) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#200245', color: 'white' }}>
+      <Typography variant="h6">No tickets found.</Typography>
+    </Box>
+  );
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* زر العودة للصفحة الرئيسية */}
-      <button
+    <Box
+      sx={{
+        p: { xs: 2, md: 4 }, // Responsive padding
+        backgroundColor: '#200245', // Overall page background
+        minHeight: '100vh', // Ensure it takes full height
+        color: 'white', // Default text color
+      }}
+    >
+      {/* Return to Home Button */}
+      <GradientButton
         onClick={() => navigate("/Home")}
-        style={{ marginBottom: 20, padding: "8px 16px", cursor: "pointer" }}
+        startIcon={<HomeIcon />}
+        sx={{ mb: 4 }} // Margin bottom for spacing
       >
-       Retun to Home 
-      </button>
+        Return to Home
+      </GradientButton>
 
-      <h2>Checkout Page</h2>
+      <Typography variant="h4" fontWeight="bold" sx={{ mb: 4, color: '#E0E0E0', textAlign: 'center' }}>
+        Checkout Page
+      </Typography>
 
       <OrderTimer orderNumber={bookingId} onCancel={handleCancelBooking} />
 
@@ -101,7 +147,7 @@ const CheckoutPage = () => {
         paymentSuccess={paymentSuccess}
         setPaymentSuccess={setPaymentSuccess}
       />
-    </div>
+    </Box>
   );
 };
 

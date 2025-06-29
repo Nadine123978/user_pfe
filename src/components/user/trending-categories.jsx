@@ -193,6 +193,7 @@ const TrendingCategories = () => {
             </Typography>
             <SeeAllButton
               endIcon={<ArrowForwardIcon />}
+                onClick={() => navigate("/all-trending-categories")}
             >
               Explore All Categories
             </SeeAllButton>
