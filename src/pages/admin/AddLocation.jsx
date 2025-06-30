@@ -11,46 +11,46 @@ const center = {
   lng: 35.49548
 };
 
-const LOCATIONIQ_TOKEN = 'YOUR_LOCATIONIQ_TOKEN'; // ⬅ استبدلها بمفتاحك من LocationIQ
+const LOCATIONIQ_TOKEN = 'd083c2bfeb1564d1f877e7bc3d93cf2c'; // ⬅ Replace with your LocationIQ token
 
 export default function LocationPicker() {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyAhYcftcBcRbJnpSO0wcWryScwNqEXrdtc' // هذا فقط لتحميل الخريطة، مو للتعريب
+    googleMapsApiKey: 'AIzaSyAhYcftcBcRbJnpSO0wcWryScwNqEXrdtc' // This is only to load the map, not for localization
   });
 
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [venueName, setVenueName] = useState('');
 
-  // ✅ استخدام LocationIQ للـ Reverse Geocoding
+  // ✅ Using LocationIQ for Reverse Geocoding
   const getAddressFromCoords = async (lat, lng) => {
     try {
-    const response = await fetch(
-  `https://us1.locationiq.com/v1/reverse?key=pk.d083c2bfeb1564d1f877e7bc3d93cf2c&lat=${lat}&lon=${lng}&format=json`
-);
+      const response = await fetch(
+        `https://us1.locationiq.com/v1/reverse?key=pk.d083c2bfeb1564d1f877e7bc3d93cf2c&lat=${lat}&lon=${lng}&format=json`
+      );
 
       const data = await response.json();
       console.log('LocationIQ data:', data);
       return data.display_name || '';
     } catch (err) {
-      console.error('خطأ في جلب العنوان من LocationIQ:', err);
+      console.error('Error fetching address from LocationIQ:', err);
       return '';
     }
   };
 
-  // عند الضغط على الخريطة
+  // When clicking on the map
   const onMapClick = async (e) => {
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
     setSelectedPosition({ lat, lng });
 
     const address = await getAddressFromCoords(lat, lng);
-    setVenueName(address); // إدخال تلقائي للاسم
+    setVenueName(address); // Auto-fill venue name
   };
 
-  // الحفظ
+  // Save location
   const saveLocation = () => {
     if (!venueName || !selectedPosition) {
-      alert('يرجى إدخال اسم المكان واختيار الموقع على الخريطة');
+      alert('Please enter the venue name and select a location on the map');
       return;
     }
     const locationData = {
@@ -67,29 +67,29 @@ export default function LocationPicker() {
       .then(async res => {
         if (!res.ok) {
           const errorMsg = await res.text();
-          throw new Error(errorMsg || 'فشل الحفظ');
+          throw new Error(errorMsg || 'Failed to save');
         }
         return res.json();
       })
       .then(() => {
-        alert('تم حفظ الموقع بنجاح!');
+        alert('Location saved successfully!');
         setVenueName('');
         setSelectedPosition(null);
       })
       .catch(err => {
         console.error(err);
-        alert('خطأ: ' + err.message);
+        alert('Error: ' + err.message);
       });
   };
 
-  if (loadError) return <div>حدث خطأ أثناء تحميل الخريطة</div>;
-  if (!isLoaded) return <div>جاري تحميل الخريطة...</div>;
+  if (loadError) return <div>Error loading the map</div>;
+  if (!isLoaded) return <div>Loading map...</div>;
 
   return (
     <div>
       <input
         type="text"
-        placeholder="اسم المكان"
+        placeholder="Venue name"
         value={venueName}
         onChange={e => setVenueName(e.target.value)}
         style={{ marginBottom: 10, padding: 8, width: 300 }}
@@ -103,7 +103,7 @@ export default function LocationPicker() {
         {selectedPosition && <Marker position={selectedPosition} />}
       </GoogleMap>
       <button onClick={saveLocation} style={{ marginTop: 10, padding: '8px 16px' }}>
-        حفظ الموقع
+        Save location
       </button>
     </div>
   );

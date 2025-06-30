@@ -2,32 +2,35 @@ import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
+  Grid,
   TextField,
   Typography,
-  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Switch,
   FormControlLabel,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 import axios from "axios";
 
 const SeatGrid = ({ section }) => {
   const [seats, setSeats] = useState([]);
   const [selectedSeat, setSelectedSeat] = useState(null);
+  const [selectionMode, setSelectionMode] = useState("single"); // single, row, col
+  const [selectedRowOrCol, setSelectedRowOrCol] = useState(null); // رقم الصف أو العمود حسب الوضع
   const [tempPrice, setTempPrice] = useState("");
   const [tempVIP, setTempVIP] = useState(false);
-  const [error, setError] = useState("");
   const [tempColor, setTempColor] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (section?.id) {
       axios
         .get(`http://localhost:8081/api/seats/section/${section.id}`)
         .then((res) => {
-          // هنا نتأكد من إضافة لون القسم لكل مقعد إذا كان لون المقعد فارغ
           const seatsWithColor = res.data.map((seat) => ({
             ...seat,
             color: seat.color || section.color || "#6c757d",
@@ -39,13 +42,42 @@ const SeatGrid = ({ section }) => {
   }, [section]);
 
   useEffect(() => {
-    if (selectedSeat) {
+    if (selectionMode === "single" && selectedSeat) {
       setTempPrice(selectedSeat.price.toString());
       setTempVIP(selectedSeat.vip || false);
       setTempColor(selectedSeat.color || section.color || "#6c757d");
       setError("");
+      setSelectedRowOrCol(null);
+    } else if (selectionMode === "row" && selectedRowOrCol != null) {
+      // قيمة الصف المختار - نستخدم أول مقعد في الصف لتعبئة الحقول
+      const seatsInRow = seats.filter((s) => s.row === selectedRowOrCol);
+      if (seatsInRow.length > 0) {
+        setTempPrice(seatsInRow[0].price.toString());
+        setTempVIP(seatsInRow[0].vip || false);
+        setTempColor(seatsInRow[0].color || section.color || "#6c757d");
+        setError("");
+      }
+      setSelectedSeat(null);
+    } else if (selectionMode === "col" && selectedRowOrCol != null) {
+      // قيمة العمود المختار - نستخدم أول مقعد في العمود لتعبئة الحقول
+      const seatsInCol = seats.filter((s) => s.number === selectedRowOrCol);
+      if (seatsInCol.length > 0) {
+        setTempPrice(seatsInCol[0].price.toString());
+        setTempVIP(seatsInCol[0].vip || false);
+        setTempColor(seatsInCol[0].color || section.color || "#6c757d");
+        setError("");
+      }
+      setSelectedSeat(null);
+    } else {
+      // تنظيف القيم إذا لم يتم اختيار شيء
+      setTempPrice("");
+      setTempVIP(false);
+      setTempColor(section.color || "#6c757d");
+      setError("");
+      setSelectedSeat(null);
+      setSelectedRowOrCol(null);
     }
-  }, [selectedSeat, section.color]);
+  }, [selectionMode, selectedSeat, selectedRowOrCol, seats, section.color]);
 
   const maxRow = Math.max(...seats.map((s) => s.row), 0);
   const maxCol = Math.max(...seats.map((s) => s.number), 0);
@@ -60,11 +92,21 @@ const SeatGrid = ({ section }) => {
     grid.push(rowSeats);
   }
 
+  // اختيار المقعد أو الصف أو العمود بناءً على الوضع الحالي
   const handleSeatClick = (seat) => {
-    setSelectedSeat(seat);
+    if (selectionMode === "single") {
+      setSelectedSeat(seat);
+      setSelectedRowOrCol(null);
+    } else if (selectionMode === "row") {
+      setSelectedRowOrCol(seat.row);
+      setSelectedSeat(null);
+    } else if (selectionMode === "col") {
+      setSelectedRowOrCol(seat.number);
+      setSelectedSeat(null);
+    }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const priceNum = parseFloat(tempPrice);
     if (isNaN(priceNum) || priceNum <= 0) {
       setError("Please enter a valid price");
@@ -75,34 +117,85 @@ const SeatGrid = ({ section }) => {
       return;
     }
 
-    axios
-      .put(`http://localhost:8081/api/seats/${selectedSeat.id}`, {
-        ...selectedSeat,
-        price: priceNum,
-        vip: tempVIP,
-        color: tempColor, // نرسل اللون الجديد للباكند
-      })
-      .then(() => {
-        setSeats((prev) =>
-          prev.map((s) =>
-            s.id === selectedSeat.id ? { ...s, price: priceNum, vip: tempVIP, color: tempColor } : s
-          )
-        );
-        setSelectedSeat(null);
-      })
-      .catch((e) => {
-        console.error(e);
-        setError("Failed to update seat");
-      });
+    let seatsToUpdate = [];
+
+    if (selectionMode === "single" && selectedSeat) {
+      seatsToUpdate = [selectedSeat];
+    } else if (selectionMode === "row" && selectedRowOrCol != null) {
+      seatsToUpdate = seats.filter((s) => s.row === selectedRowOrCol);
+    } else if (selectionMode === "col" && selectedRowOrCol != null) {
+      seatsToUpdate = seats.filter((s) => s.number === selectedRowOrCol);
+    } else {
+      setError("No seat or row/column selected");
+      return;
+    }
+
+    try {
+      // تحديث كل المقاعد في التحديد
+      await Promise.all(
+        seatsToUpdate.map((seat) =>
+          axios.put(`http://localhost:8081/api/seats/${seat.id}`, {
+            ...seat,
+            price: priceNum,
+            vip: tempVIP,
+            color: tempColor,
+          })
+        )
+      );
+
+      // تحديث الواجهة محلياً
+      setSeats((prev) =>
+        prev.map((s) =>
+          seatsToUpdate.find((upd) => upd.id === s.id)
+            ? { ...s, price: priceNum, vip: tempVIP, color: tempColor }
+            : s
+        )
+      );
+
+      setSelectedSeat(null);
+      setSelectedRowOrCol(null);
+      setError("");
+    } catch (e) {
+      console.error(e);
+      setError("Failed to update seat(s)");
+    }
   };
 
   const handleClose = () => {
     setSelectedSeat(null);
+    setSelectedRowOrCol(null);
     setError("");
   };
 
   return (
     <>
+      {/* اختيارات نوع التحديد */}
+      <Box sx={{ mb: 2 }}>
+        <ToggleButtonGroup
+          value={selectionMode}
+          exclusive
+          onChange={(e, val) => {
+            if (val !== null) {
+              setSelectionMode(val);
+              setSelectedSeat(null);
+              setSelectedRowOrCol(null);
+            }
+          }}
+          aria-label="selection mode"
+        >
+          <ToggleButton value="single" aria-label="single seat">
+            Single Seat
+          </ToggleButton>
+          <ToggleButton value="row" aria-label="row">
+            Whole Row
+          </ToggleButton>
+          <ToggleButton value="col" aria-label="column">
+            Whole Column
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
+      {/* الشبكة */}
       <div style={{ display: "inline-block", border: "1px solid #ccc", padding: 10 }}>
         {grid.map((rowSeats, rowIndex) => (
           <div key={rowIndex} style={{ display: "flex", gap: 5, marginBottom: 5 }}>
@@ -112,10 +205,20 @@ const SeatGrid = ({ section }) => {
                   key={seat.id}
                   onClick={() => handleSeatClick(seat)}
                   style={{
-                    width: selectedSeat?.id === seat.id ? 50 : 40,
-                    height: selectedSeat?.id === seat.id ? 50 : 40,
+                    width:
+                      (selectionMode === "single" && selectedSeat?.id === seat.id) ||
+                      (selectionMode === "row" && selectedRowOrCol === seat.row) ||
+                      (selectionMode === "col" && selectedRowOrCol === seat.number)
+                        ? 50
+                        : 40,
+                    height:
+                      (selectionMode === "single" && selectedSeat?.id === seat.id) ||
+                      (selectionMode === "row" && selectedRowOrCol === seat.row) ||
+                      (selectionMode === "col" && selectedRowOrCol === seat.number)
+                        ? 50
+                        : 40,
                     backgroundColor: seat.vip
-                      ? "#FFD700" // لون ذهبي للمقاعد VIP
+                      ? "#FFD700"
                       : seat.reserved
                       ? "red"
                       : seat.color || section.color || "#6c757d",
@@ -127,11 +230,23 @@ const SeatGrid = ({ section }) => {
                     cursor: "pointer",
                     userSelect: "none",
                     fontWeight: "bold",
-                    border: seat.vip ? "2px solid orange" : "none",
+                    border:
+                      (selectionMode === "single" && selectedSeat?.id === seat.id) ||
+                      (selectionMode === "row" && selectedRowOrCol === seat.row) ||
+                      (selectionMode === "col" && selectedRowOrCol === seat.number)
+                        ? "2px solid orange"
+                        : "none",
                     transition: "all 0.2s ease",
-                    fontSize: selectedSeat?.id === seat.id ? "1.2em" : "1em",
+                    fontSize:
+                      (selectionMode === "single" && selectedSeat?.id === seat.id) ||
+                      (selectionMode === "row" && selectedRowOrCol === seat.row) ||
+                      (selectionMode === "col" && selectedRowOrCol === seat.number)
+                        ? "1.2em"
+                        : "1em",
                   }}
-                  title={`Seat ${seat.code} - ${seat.reserved ? "Reserved" : "Available"}${seat.vip ? " (VIP)" : ""}`}
+                  title={`Seat ${seat.code} - ${seat.reserved ? "Reserved" : "Available"}${
+                    seat.vip ? " (VIP)" : ""
+                  }`}
                 >
                   {seat.code}
                 </div>
@@ -143,9 +258,15 @@ const SeatGrid = ({ section }) => {
         ))}
       </div>
 
-      {/* Dialog لتعديل سعر ومميزات المقعد */}
-      <Dialog open={!!selectedSeat} onClose={handleClose}>
-        <DialogTitle>Edit Seat {selectedSeat?.code}</DialogTitle>
+      {/* Dialog تعديل مقعد أو صف أو عمود */}
+      <Dialog open={selectionMode === "single" ? !!selectedSeat : selectedRowOrCol != null} onClose={handleClose}>
+        <DialogTitle>
+          {selectionMode === "single"
+            ? `Edit Seat ${selectedSeat?.code}`
+            : selectionMode === "row"
+            ? `Edit Row ${selectedRowOrCol}`
+            : `Edit Column ${selectedRowOrCol}`}
+        </DialogTitle>
         <DialogContent>
           <TextField
             label="Price"
@@ -160,7 +281,6 @@ const SeatGrid = ({ section }) => {
             control={<Switch checked={tempVIP} onChange={(e) => setTempVIP(e.target.checked)} />}
             label="VIP Seat"
           />
-          {/* input لاختيار اللون */}
           <TextField
             label="Seat Color"
             type="color"
@@ -185,6 +305,9 @@ const SeatGrid = ({ section }) => {
     </>
   );
 };
+
+
+
 
 const AddSectionForm = ({ eventId }) => {
   const [sectionName, setSectionName] = useState("");
