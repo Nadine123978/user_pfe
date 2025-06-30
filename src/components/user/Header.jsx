@@ -55,16 +55,22 @@ const Header = ({ scrollTargets }) => {
     <AppBar
       position="sticky"
       elevation={4}
- sx={{
-  backgroundColor: '#200245',
-  color: "#ffffff",
-  borderBottom: "none",
-  py: 1,
-  fontFamily: "'Inter', sans-serif",
-}}
-
+      sx={{
+        backgroundColor: "#200245",
+        color: "#ffffff",
+        borderBottom: "none",
+        py: 1,
+        fontFamily: "'Inter', sans-serif",
+      }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          maxWidth: "1200px",
+          margin: "0 auto",
+          width: "100%",
+        }}
+      >
         <Typography
           variant="h6"
           sx={{
@@ -73,20 +79,23 @@ const Header = ({ scrollTargets }) => {
             cursor: "pointer",
             userSelect: "none",
             "&:hover": { color: "#1A0237" },
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
           }}
           onClick={() => navigate("/")}
         >
-          SOCIETHY{' '}
-          <Typography component="span" sx={{ fontSize: 14, ml: 0.5, fontWeight: "normal", color: '#E91E63' }}>
+          SOCIETHY{" "}
+          <Typography
+            component="span"
+            sx={{ fontSize: 14, ml: 0.5, fontWeight: "normal", color: "#E91E63" }}
+          >
             EVENTS
           </Typography>
         </Typography>
 
         {isMobile ? (
           <>
-            <IconButton color="inherit" onClick={handleMenuOpen}>
+            <IconButton color="inherit" onClick={handleMenuOpen} size="large">
               <MenuIcon sx={{ color: "#ffffff" }} />
             </IconButton>
             <Menu
@@ -95,10 +104,11 @@ const Header = ({ scrollTargets }) => {
               onClose={handleMenuClose}
               PaperProps={{
                 sx: {
-                  background: 'linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)',
+                  background:
+                    "linear-gradient(135deg, #2C3E50 0%, #4A148C 100%)",
                   color: "#ffffff",
                   border: "1px solid rgba(255, 255, 255, 0.2)",
-                  boxShadow: '0px 4px 20px rgba(0,0,0,0.3)',
+                  boxShadow: "0px 4px 20px rgba(0,0,0,0.3)",
                 },
               }}
             >
@@ -133,6 +143,7 @@ const Header = ({ scrollTargets }) => {
                   </MenuItem>
                 )
               )}
+              {/* زر My Bookings بسيط بدون أيقونة */}
               {isLoggedIn && (
                 <MenuItem
                   component={Link}
@@ -169,10 +180,12 @@ const Header = ({ scrollTargets }) => {
                     onClick={handleMenuClose}
                     sx={{
                       fontWeight: "bold",
-                      background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+                      background:
+                        "linear-gradient(45deg, #D81B60, #E91E63)",
                       color: "#fff",
                       "&:hover": {
-                        background: 'linear-gradient(45deg, #C2185B, #D81B60)',
+                        background:
+                          "linear-gradient(45deg, #C2185B, #D81B60)",
                         color: "#fff",
                       },
                     }}
@@ -240,18 +253,38 @@ const Header = ({ scrollTargets }) => {
               )
             )}
 
+            {isLoggedIn && (
+              <Button
+                onClick={() => navigate("/my-bookings")}
+                sx={{
+                  color: "#ffffff",
+                  textTransform: "none",
+                  fontWeight: "600",
+                  border: "1px solid #E91E63",
+                  borderRadius: "25px",
+                  px: 2,
+                  "&:hover": {
+                    backgroundColor: "#E91E63",
+                    color: "#fff",
+                  },
+                }}
+              >
+                My Bookings
+              </Button>
+            )}
+
             {isLoggedIn ? (
               <Button
                 onClick={handleLogout}
                 sx={{
                   color: "white",
-                  background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+                  background: "linear-gradient(45deg, #D81B60, #E91E63)",
                   borderRadius: "25px",
                   px: 3,
                   textTransform: "none",
                   fontWeight: "bold",
                   "&:hover": {
-                    background: 'linear-gradient(45deg, #C2185B, #D81B60)',
+                    background: "linear-gradient(45deg, #C2185B, #D81B60)",
                   },
                 }}
               >
@@ -277,14 +310,14 @@ const Header = ({ scrollTargets }) => {
                 <Link to="/signup" style={{ textDecoration: "none" }}>
                   <Button
                     sx={{
-                      background: 'linear-gradient(45deg, #D81B60, #E91E63)',
+                      background: "linear-gradient(45deg, #D81B60, #E91E63)",
                       color: "white",
                       borderRadius: "25px",
                       px: 3,
                       textTransform: "none",
                       fontWeight: "bold",
                       "&:hover": {
-                        background: 'linear-gradient(45deg, #C2185B, #D81B60)',
+                        background: "linear-gradient(45deg, #C2185B, #D81B60)",
                       },
                     }}
                   >
@@ -301,4 +334,3 @@ const Header = ({ scrollTargets }) => {
 };
 
 export default Header;
-

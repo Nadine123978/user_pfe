@@ -1,5 +1,3 @@
-// ✅ TicketCheckout.jsx (React)
-
 import React, { useState } from 'react';
 import {
   Card,
@@ -40,7 +38,14 @@ const GradientButton = styled(Button)(({ disabled }) => ({
   },
 }));
 
-const TicketCheckout = ({ tickets, orderNumber, paymentSuccess, setPaymentSuccess, onPaymentDone }) => {
+const TicketCheckout = ({
+  tickets,
+  orderNumber,
+  bookingId,         // لازم تمرر هذا من الأب
+  paymentSuccess,
+  setPaymentSuccess,
+  onPaymentDone,
+}) => {
   const [selectedPayment, setSelectedPayment] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -50,9 +55,8 @@ const TicketCheckout = ({ tickets, orderNumber, paymentSuccess, setPaymentSucces
   const [errorMessage, setErrorMessage] = useState('');
 
   const ticketsList = tickets || [];
-  const paymentFee = 14.34;
   const subtotal = ticketsList.reduce((sum, t) => sum + t.price, 0);
-  const total = subtotal + paymentFee;
+  const total = subtotal;
 
   const paymentOptions = [
     { id: 'MPGS', label: 'MPGS' },
@@ -70,20 +74,53 @@ const TicketCheckout = ({ tickets, orderNumber, paymentSuccess, setPaymentSucces
   const isFormValid = () => {
     if (!selectedPayment) return false;
     if (isOffline) {
-      return fullName && phoneNumber && receiptNumber;
+      return fullName.trim() && phoneNumber.trim() && receiptNumber.trim();
     }
     return true;
   };
 
+  // *** هنا أضفت استخراج الإيميل من التوكن JWT ***
+  const getEmailFromToken = () => {
+  const token = localStorage.getItem('token');
+  console.log('Token inside getEmailFromToken:', token);
+  if (!token) return '';
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    console.log('Decoded JWT payload:', jsonPayload);
+    const payload = JSON.parse(jsonPayload);
+    console.log('Payload object:', payload);
+    return payload.sub || '';
+  } catch (e) {
+    console.log('Error decoding token:', e);
+    return '';
+  }
+};
+
+
   const handlePayment = async () => {
+    if (!bookingId) {
+      setErrorMessage('Booking ID is missing.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setErrorMessage('User not authenticated.');
+      return;
+    }
+
     setIsPaying(true);
     setPaymentSuccess(false);
     setErrorMessage('');
 
     const seatIds = ticketsList.map((t) => t.id);
-    const token = localStorage.getItem("token");
 
     try {
+      // Confirm seats first
       const confirmResponse = await fetch('http://localhost:8081/api/seats/confirm', {
         method: 'POST',
         headers: {
@@ -100,25 +137,32 @@ const TicketCheckout = ({ tickets, orderNumber, paymentSuccess, setPaymentSucces
         return;
       }
 
-    const formData = new FormData();
-formData.append('paymentMethod', selectedPayment);
-formData.append('orderNumber', orderNumber);
-formData.append('amount', total.toString());  // مهم
-
-if (isOffline) {
-  formData.append('fullName', fullName);
-  formData.append('phoneNumber', phoneNumber);
-  formData.append('receiptNumber', receiptNumber);
-  if (receiptImage) formData.append('receiptImage', receiptImage);
-}
-
-// DEBUG
-for (let [key, value] of formData.entries()) {
-  console.log(key + ": ", value);
-}
+      // استخراج الإيميل
+      const email = getEmailFromToken();
+          console.log('Extracted email (sub):', email);
 
 
-      const payResponse = await fetch(`http://localhost:8081/api/payments/pay`, {
+      // Prepare payment data
+      const formData = new FormData();
+      formData.append('paymentMethod', selectedPayment);
+      formData.append('bookingId', bookingId.toString());
+      formData.append('amount', total.toString());
+      formData.append('email', email);  // أضفت الإيميل هنا
+
+      if (isOffline) {
+        formData.append('fullName', fullName);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('receiptNumber', receiptNumber);
+        if (receiptImage) formData.append('receiptImage', receiptImage);
+      }
+
+      // DEBUG: Log formData content
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: `, value);
+      }
+
+      // Send payment request
+      const payResponse = await fetch('http://localhost:8081/api/payments/pay', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -136,6 +180,7 @@ for (let [key, value] of formData.entries()) {
       setPaymentSuccess(true);
       if (onPaymentDone) onPaymentDone();
     } catch (error) {
+      console.error('Payment error:', error);
       setErrorMessage('Network or server error.');
     } finally {
       setIsPaying(false);
@@ -143,7 +188,20 @@ for (let [key, value] of formData.entries()) {
   };
 
   return (
-    <Box maxWidth={600} mx="auto" p={4} display="flex" flexDirection="column" gap={4} sx={{ backgroundColor: '#200245', borderRadius: '16px', boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.6)', color: 'white' }}>
+    <Box
+      maxWidth={600}
+      mx="auto"
+      p={4}
+      display="flex"
+      flexDirection="column"
+      gap={4}
+      sx={{
+        backgroundColor: '#200245',
+        borderRadius: '16px',
+        boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.6)',
+        color: 'white',
+      }}
+    >
       <Card sx={{ backgroundColor: '#2C0050', borderRadius: '12px' }}>
         <CardContent>
           <Typography variant="h6">Your Tickets</Typography>
@@ -169,14 +227,27 @@ for (let [key, value] of formData.entries()) {
 
       <Box>
         <Typography variant="h6">Choose a Payment Option</Typography>
-        <RadioGroup value={selectedPayment} onChange={(e) => setSelectedPayment(e.target.value)} sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 2 }}>
+        <RadioGroup
+          value={selectedPayment}
+          onChange={(e) => setSelectedPayment(e.target.value)}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+            gap: 2,
+          }}
+        >
           {paymentOptions.map((opt) => (
             <FormControlLabel
               key={opt.id}
               value={opt.id}
               control={<Radio sx={{ color: '#B0B0B0', '&.Mui-checked': { color: '#E91E63' } }} />}
               label={<Typography sx={{ color: '#FFFFFF' }}>{opt.label}</Typography>}
-              sx={{ border: selectedPayment === opt.id ? '2px solid #E91E63' : '1px solid rgba(255, 255, 255, 0.3)', borderRadius: '10px', padding: 1.5, backgroundColor: selectedPayment === opt.id ? 'rgba(233, 30, 99, 0.1)' : 'rgba(0, 0, 0, 0.2)' }}
+              sx={{
+                border: selectedPayment === opt.id ? '2px solid #E91E63' : '1px solid rgba(255, 255, 255, 0.3)',
+                borderRadius: '10px',
+                padding: 1.5,
+                backgroundColor: selectedPayment === opt.id ? 'rgba(233, 30, 99, 0.1)' : 'rgba(0, 0, 0, 0.2)',
+              }}
             />
           ))}
         </RadioGroup>
@@ -198,8 +269,9 @@ for (let [key, value] of formData.entries()) {
             <Typography variant="h5">TOTAL</Typography>
           </Box>
           <Box textAlign="right">
-            <Typography>${paymentFee.toFixed(2)}</Typography>
-            <Typography variant="h5" color="#E91E63">${total.toFixed(2)}</Typography>
+            <Typography variant="h5" color="#E91E63">
+              ${total.toFixed(2)}
+            </Typography>
           </Box>
         </CardContent>
       </Card>
@@ -219,12 +291,8 @@ for (let [key, value] of formData.entries()) {
         </GradientButton>
       </Box>
 
-      {paymentSuccess && (
-        <Alert severity="success" sx={{ mt: 2 }}>Your payment was successful!</Alert>
-      )}
-      {errorMessage && (
-        <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>
-      )}
+      {paymentSuccess && <Alert severity="success" sx={{ mt: 2 }}>Your payment was successful!</Alert>}
+      {errorMessage && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
     </Box>
   );
 };
