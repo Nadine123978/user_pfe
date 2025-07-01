@@ -60,6 +60,11 @@ const AddEvent = () => {
     formData.append("status", "draft");  // مهم: نحدد الحالة draft
 
     try {
+      console.log("startDate:", startDate);
+console.log("endDate:", endDate);
+console.log("categoryId:", categoryId);
+console.log("locationId:", locationId);
+console.log("file:", file ? file.name : "No file");
       await axios.post('http://localhost:8081/api/events/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

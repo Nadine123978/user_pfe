@@ -1,14 +1,14 @@
 import React from 'react';
 import {
   Drawer, List, ListItem, ListItemIcon, ListItemText,
-  Toolbar, Collapse
+  Toolbar, Collapse, Box, Typography
 } from '@mui/material';
 import {
   Dashboard, Category, Event, SupervisorAccount, Subscriptions,
   BookOnline, Newspaper, Settings, MenuBook, ExpandLess, ExpandMore,
   Add, ManageAccounts, Logout, EventSeat, LocationOn, Inbox
 } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -28,6 +28,7 @@ const Sidebar = () => {
   const handleClickSeating = () => setOpenSeating(!openSeating);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem("userId");
@@ -35,6 +36,98 @@ const Sidebar = () => {
     localStorage.removeItem("role");
     navigate("/login", { replace: true });
   };
+
+  // Check if current path matches the given path
+  const isActive = (path) => location.pathname === path;
+
+  // Enhanced ListItem component with professional styling
+  const StyledListItem = ({ 
+    children, 
+    onClick, 
+    component, 
+    to, 
+    isActive = false, 
+    isSubItem = false,
+    isLogout = false 
+  }) => (
+    <ListItem
+      button
+      onClick={onClick}
+      component={component}
+      to={to}
+      sx={{
+        px: isSubItem ? 4 : 3,
+        py: 1.5,
+        mx: 1,
+        my: 0.5,
+        borderRadius: 2,
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        position: 'relative',
+        cursor: 'pointer',
+        ...(isActive && {
+          backgroundColor: 'rgba(79, 70, 229, 0.15)',
+          borderLeft: '4px solid #4f46e5',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: '4px',
+            backgroundColor: '#4f46e5',
+            borderRadius: '0 2px 2px 0',
+          }
+        }),
+        '&:hover': {
+          backgroundColor: isLogout 
+            ? 'rgba(239, 68, 68, 0.1)' 
+            : 'rgba(255, 255, 255, 0.08)',
+          transform: 'translateX(4px)',
+          '& .MuiListItemIcon-root': {
+            transform: 'scale(1.1)',
+          }
+        },
+        '&:active': {
+          transform: 'translateX(2px)',
+        }
+      }}
+    >
+      {children}
+    </ListItem>
+  );
+
+  // Enhanced ListItemIcon with consistent styling
+  const StyledListItemIcon = ({ children, isLogout = false }) => (
+    <ListItemIcon 
+      sx={{ 
+        color: isLogout ? '#ef4444' : '#ffffff',
+        minWidth: 40,
+        transition: 'all 0.3s ease',
+        '& .MuiSvgIcon-root': {
+          fontSize: '1.25rem',
+          filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1))'
+        }
+      }}
+    >
+      {children}
+    </ListItemIcon>
+  );
+
+  // Enhanced ListItemText with better typography
+  const StyledListItemText = ({ primary, isLogout = false }) => (
+    <ListItemText 
+      primary={primary}
+      sx={{ 
+        '& .MuiListItemText-primary': { 
+          fontSize: '0.875rem',
+          fontWeight: 500,
+          color: isLogout ? '#ef4444' : '#ffffff',
+          letterSpacing: '0.025em',
+          transition: 'color 0.3s ease'
+        } 
+      }} 
+    />
+  );
 
   return (
     <Drawer
@@ -45,171 +138,305 @@ const Sidebar = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: '#f9f9f9',
-          borderRight: '1px solid #ddd',
+          backgroundColor: '#1a2332',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundImage: 'linear-gradient(180deg, #1a2332 0%, #1e293b 100%)',
         },
       }}
     >
       <Toolbar />
-      <List sx={{ pt: 1 }}>
-        <ListItem button component={Link} to="/admin">
-          <ListItemIcon><Dashboard sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Dashboard" />
-        </ListItem>
+      
+      {/* Brand Section */}
+      <Box sx={{ 
+        p: 3, 
+        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        mb: 1
+      }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 700, 
+            color: '#ffffff',
+            fontSize: '1.1rem',
+            letterSpacing: '0.5px',
+            textAlign: 'center'
+          }}
+        >
+          Event Manager
+        </Typography>
+        <Typography 
+          variant="caption" 
+          sx={{ 
+            color: 'rgba(255, 255, 255, 0.6)',
+            fontSize: '0.75rem',
+            textAlign: 'center',
+            display: 'block',
+            mt: 0.5
+          }}
+        >
+          Admin Panel
+        </Typography>
+      </Box>
+
+      <List sx={{ pt: 1, px: 1 }}>
+        <StyledListItem 
+          component={Link} 
+          to="/admin"
+          isActive={isActive('/admin')}
+        >
+          <StyledListItemIcon><Dashboard /></StyledListItemIcon>
+          <StyledListItemText primary="Dashboard" />
+        </StyledListItem>
 
         {/* Category */}
-        <ListItem button onClick={handleClickCategory}>
-          <ListItemIcon><Category sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Category" />
-          {openCategory ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+        <StyledListItem onClick={handleClickCategory}>
+          <StyledListItemIcon><Category /></StyledListItemIcon>
+          <StyledListItemText primary="Category" />
+          {openCategory ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+        </StyledListItem>
         <Collapse in={openCategory} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/category/add">
-              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Add" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/category/manage">
-              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Manage" />
-            </ListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/category/add"
+              isActive={isActive('/admin/category/add')}
+            >
+              <StyledListItemIcon><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/category/manage"
+              isActive={isActive('/admin/category/manage')}
+            >
+              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage" />
+            </StyledListItem>
           </List>
         </Collapse>
 
         {/* Location */}
-        <ListItem button onClick={handleClickLocation}>
-          <ListItemIcon><LocationOn sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Location" />
-          {openLocation ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+        <StyledListItem onClick={handleClickLocation}>
+          <StyledListItemIcon><LocationOn /></StyledListItemIcon>
+          <StyledListItemText primary="Location" />
+          {openLocation ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+        </StyledListItem>
         <Collapse in={openLocation} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/location/add">
-              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Add" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/location/manage">
-              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Manage" />
-            </ListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/location/add"
+              isActive={isActive('/admin/location/add')}
+            >
+              <StyledListItemIcon><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/location/manage"
+              isActive={isActive('/admin/location/manage')}
+            >
+              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage" />
+            </StyledListItem>
           </List>
         </Collapse>
 
         {/* Seating */}
-        <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating">
-          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Section" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/seating"
+          isActive={isActive('/admin/seating')}
+        >
+          <StyledListItemIcon><EventSeat /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Section" />
+        </StyledListItem>
 
-        <ListItem button onClick={handleClickSeating}>
-          <ListItemIcon><EventSeat sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Seating" />
-          {openSeating ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+        <StyledListItem onClick={handleClickSeating}>
+          <StyledListItemIcon><EventSeat /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Seating" />
+          {openSeating ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+        </StyledListItem>
 
         <Collapse in={openSeating} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/manage-seats">
-              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Add Seat" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/seating/managee">
-              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Manage Seats" />
-            </ListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/manage-seats"
+              isActive={isActive('/admin/manage-seats')}
+            >
+              <StyledListItemIcon><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add Seat" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/seating/managee"
+              isActive={isActive('/admin/seating/managee')}
+            >
+              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage Seats" />
+            </StyledListItem>
           </List>
         </Collapse>
 
         {/* Manage Sponsors */}
-        <ListItem button component={Link} to="/admin/sponsors">
-          <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Sponsors" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/sponsors"
+          isActive={isActive('/admin/sponsors')}
+        >
+          <StyledListItemIcon><MenuBook /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Sponsors" />
+        </StyledListItem>
 
         {/* Events */}
-        <ListItem button onClick={handleClickEvents}>
-          <ListItemIcon><Event sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Events" />
-          {openEvents ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+        <StyledListItem onClick={handleClickEvents}>
+          <StyledListItemIcon><Event /></StyledListItemIcon>
+          <StyledListItemText primary="Events" />
+          {openEvents ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+        </StyledListItem>
         <Collapse in={openEvents} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/events/add">
-              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Add Event" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/events/manage">
-              <ListItemIcon><ManageAccounts sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Manage Events" />
-            </ListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/events/add"
+              isActive={isActive('/admin/events/add')}
+            >
+              <StyledListItemIcon><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add Event" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/events/manage"
+              isActive={isActive('/admin/events/manage')}
+            >
+              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage Events" />
+            </StyledListItem>
           </List>
         </Collapse>
 
-        <ListItem button component={Link} to="/admin/gallery">
-          <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Gallery" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/gallery"
+          isActive={isActive('/admin/gallery')}
+        >
+          <StyledListItemIcon><MenuBook /></StyledListItemIcon>
+          <StyledListItemText primary="Gallery" />
+        </StyledListItem>
 
-        <ListItem button component={Link} to="/admin/users">
-          <ListItemIcon><SupervisorAccount sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Users" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/users"
+          isActive={isActive('/admin/users')}
+        >
+          <StyledListItemIcon><SupervisorAccount /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Users" />
+        </StyledListItem>
 
-        <ListItem button component={Link} to="/admin/subscribers">
-          <ListItemIcon><Subscriptions sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Subscribers" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/subscribers"
+          isActive={isActive('/admin/subscribers')}
+        >
+          <StyledListItemIcon><Subscriptions /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Subscribers" />
+        </StyledListItem>
 
         {/* Bookings */}
-        <ListItem button onClick={handleClickBookings}>
-          <ListItemIcon><BookOnline sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Manage Bookings" />
-          {openBookings ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
+        <StyledListItem onClick={handleClickBookings}>
+          <StyledListItemIcon><BookOnline /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Bookings" />
+          {openBookings ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+        </StyledListItem>
         <Collapse in={openBookings} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/bookings/all">
-              <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="All Bookings" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/bookings/new">
-              <ListItemIcon><Add sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="New Bookings" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/bookings/cancelled">
-              <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Cancelled Bookings" />
-            </ListItem>
-            <ListItem button sx={{ pl: 4 }} component={Link} to="/admin/bookings/confirmed">
-              <ListItemIcon><MenuBook sx={{ color: '#007bff' }} /></ListItemIcon>
-              <ListItemText primary="Confirmed Bookings" />
-            </ListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/bookings/all"
+              isActive={isActive('/admin/bookings/all')}
+            >
+              <StyledListItemIcon><MenuBook /></StyledListItemIcon>
+              <StyledListItemText primary="All Bookings" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/bookings/new"
+              isActive={isActive('/admin/bookings/new')}
+            >
+              <StyledListItemIcon><Add /></StyledListItemIcon>
+              <StyledListItemText primary="New Bookings" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/bookings/cancelled"
+              isActive={isActive('/admin/bookings/cancelled')}
+            >
+              <StyledListItemIcon><MenuBook /></StyledListItemIcon>
+              <StyledListItemText primary="Cancelled Bookings" />
+            </StyledListItem>
+            <StyledListItem 
+              isSubItem 
+              component={Link} 
+              to="/admin/bookings/confirmed"
+              isActive={isActive('/admin/bookings/confirmed')}
+            >
+              <StyledListItemIcon><MenuBook /></StyledListItemIcon>
+              <StyledListItemText primary="Confirmed Bookings" />
+            </StyledListItem>
           </List>
         </Collapse>
 
-        {/* Inbox Added Here */}
-        <ListItem button component={Link} to="/admin/inbox">
-          <ListItemIcon><Inbox sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Inbox" />
-        </ListItem>
+        {/* Inbox */}
+        <StyledListItem 
+          component={Link} 
+          to="/admin/inbox"
+          isActive={isActive('/admin/inbox')}
+        >
+          <StyledListItemIcon><Inbox /></StyledListItemIcon>
+          <StyledListItemText primary="Inbox" />
+        </StyledListItem>
 
-        <ListItem button component={Link} to="/admin/news">
-          <ListItemIcon><Newspaper sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="News" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/news"
+          isActive={isActive('/admin/news')}
+        >
+          <StyledListItemIcon><Newspaper /></StyledListItemIcon>
+          <StyledListItemText primary="News" />
+        </StyledListItem>
 
-        <ListItem button component={Link} to="/admin/settings">
-          <ListItemIcon><Settings sx={{ color: '#007bff' }} /></ListItemIcon>
-          <ListItemText primary="Website Setting" />
-        </ListItem>
+        <StyledListItem 
+          component={Link} 
+          to="/admin/settings"
+          isActive={isActive('/admin/settings')}
+        >
+          <StyledListItemIcon><Settings /></StyledListItemIcon>
+          <StyledListItemText primary="Website Setting" />
+        </StyledListItem>
 
-        <ListItem button onClick={handleLogout}>
-          <ListItemIcon><Logout sx={{ color: 'red' }} /></ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItem>
+        {/* Logout with special styling */}
+        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <StyledListItem onClick={handleLogout} isLogout>
+            <StyledListItemIcon isLogout><Logout /></StyledListItemIcon>
+            <StyledListItemText primary="Logout" isLogout />
+          </StyledListItem>
+        </Box>
       </List>
     </Drawer>
   );
 };
 
 export default Sidebar;
+

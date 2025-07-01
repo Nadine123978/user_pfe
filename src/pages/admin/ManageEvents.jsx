@@ -11,9 +11,10 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import DraftAlerts from "./DraftAlerts";
+
 
 const ManageEvents = () => {
+    console.log("ManageEvents loaded");
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [selectedTab, setSelectedTab] = useState("draft");
@@ -21,26 +22,27 @@ const ManageEvents = () => {
 
   const tabs = ["draft", "active", "upcoming", "past"];
 
-  const fetchEvents = async (status) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:8081/api/events/by-status?status=${status}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setEvents(
-        response.data.sort(
-          (a, b) => new Date(a.startDate) - new Date(b.startDate)
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching events:", error);
-    }
-  };
+const fetchEvents = async (status) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `http://localhost:8081/api/events/by-status?status=${status}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("Events fetched:", response.data);  // <— هاي طبعاً للتصحيح والتأكد
+    setEvents(
+      response.data.sort(
+        (a, b) => new Date(a.startDate) - new Date(b.startDate)
+      )
+    );
+  } catch (error) {
+    console.error("Error fetching events:", error);
+  }
+};
 
   useEffect(() => {
     fetchEvents(selectedTab);
@@ -106,7 +108,6 @@ const ManageEvents = () => {
         ))}
       </Box>
 
-      {selectedTab === "draft" && <DraftAlerts />}
 
       <Box sx={{ mb: 3 }}>
         <TextField

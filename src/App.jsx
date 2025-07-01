@@ -156,7 +156,7 @@ function App() {
         />
 
         {/* مجموعة صفحات الأدمن داخل AdminLayout */}
-       <Route path="/admin" element={role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />}>
+   <Route path="/admin" element={role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />}>
   <Route index element={<AdminDashboard />} />
   <Route path="category/add" element={<AddCategory />} />
   <Route path="category/manage" element={<ManageCategories />} />
@@ -169,16 +169,16 @@ function App() {
   <Route path="bookings/:id" element={<BookingDetails />} />
   <Route path="events/add" element={<AddEvent />} />
   <Route path="location/add" element={<AddLocation />} />
-  <Route path="events/manage" element={<ManageEvents />} />
+  <Route path="/admin/events/manage" element={<ManageEvents />} />
   <Route path="edit-event/:id" element={<EditEvent />} />
   <Route path="seating" element={<SelectEventPage />} />
   <Route path="seating/:eventId" element={<ManageSeatingPage />} />
   <Route path="manage-seats" element={<EditSeatsPage />} />
   <Route path="users" element={<ManageUsers />} />
   <Route path="users/:userId/bookings" element={<UserBookings />} />
-  <Route path="/admin/inbox" element={<EmailInterface />} />
-
+  <Route path="inbox" element={<EmailInterface />} />
 </Route>
+
 
       </Routes>
     </Router>
