@@ -509,31 +509,6 @@ const SeatingMap = ({ eventId, requestedSeats = 1 }) => {
               Go to Checkout
             </GradientButton>
 
-            <Button
-              variant="outlined"
-              sx={{
-                borderColor: 'rgba(255, 255, 255, 0.5)',
-                color: 'white',
-                borderRadius: 30, // More rounded
-                px: 4,
-                py: 1.5,
-                textTransform: 'uppercase', // Uppercase text
-                fontWeight: 'bold',
-                fontSize: '1rem',
-                transition: 'all 0.3s ease',
-                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', // Subtle shadow
-                '&:hover': {
-                  borderColor: '#E91E63', // Vibrant pink border on hover
-                  backgroundColor: 'rgba(233, 30, 99, 0.1)', // Subtle pink background on hover
-                  transform: 'translateY(-2px)', // Lift effect
-                  boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.4)',
-                },
-              }}
-              onClick={handleCancelBooking}
-              disabled={loading}
-            >
-              Cancel Booking
-            </Button>
           </Box>
         </>
       )}

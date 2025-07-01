@@ -170,7 +170,10 @@ function Booking() {
           onSeatSelected={handleSeatSelected}
         />
       )}
-      <OrganizerInfo organizer={event.organizer} />
+   {/*
+<OrganizerInfo organizer={event.organizer} />
+*/}
+
 <VenueMap 
   latitude={event.location?.latitude}
   longitude={event.location?.longitude}
