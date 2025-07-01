@@ -4,7 +4,6 @@ import {
   Box, 
   TextField, 
   Button, 
-  Paper, 
   Alert,
   IconButton,
   Fade,
@@ -22,6 +21,381 @@ import {
   Category as CategoryIcon
 } from '@mui/icons-material';
 import axios from 'axios';
+import { styled, createTheme, ThemeProvider, keyframes } from '@mui/material/styles';
+
+// ثيم بنفسجي-أزرق مخصص (cosmic design)
+const cosmicTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#6366f1',  // بنفسجي أزرق
+    },
+    secondary: {
+      main: '#06b6d4',
+    },
+    background: {
+      default: '#0f172a',
+      paper: 'rgba(255, 255, 255, 0.05)',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.8)',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h4: {
+      fontWeight: 700,
+      background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+    },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(99, 102, 241, 0.3)',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 32px rgba(99, 102, 241, 0.2)',
+            },
+            '&.Mui-focused': {
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid #6366f1',
+              boxShadow: '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(99, 102, 241, 0.2)',
+              transform: 'translateY(-2px)',
+            },
+            '& fieldset': {
+              border: 'none',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontWeight: 500,
+            '&.Mui-focused': {
+              color: '#6366f1',
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            color: '#ffffff',
+            '&::placeholder': {
+              color: 'rgba(255, 255, 255, 0.6)',
+              opacity: 1,
+            },
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          textTransform: 'none',
+          fontWeight: 600,
+          fontSize: '14px',
+          padding: '12px 24px',
+          transition: 'all 0.3s ease',
+          '&.MuiButton-contained': {
+            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5855eb 0%, #0891b2 100%)',
+              boxShadow: '0 8px 32px rgba(99, 102, 241, 0.4)',
+              transform: 'translateY(-2px)',
+            },
+            '&:disabled': {
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'rgba(255, 255, 255, 0.5)',
+            },
+          },
+        },
+      },
+    },
+    MuiAlert: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          '&.MuiAlert-standardSuccess': {
+            background: 'rgba(16, 185, 129, 0.1)',
+            color: '#10b981',
+            border: '1px solid rgba(16, 185, 129, 0.3)',
+            '& .MuiAlert-icon': { color: '#10b981' },
+          },
+          '&.MuiAlert-standardError': {
+            background: 'rgba(239, 68, 68, 0.1)',
+            color: '#ef4444',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            '& .MuiAlert-icon': { color: '#ef4444' },
+          },
+        },
+      },
+    },
+  },
+});
+
+// Keyframe animations
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+`;
+
+const sparkleAnimation = keyframes`
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+`;
+
+const shimmerAnimation = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+// Styled components
+const CosmicContainer = styled(Box)({
+  minHeight: '100vh',
+  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2d1b69 100%)',
+  position: 'relative',
+  overflow: 'hidden',
+  padding: '20px',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)
+    `,
+    animation: `${floatAnimation} 6s ease-in-out infinite`,
+  },
+});
+
+const FloatingParticles = styled(Box)({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  pointerEvents: 'none',
+  '&::before, &::after': {
+    content: '""',
+    position: 'absolute',
+    width: '4px',
+    height: '4px',
+    background: '#6366f1',
+    borderRadius: '50%',
+    animation: `${sparkleAnimation} 3s linear infinite`,
+  },
+  '&::before': {
+    top: '20%',
+    left: '10%',
+    animationDelay: '0s',
+  },
+  '&::after': {
+    top: '60%',
+    right: '15%',
+    animationDelay: '1.5s',
+    background: '#06b6d4',
+  },
+});
+
+const HeroHeader = styled(Box)({
+  textAlign: 'center',
+  marginBottom: '48px',
+  position: 'relative',
+  zIndex: 1,
+});
+
+const HeroBadge = styled(Box)({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '16px',
+  marginBottom: '16px',
+  padding: '12px 24px',
+  background: 'rgba(255, 255, 255, 0.1)',
+  backdropFilter: 'blur(20px)',
+  borderRadius: '50px',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+});
+
+const HeroTitle = styled(Typography)({
+  fontWeight: 800,
+  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  fontSize: '3rem',
+  letterSpacing: '-0.02em',
+  '@media (max-width: 768px)': {
+    fontSize: '2rem',
+  },
+});
+
+const HeroSubtitle = styled(Typography)({
+  color: 'rgba(255, 255, 255, 0.8)',
+  fontWeight: 400,
+  maxWidth: '600px',
+  margin: '0 auto',
+  fontSize: '1.25rem',
+  '@media (max-width: 768px)': {
+    fontSize: '1rem',
+  },
+});
+
+const MainContent = styled(Box)({
+  maxWidth: '1200px',
+  margin: '0 auto',
+  position: 'relative',
+  zIndex: 1,
+});
+
+const FormPaper = styled(Box)({
+  padding: '40px',
+  background: 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(20px)',
+  borderRadius: '24px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  position: 'relative',
+  overflow: 'hidden',
+  boxShadow: `
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1)
+  `,
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: `
+      0 16px 64px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2)
+    `,
+  },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    background: 'linear-gradient(90deg, #6366f1, #06b6d4)',
+  },
+});
+
+const SectionTitle = styled(Typography)({
+  color: 'rgba(255, 255, 255, 0.9)',
+  marginBottom: '16px',
+  fontWeight: 600,
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  fontSize: '1.2rem',
+});
+
+const DropZone = styled(Box)(({ isDragOver }) => ({
+  border: `2px dashed ${isDragOver ? '#06b6d4' : 'rgba(255, 255, 255, 0.3)'}`,
+  borderRadius: '16px',
+  padding: '32px',
+  textAlign: 'center',
+  cursor: 'pointer',
+  background: isDragOver 
+    ? 'rgba(6, 182, 212, 0.1)' 
+    : 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(10px)',
+  transition: 'all 0.3s ease',
+  position: 'relative',
+  overflow: 'hidden',
+  '&:hover': {
+    background: 'rgba(6, 182, 212, 0.1)',
+    borderColor: '#06b6d4',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 32px rgba(6, 182, 212, 0.2)',
+  },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+    transition: 'left 0.5s ease',
+  },
+  '&:hover::before': {
+    left: '100%',
+  },
+}));
+
+const ImagePreview = styled(Box)({
+  marginTop: '16px',
+  position: 'relative',
+  display: 'inline-block',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  border: '2px solid rgba(99, 102, 241, 0.3)',
+  boxShadow: '0 8px 32px rgba(99, 102, 241, 0.2)',
+});
+
+const RemoveButton = styled(IconButton)({
+  position: 'absolute',
+  top: '8px',
+  right: '8px',
+  background: 'rgba(239, 68, 68, 0.8)',
+  color: 'white',
+  width: '32px',
+  height: '32px',
+  '&:hover': {
+    background: 'rgba(239, 68, 68, 0.9)',
+    transform: 'scale(1.1)',
+  },
+});
+
+const SubmitButton = styled(Button)(({ disabled }) => ({
+  padding: '16px 32px',
+  fontSize: '1.1rem',
+  fontWeight: 700,
+  borderRadius: '12px',
+  position: 'relative',
+  overflow: 'hidden',
+  width: '100%',
+  background: disabled
+    ? 'rgba(255, 255, 255, 0.1)'
+    : 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-200%',
+    width: '200%',
+    height: '100%',
+    background: `
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+      )
+    `,
+    transition: 'left 0.6s ease',
+  },
+  '&:hover::before': {
+    left: disabled ? '-200%' : '100%',
+  },
+}));
 
 const AddCategory = () => {
   const [category, setCategory] = useState('');
@@ -127,171 +501,38 @@ const AddCategory = () => {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-        padding: 4,
-        position: 'relative',
-        overflow: 'hidden',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)',
-          pointerEvents: 'none',
-        }
-      }}
-    >
-      {/* Floating particles background */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            width: '100px',
-            height: '100px',
-            background: 'rgba(255, 255, 255, 0.1)',
-            borderRadius: '50%',
-            top: '10%',
-            left: '10%',
-            animation: 'float 6s ease-in-out infinite',
-          },
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            width: '60px',
-            height: '60px',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '50%',
-            top: '70%',
-            right: '15%',
-            animation: 'float 8s ease-in-out infinite reverse',
-          },
-          '@keyframes float': {
-            '0%, 100%': { transform: 'translateY(0px)' },
-            '50%': { transform: 'translateY(-20px)' }
-          }
-        }}
-      />
+    <ThemeProvider theme={cosmicTheme}>
+      <CosmicContainer>
+        <FloatingParticles />
 
-      <Box
-        sx={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        {/* Hero Header */}
-        <Fade in timeout={1000}>
-          <Box
-            sx={{
-              textAlign: 'center',
-              mb: 6,
-              position: 'relative',
-            }}
-          >
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 2,
-                mb: 2,
-                padding: '12px 24px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: '50px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-              }}
-            >
-              <AutoAwesome sx={{ color: '#ffd700', fontSize: 28 }} />
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 800,
-                  background: 'linear-gradient(45deg, #ffffff 30%, #f093fb 90%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontSize: { xs: '2rem', md: '3rem' },
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Add Category
-              </Typography>
-              <CategoryIcon sx={{ color: '#06b6d4', fontSize: 28 }} />
-            </Box>
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontWeight: 400,
-                maxWidth: 600,
-                margin: '0 auto',
-                fontSize: { xs: '1rem', md: '1.25rem' },
-              }}
-            >
-              Create beautiful categories with stunning visuals
-            </Typography>
-          </Box>
-        </Fade>
+        <MainContent>
+          {/* Hero Header */}
+          <Fade in timeout={1000}>
+            <HeroHeader>
+              <HeroBadge>
+                <AutoAwesome sx={{ color: '#ffd700', fontSize: 28 }} />
+                <HeroTitle variant="h3">
+                  Add Cosmic Category
+                </HeroTitle>
+                <CategoryIcon sx={{ color: '#06b6d4', fontSize: 28 }} />
+              </HeroBadge>
+              <HeroSubtitle variant="h6">
+                Create beautiful categories with stunning visuals in the cosmic realm
+              </HeroSubtitle>
+            </HeroHeader>
+          </Fade>
 
-        {/* Main Content */}
-        <Slide in direction="up" timeout={1200}>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
-              gap: 4,
-              alignItems: 'start',
-            }}
-          >
-            {/* Form Section */}
-            <Paper
-              elevation={0}
-              sx={{
-                p: 4,
-                background: 'rgba(255, 255, 255, 0.1)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: 4,
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '4px',
-                  background: 'linear-gradient(90deg, #667eea, #764ba2, #f093fb)',
-                }
-              }}
-            >
+          {/* Main Content */}
+          <Slide in direction="up" timeout={1200}>
+            <FormPaper>
               {/* Success/Error Messages */}
               <Zoom in={!!successMessage || !!errorMessage}>
                 <Box sx={{ mb: 3 }}>
                   {successMessage && (
                     <Alert 
                       severity="success" 
-                      sx={{ 
-                        mb: 2,
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(16, 185, 129, 0.3)',
-                        color: '#10b981',
-                        '& .MuiAlert-icon': { color: '#10b981' }
-                      }}
                       icon={<Celebration />}
+                      sx={{ mb: 2 }}
                     >
                       {successMessage}
                     </Alert>
@@ -299,14 +540,7 @@ const AddCategory = () => {
                   {errorMessage && (
                     <Alert 
                       severity="error" 
-                      sx={{ 
-                        mb: 2,
-                        background: 'rgba(239, 68, 68, 0.1)',
-                        backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(239, 68, 68, 0.3)',
-                        color: '#ef4444',
-                        '& .MuiAlert-icon': { color: '#ef4444' }
-                      }}
+                      sx={{ mb: 2 }}
                     >
                       {errorMessage}
                     </Alert>
@@ -317,113 +551,33 @@ const AddCategory = () => {
               <form onSubmit={handleSubmit}>
                 {/* Category Name Input */}
                 <Box sx={{ mb: 4 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      mb: 2,
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                    }}
-                  >
+                  <SectionTitle>
                     <CategoryIcon sx={{ color: '#06b6d4' }} />
                     Category Name
-                  </Typography>
+                  </SectionTitle>
                   <TextField
                     fullWidth
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="Enter category name..."
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: 3,
-                        fontSize: '1.1rem',
-                        color: 'white',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          background: 'rgba(255, 255, 255, 0.15)',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                        },
-                        '&.Mui-focused': {
-                          background: 'rgba(255, 255, 255, 0.2)',
-                          borderColor: '#06b6d4',
-                          boxShadow: '0 0 0 3px rgba(6, 182, 212, 0.1)',
-                        },
-                        '& fieldset': { border: 'none' },
-                      },
-                      '& .MuiInputBase-input': {
-                        color: 'white',
-                        '&::placeholder': {
-                          color: 'rgba(255, 255, 255, 0.6)',
-                          opacity: 1,
-                        },
-                      },
-                    }}
+                    sx={{ fontSize: '1.1rem' }}
                   />
                 </Box>
 
                 {/* File Upload Section */}
                 <Box sx={{ mb: 4 }}>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      mb: 2,
-                      fontWeight: 600,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                    }}
-                  >
+                  <SectionTitle>
                     <PhotoCamera sx={{ color: '#f59e0b' }} />
                     Category Image
-                  </Typography>
+                  </SectionTitle>
 
                   {/* Drag & Drop Zone */}
-                  <Box
+                  <DropZone
+                    isDragOver={isDragOver}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    sx={{
-                      border: `2px dashed ${isDragOver ? '#06b6d4' : 'rgba(255, 255, 255, 0.3)'}`,
-                      borderRadius: 3,
-                      p: 4,
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                      background: isDragOver 
-                        ? 'rgba(6, 182, 212, 0.1)' 
-                        : 'rgba(255, 255, 255, 0.05)',
-                      backdropFilter: 'blur(10px)',
-                      transition: 'all 0.3s ease',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&:hover': {
-                        background: 'rgba(6, 182, 212, 0.1)',
-                        borderColor: '#06b6d4',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 32px rgba(6, 182, 212, 0.2)',
-                      },
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: '-100%',
-                        width: '100%',
-                        height: '100%',
-                        background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
-                        transition: 'left 0.5s ease',
-                      },
-                      '&:hover::before': {
-                        left: '100%',
-                      }
-                    }}
                   >
                     <CloudUpload
                       sx={{
@@ -441,7 +595,7 @@ const AddCategory = () => {
                         fontWeight: 600,
                       }}
                     >
-                      {isDragOver ? 'Drop your image here!' : 'Drag & drop your image'}
+                      {isDragOver ? 'Drop your cosmic image here!' : 'Drag & drop your cosmic image'}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -451,7 +605,7 @@ const AddCategory = () => {
                     >
                       or click to browse • Max 250KB • JPG, PNG, GIF
                     </Typography>
-                  </Box>
+                  </DropZone>
 
                   <input
                     ref={fileInputRef}
@@ -460,239 +614,55 @@ const AddCategory = () => {
                     onChange={handleFileInputChange}
                     style={{ display: 'none' }}
                   />
+
+                  {/* Image Preview */}
+                  {image && (
+                    <Zoom in timeout={300}>
+                      <ImagePreview>
+                        <img
+                          src={URL.createObjectURL(image)}
+                          alt="Preview"
+                          style={{
+                            width: '200px',
+                            height: '150px',
+                            objectFit: 'cover',
+                            display: 'block',
+                          }}
+                        />
+                        <RemoveButton
+                          onClick={removeImage}
+                          size="small"
+                        >
+                          <Close fontSize="small" />
+                        </RemoveButton>
+                      </ImagePreview>
+                    </Zoom>
+                  )}
                 </Box>
 
                 {/* Submit Button */}
-                <Button
+                <SubmitButton
                   type="submit"
-                  fullWidth
                   disabled={!category || !image || isLoading}
-                  sx={{
-                    py: 2,
-                    fontSize: '1.1rem',
-                    fontWeight: 700,
-                    borderRadius: 3,
-                    background: !category || !image || isLoading
-                      ? 'rgba(255, 255, 255, 0.1)'
-                      : 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                    color: 'white',
-                    border: 'none',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      background: !category || !image || isLoading
-                        ? 'rgba(255, 255, 255, 0.1)'
-                        : 'linear-gradient(45deg, #764ba2 30%, #667eea 90%)',
-                      transform: !category || !image || isLoading ? 'none' : 'translateY(-2px)',
-                      boxShadow: !category || !image || isLoading 
-                        ? 'none' 
-                        : '0 8px 32px rgba(102, 126, 234, 0.4)',
-                    },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: '-100%',
-                      width: '100%',
-                      height: '100%',
-                      background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
-                      transition: 'left 0.5s ease',
-                    },
-                    '&:hover::before': {
-                      left: '100%',
-                    }
-                  }}
                 >
                   {isLoading ? (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Box
-                        sx={{
-                          width: 20,
-                          height: 20,
-                          border: '2px solid rgba(255, 255, 255, 0.3)',
-                          borderTop: '2px solid white',
-                          borderRadius: '50%',
-                          animation: 'spin 1s linear infinite',
-                          '@keyframes spin': {
-                            '0%': { transform: 'rotate(0deg)' },
-                            '100%': { transform: 'rotate(360deg)' }
-                          }
-                        }}
-                      />
-                      Creating Category...
-                    </Box>
+                    <>
+                      <AutoAwesome sx={{ mr: 1, animation: `${sparkleAnimation} 1s linear infinite` }} />
+                      Creating Cosmic Category...
+                    </>
                   ) : (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <AutoAwesome />
-                      Create Category
-                    </Box>
+                    <>
+                      <Celebration sx={{ mr: 1 }} />
+                      Create Cosmic Category
+                    </>
                   )}
-                </Button>
+                </SubmitButton>
               </form>
-            </Paper>
-
-            {/* Preview Section */}
-            <Fade in timeout={1500}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 4,
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(20px)',
-                  borderRadius: 4,
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  minHeight: 400,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{
-                    color: 'rgba(255, 255, 255, 0.9)',
-                    mb: 3,
-                    fontWeight: 600,
-                    textAlign: 'center',
-                  }}
-                >
-                  Live Preview
-                </Typography>
-
-                {image ? (
-                  <Zoom in timeout={500}>
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'scale(1.05)',
-                          boxShadow: '0 12px 48px rgba(0, 0, 0, 0.3)',
-                        }
-                      }}
-                    >
-                      <img
-                        src={URL.createObjectURL(image)}
-                        alt="Preview"
-                        style={{
-                          maxWidth: '100%',
-                          maxHeight: '200px',
-                          borderRadius: '12px',
-                          display: 'block',
-                        }}
-                      />
-                      <IconButton
-                        onClick={removeImage}
-                        sx={{
-                          position: 'absolute',
-                          top: 8,
-                          right: 8,
-                          background: 'rgba(239, 68, 68, 0.8)',
-                          color: 'white',
-                          '&:hover': {
-                            background: 'rgba(239, 68, 68, 1)',
-                            transform: 'scale(1.1)',
-                          }
-                        }}
-                        size="small"
-                      >
-                        <Close />
-                      </IconButton>
-                    </Box>
-                  </Zoom>
-                ) : (
-                  <Box
-                    sx={{
-                      textAlign: 'center',
-                      color: 'rgba(255, 255, 255, 0.6)',
-                      py: 4,
-                    }}
-                  >
-                    <PhotoCamera sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
-                    <Typography variant="body1">
-                      Upload an image to see preview
-                    </Typography>
-                  </Box>
-                )}
-
-                {category && (
-                  <Fade in timeout={300}>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        color: 'white',
-                        mt: 2,
-                        fontWeight: 600,
-                        textAlign: 'center',
-                        background: 'linear-gradient(45deg, #06b6d4, #f59e0b)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
-                    >
-                      {category}
-                    </Typography>
-                  </Fade>
-                )}
-              </Paper>
-            </Fade>
-          </Box>
-        </Slide>
-
-        {/* Success Celebration */}
-        {showSuccess && (
-          <Box
-            sx={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(16, 185, 129, 0.1)',
-              backdropFilter: 'blur(5px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 9999,
-              animation: 'celebration 3s ease-in-out',
-              '@keyframes celebration': {
-                '0%': { opacity: 0, transform: 'scale(0.8)' },
-                '20%': { opacity: 1, transform: 'scale(1.1)' },
-                '80%': { opacity: 1, transform: 'scale(1)' },
-                '100%': { opacity: 0, transform: 'scale(0.9)' }
-              }
-            }}
-          >
-            <Box
-              sx={{
-                textAlign: 'center',
-                color: 'white',
-                background: 'rgba(16, 185, 129, 0.2)',
-                backdropFilter: 'blur(20px)',
-                p: 4,
-                borderRadius: 4,
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-              }}
-            >
-              <Celebration sx={{ fontSize: 64, mb: 2, color: '#10b981' }} />
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                Success!
-              </Typography>
-              <Typography variant="h6">
-                Category created successfully! 🎉
-              </Typography>
-            </Box>
-          </Box>
-        )}
-      </Box>
-    </Box>
+            </FormPaper>
+          </Slide>
+        </MainContent>
+      </CosmicContainer>
+    </ThemeProvider>
   );
 };
 

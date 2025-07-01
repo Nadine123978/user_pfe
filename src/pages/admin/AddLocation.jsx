@@ -224,7 +224,7 @@ export default function LocationPicker() {
     setIsSearchMode(false);
   };
 
-  // ✅ Using LocationIQ for Reverse Geocoding (unchanged)
+  // Using LocationIQ for Reverse Geocoding
   const getAddressFromCoords = async (lat, lng) => {
     try {
       const response = await fetch(
@@ -232,7 +232,6 @@ export default function LocationPicker() {
       );
 
       const data = await response.json();
-      console.log('LocationIQ data:', data);
       return data.display_name || '';
     } catch (err) {
       console.error('Error fetching address from LocationIQ:', err);
@@ -240,7 +239,7 @@ export default function LocationPicker() {
     }
   };
 
-  // When clicking on the map (unchanged logic)
+  // When clicking on the map
   const onMapClick = async (e) => {
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
@@ -252,7 +251,7 @@ export default function LocationPicker() {
     setShowSuggestions(false);
   };
 
-  // Save location (unchanged logic)
+  // Save location
   const saveLocation = () => {
     if (!venueName || !selectedPosition) {
       alert('Please enter the venue name and select a location on the map');
@@ -310,7 +309,7 @@ export default function LocationPicker() {
   const styles = {
     container: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%)',
+      backgroundColor: '#1d2c4d', // هنا غيرت اللون ليكون مثل لون الخريطة الداكن
       position: 'relative',
       overflow: 'hidden',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
@@ -469,10 +468,6 @@ export default function LocationPicker() {
       position: 'relative',
       overflow: 'hidden'
     },
-    saveButtonHover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 12px 24px rgba(139, 92, 246, 0.6)'
-    },
     saveButtonDisabled: {
       opacity: 0.6,
       cursor: 'not-allowed',
@@ -496,201 +491,109 @@ export default function LocationPicker() {
       overflow: 'hidden',
       boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
       border: '2px solid rgba(255, 255, 255, 0.1)'
-    },
-    loadingSpinner: {
-      position: 'absolute',
-      right: '50px',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      width: '20px',
-      height: '20px',
-      border: '2px solid rgba(255, 255, 255, 0.3)',
-      borderTop: '2px solid #06b6d4',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite'
     }
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.particles}></div>
+    <div style={styles.container} onClick={() => setShowSuggestions(false)}>
+      <div style={styles.particles} />
       
-      {/* Success Message */}
-      {showSuccess && (
-        <div style={styles.successMessage}>
-          ✨ Location saved successfully! Redirecting...
-        </div>
-      )}
-
-      {/* Header */}
-      <div style={styles.header}>
-        <h1 style={styles.title}>🌟 Location Picker</h1>
-        <p style={styles.subtitle}>Discover and save amazing locations with style</p>
-      </div>
-
-      {/* Main Content */}
-      <div style={styles.mainContent}>
-        {/* Left Panel - Input Form */}
-        <div style={styles.leftPanel}>
-          <h2 style={styles.sectionTitle}>
-            📍 Location Details
-          </h2>
-          
+      <header style={styles.header}>
+        <h1 style={styles.title}>Location Picker</h1>
+        <p style={styles.subtitle}>Find and save your favorite places with ease.</p>
+      </header>
+      
+      <main style={styles.mainContent}>
+        <section style={styles.leftPanel} onClick={e => e.stopPropagation()}>
+          <h2 style={styles.sectionTitle}>Venue Location</h2>
           <div style={styles.inputContainer}>
-            <label style={styles.inputLabel}>
-              Venue Name {isSearchMode ? '(Search Mode)' : '(Input Mode)'}
-            </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                type="text"
-                placeholder={isSearchMode ? "Search for locations..." : "Enter venue name..."}
-                value={venueName}
-                onChange={handleInputChange}
-                style={{
-                  ...styles.input,
-                  ...(showSuggestions ? styles.inputFocused : {})
-                }}
-                onClick={(e) => e.stopPropagation()}
-              />
-              <div style={styles.modeIndicator}>
-                {isSearchMode ? '🔍' : '✏️'}
-              </div>
-              {isLoading && <div style={styles.loadingSpinner}></div>}
-            </div>
-            
-            {/* Search Suggestions */}
-            {showSuggestions && searchSuggestions.length > 0 && (
-              <div style={styles.suggestionsContainer} onClick={(e) => e.stopPropagation()}>
-                {searchSuggestions.map((suggestion, index) => (
-                  <div
-                    key={index}
-                    style={styles.suggestion}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    onMouseEnter={(e) => {
-                      e.target.style.background = 'rgba(139, 92, 246, 0.3)';
-                      e.target.style.transform = 'translateX(4px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.background = 'transparent';
-                      e.target.style.transform = 'translateX(0)';
-                    }}
-                  >
-                    📍 {suggestion.display_name}
-                  </div>
-                ))}
+            <label htmlFor="venueName" style={styles.inputLabel}>Venue Name</label>
+            <input
+              id="venueName"
+              type="text"
+              value={venueName}
+              onChange={handleInputChange}
+              style={{
+                ...styles.input,
+                ...(isSearchMode ? styles.inputFocused : {})
+              }}
+              placeholder="Type venue name or address..."
+              autoComplete="off"
+              onClick={e => e.stopPropagation()}
+            />
+            {showSuggestions && (
+              <div style={styles.suggestionsContainer} onClick={e => e.stopPropagation()}>
+                {isLoading ? (
+                  <p style={{ padding: '16px', color: '#fff' }}>Loading...</p>
+                ) : (
+                  searchSuggestions.map((suggestion, idx) => (
+                    <div
+                      key={idx}
+                      style={styles.suggestion}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.3)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {suggestion.display_name}
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>
-
-          {/* Selected Location Info */}
-          {selectedPosition && (
-            <div style={{
-              background: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              borderRadius: '16px',
-              padding: '20px',
-              marginBottom: '30px'
-            }}>
-              <h3 style={{ color: '#10b981', marginBottom: '10px', fontSize: '1.1rem' }}>
-                ✅ Location Selected
-              </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.8)', margin: 0 }}>
-                Lat: {selectedPosition.lat.toFixed(6)}, Lng: {selectedPosition.lng.toFixed(6)}
-              </p>
-            </div>
-          )}
-
-          {/* Save Button */}
           <button
-            onClick={saveLocation}
-            disabled={!venueName || !selectedPosition || isSaving}
             style={{
               ...styles.saveButton,
-              ...((!venueName || !selectedPosition || isSaving) ? styles.saveButtonDisabled : {})
+              ...(isSaving || !venueName || !selectedPosition ? styles.saveButtonDisabled : {})
             }}
-            onMouseEnter={(e) => {
-              if (!e.target.disabled) {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 12px 24px rgba(139, 92, 246, 0.6)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!e.target.disabled) {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 8px 16px rgba(139, 92, 246, 0.4)';
-              }
-            }}
+            onClick={saveLocation}
+            disabled={isSaving || !venueName || !selectedPosition}
           >
-            {isSaving ? '💾 Saving Location...' : '💾 Save Location'}
+            {isSaving ? 'Saving...' : 'Save Location'}
           </button>
-        </div>
+        </section>
 
-        {/* Right Panel - Map */}
-        <div style={styles.rightPanel}>
-          <h2 style={styles.sectionTitle}>
-            🗺️ Interactive Map
-          </h2>
-          <div style={styles.mapContainer}>
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={selectedPosition || center}
-              zoom={selectedPosition ? 15 : 10}
-              onClick={onMapClick}
-              options={{
-                styles: mapStyles,
-                disableDefaultUI: false,
-                zoomControl: true,
-                mapTypeControl: false,
-                scaleControl: true,
-                streetViewControl: false,
-                rotateControl: false,
-                fullscreenControl: true
-              }}
-            >
-              {selectedPosition && (
-                <Marker 
-                  position={selectedPosition}
-                  animation={window.google?.maps?.Animation?.BOUNCE}
-                />
-              )}
-            </GoogleMap>
-          </div>
-        </div>
-      </div>
+        <section style={styles.rightPanel}>
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={13}
+            options={{
+              styles: mapStyles,
+              disableDefaultUI: true,
+              zoomControl: true
+            }}
+            onClick={onMapClick}
+          >
+            {selectedPosition && <Marker position={selectedPosition} />}
+          </GoogleMap>
+        </section>
+      </main>
 
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        
-        @keyframes spin {
-          0% { transform: translateY(-50%) rotate(0deg); }
-          100% { transform: translateY(-50%) rotate(360deg); }
-        }
-        
-        @keyframes slideIn {
-          from { transform: translateX(100%); opacity: 0; }
-          to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @media (max-width: 768px) {
-          .mainContent {
-            grid-template-columns: 1fr !important;
-            gap: 20px !important;
-            padding: 20px !important;
+      {showSuccess && <div style={styles.successMessage}>Location saved successfully!</div>}
+
+      <style>
+        {`
+          @keyframes float {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
           }
-          
-          .title {
-            font-size: 2rem !important;
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: translateX(50%);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
           }
-          
-          .leftPanel, .rightPanel {
-            padding: 20px !important;
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 }
-

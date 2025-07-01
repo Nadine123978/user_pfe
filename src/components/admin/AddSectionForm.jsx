@@ -15,6 +15,588 @@ import {
   ToggleButtonGroup,
 } from "@mui/material";
 import axios from "axios";
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+
+// ثيم بنفسجي-أزرق مخصص (cosmic design)
+const cosmicTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#6366f1',  // بنفسجي أزرق
+    },
+    secondary: {
+      main: '#06b6d4',
+    },
+    background: {
+      default: '#0f172a',
+      paper: 'rgba(255, 255, 255, 0.05)',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.8)',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h4: {
+      fontWeight: 700,
+      background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+    },
+  },
+  components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '12px',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(99, 102, 241, 0.3)',
+              transform: 'translateY(-2px)',
+              boxShadow: '0 8px 32px rgba(99, 102, 241, 0.2)',
+            },
+            '&.Mui-focused': {
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid #6366f1',
+              boxShadow: '0 0 20px rgba(99, 102, 241, 0.4), 0 8px 32px rgba(99, 102, 241, 0.2)',
+              transform: 'translateY(-2px)',
+            },
+            '& fieldset': {
+              border: 'none',
+            },
+          },
+          '& .MuiInputLabel-root': {
+            color: 'rgba(255, 255, 255, 0.7)',
+            fontWeight: 500,
+            '&.Mui-focused': {
+              color: '#6366f1',
+            },
+          },
+          '& .MuiOutlinedInput-input': {
+            color: '#ffffff',
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          textTransform: 'none',
+          fontWeight: 600,
+          fontSize: '14px',
+          padding: '12px 24px',
+          transition: 'all 0.3s ease',
+          '&.MuiButton-contained': {
+            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5855eb 0%, #0891b2 100%)',
+              boxShadow: '0 8px 32px rgba(99, 102, 241, 0.4)',
+              transform: 'translateY(-2px)',
+            },
+          },
+          '&.MuiButton-outlined': {
+            border: '1px solid rgba(99, 102, 241, 0.5)',
+            color: '#6366f1',
+            '&:hover': {
+              border: '1px solid #6366f1',
+              background: 'rgba(99, 102, 241, 0.1)',
+              transform: 'translateY(-2px)',
+            },
+          },
+        },
+      },
+    },
+    MuiToggleButton: {
+      styleOverrides: {
+        root: {
+          background: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          color: 'rgba(255, 255, 255, 0.8)',
+          borderRadius: '12px',
+          padding: '12px 24px',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: 'rgba(99, 102, 241, 0.1)',
+            border: '1px solid rgba(99, 102, 241, 0.3)',
+            transform: 'translateY(-2px)',
+          },
+          '&.Mui-selected': {
+            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+            color: '#ffffff',
+            border: '1px solid #6366f1',
+            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5855eb 0%, #0891b2 100%)',
+            },
+          },
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          background: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '20px',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+        },
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          color: '#6366f1',
+          fontWeight: 700,
+          textAlign: 'center',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          '&.Mui-checked': {
+            color: '#6366f1',
+            '& + .MuiSwitch-track': {
+              backgroundColor: 'rgba(99, 102, 241, 0.5)',
+            },
+          },
+        },
+      },
+    },
+  },
+});
+
+
+const GlassmorphismPaper = styled(Box)({
+  background: 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: '24px',
+  padding: '40px',
+  maxWidth: '1200px',
+  margin: 'auto',
+  position: 'relative',
+  zIndex: 1,
+  boxShadow: `
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1)
+  `,
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: `
+      0 16px 64px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2)
+    `,
+  },
+});
+
+const SelectionModeContainer = styled(Box)({
+  background: 'rgba(99, 102, 241, 0.1)',
+  borderRadius: '16px',
+  padding: '24px',
+  marginBottom: '32px',
+  border: '1px solid rgba(99, 102, 241, 0.2)',
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent)',
+    transition: 'left 0.5s',
+  },
+  '&:hover::before': {
+    left: '100%',
+  },
+});
+
+const SeatGridContainer = styled(Box)({
+  background: 'rgba(255, 255, 255, 0.03)',
+  borderRadius: '16px',
+  padding: '32px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  display: 'inline-block',
+  margin: '0 auto',
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+});
+
+const SeatButton = styled(Box)(({ selected, vip, reserved, rowSelected, colSelected }) => ({
+  width: '48px',
+  height: '48px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: '12px',
+  cursor: 'pointer',
+  userSelect: 'none',
+  fontWeight: 600,
+  fontSize: '0.85rem',
+  transition: 'all 0.3s ease',
+  position: 'relative',
+  border: '2px solid transparent',
+  background: vip 
+    ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+    : reserved 
+    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+    : 'rgba(255, 255, 255, 0.1)',
+  color: vip || reserved ? '#ffffff' : 'rgba(255, 255, 255, 0.8)',
+  boxShadow: vip 
+    ? '0 4px 20px rgba(251, 191, 36, 0.3)'
+    : reserved 
+    ? '0 4px 20px rgba(239, 68, 68, 0.3)'
+    : '0 4px 16px rgba(0, 0, 0, 0.2)',
+  ...(selected && {
+    border: '2px solid #6366f1',
+    boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.3), 0 8px 32px rgba(99, 102, 241, 0.4)',
+    animation: 'selectedPulse 2s ease-in-out infinite',
+  }),
+  ...(rowSelected && {
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%)',
+    border: '2px solid rgba(99, 102, 241, 0.5)',
+  }),
+  ...(colSelected && {
+    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(6, 182, 212, 0.3) 100%)',
+    border: '2px solid rgba(99, 102, 241, 0.5)',
+  }),
+  '&:hover': {
+    transform: 'translateY(-2px) scale(1.05)',
+    boxShadow: vip 
+      ? '0 8px 32px rgba(251, 191, 36, 0.4)'
+      : reserved 
+      ? '0 8px 32px rgba(239, 68, 68, 0.4)'
+      : '0 8px 32px rgba(99, 102, 241, 0.3)',
+  },
+  '@keyframes selectedPulse': {
+    '0%, 100%': { 
+      boxShadow: '0 0 0 4px rgba(99, 102, 241, 0.3), 0 8px 32px rgba(99, 102, 241, 0.4)',
+    },
+    '50%': { 
+      boxShadow: '0 0 0 8px rgba(99, 102, 241, 0.4), 0 12px 40px rgba(99, 102, 241, 0.5)',
+    },
+  },
+}));
+
+// Styled components للستايل الجميل
+const CosmicContainer = styled('div')({
+  minHeight: '100vh',
+  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2d1b69 100%)',
+  position: 'relative',
+  overflow: 'hidden',
+  padding: '20px',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)
+    `,
+    animation: 'float 6s ease-in-out infinite',
+  },
+  '@keyframes float': {
+    '0%, 100%': { transform: 'translateY(0px)' },
+    '50%': { transform: 'translateY(-10px)' },
+  },
+});
+
+const FloatingParticles = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  pointerEvents: 'none',
+  '&::before, &::after': {
+    content: '""',
+    position: 'absolute',
+    width: '4px',
+    height: '4px',
+    background: '#6366f1',
+    borderRadius: '50%',
+    animation: 'sparkle 3s linear infinite',
+  },
+  '&::before': {
+    top: '20%',
+    left: '10%',
+    animationDelay: '0s',
+  },
+  '&::after': {
+    top: '60%',
+    right: '15%',
+    animationDelay: '1.5s',
+    background: '#06b6d4',
+  },
+  '@keyframes sparkle': {
+    '0%, 100%': { opacity: 0, transform: 'scale(0)' },
+    '50%': { opacity: 1, transform: 'scale(1)' },
+  },
+});
+
+const FormTitle = styled(Typography)({
+  fontWeight: 700,
+  fontSize: '2rem',
+  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  marginBottom: '32px',
+  textAlign: 'center',
+  position: 'relative',
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    bottom: '-8px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: '80px',
+    height: '4px',
+    background: 'linear-gradient(90deg, #6366f1, #06b6d4)',
+    borderRadius: '2px',
+  },
+});
+
+const FormGrid = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  gap: '24px',
+  marginBottom: '32px',
+});
+
+const ColorInputContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
+});
+
+const ColorInputLabel = styled('label')({
+  fontFamily: '"Inter", sans-serif',
+  fontWeight: 500,
+  color: 'rgba(255, 255, 255, 0.7)',
+  fontSize: '0.95rem',
+});
+
+const CosmicColorInput = styled('input')({
+  width: '100%',
+  height: '56px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  borderRadius: '12px',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  background: 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(10px)',
+  '&:hover': {
+    border: '1px solid rgba(99, 102, 241, 0.3)',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 32px rgba(99, 102, 241, 0.2)',
+  },
+  '&:focus': {
+    outline: 'none',
+    border: '1px solid #6366f1',
+    boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
+  },
+});
+
+const ButtonContainer = styled('div')({
+  display: 'flex',
+  gap: '16px',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+});
+
+const SectionListContainer = styled('div')({
+  background: 'rgba(99, 102, 241, 0.05)',
+  borderRadius: '16px',
+  padding: '24px',
+  marginTop: '32px',
+  border: '1px solid rgba(99, 102, 241, 0.2)',
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent)',
+    transition: 'left 0.5s',
+  },
+  '&:hover::before': {
+    left: '100%',
+  },
+});
+
+const SectionListTitle = styled(Typography)({
+  fontWeight: 700,
+  fontSize: '1.5rem',
+  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  marginBottom: '20px',
+  textAlign: 'center',
+});
+
+const SectionItem = styled('div')({
+  background: 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '12px',
+  padding: '20px',
+  marginBottom: '16px',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-2px) scale(1.01)',
+    boxShadow: '0 8px 32px rgba(99, 102, 241, 0.2)',
+    border: '1px solid rgba(99, 102, 241, 0.3)',
+    background: 'rgba(99, 102, 241, 0.1)',
+  },
+  '@media (max-width: 768px)': {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '16px',
+  },
+});
+
+const SectionInfo = styled('div')({
+  flex: 1,
+});
+
+const SectionName = styled('div')({
+  fontWeight: 600,
+  fontSize: '1.1rem',
+  color: '#ffffff',
+  marginBottom: '4px',
+});
+
+const SectionDetails = styled('div')({
+  fontSize: '0.9rem',
+  color: 'rgba(255, 255, 255, 0.7)',
+  display: 'flex',
+  gap: '16px',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+});
+
+const SectionActions = styled('div')({
+  display: 'flex',
+  gap: '8px',
+  flexWrap: 'wrap',
+  '@media (max-width: 768px)': {
+    width: '100%',
+    justifyContent: 'flex-end',
+  },
+});
+
+const ActionButton = styled(Button)(({ variant }) => ({
+  fontSize: '0.85rem',
+  padding: '8px 16px',
+  minWidth: 'auto',
+  ...(variant === 'view' && {
+    background: 'rgba(6, 182, 212, 0.2)',
+    color: '#06b6d4',
+    border: '1px solid rgba(6, 182, 212, 0.3)',
+    '&:hover': {
+      background: 'rgba(6, 182, 212, 0.3)',
+      transform: 'translateY(-1px)',
+    },
+  }),
+  ...(variant === 'edit' && {
+    background: 'rgba(245, 158, 11, 0.2)',
+    color: '#f59e0b',
+    border: '1px solid rgba(245, 158, 11, 0.3)',
+    '&:hover': {
+      background: 'rgba(245, 158, 11, 0.3)',
+      transform: 'translateY(-1px)',
+    },
+  }),
+  ...(variant === 'delete' && {
+    background: 'rgba(239, 68, 68, 0.2)',
+    color: '#ef4444',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    '&:hover': {
+      background: 'rgba(239, 68, 68, 0.3)',
+      transform: 'translateY(-1px)',
+    },
+  }),
+}));
+
+const ColorSwatch = styled('span')(({ color }) => ({
+  display: 'inline-block',
+  width: '16px',
+  height: '16px',
+  backgroundColor: color,
+  borderRadius: '4px',
+  border: '1px solid rgba(255, 255, 255, 0.3)',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+}));
+
+
+const RowLabel = styled(Typography)({
+  color: 'rgba(255, 255, 255, 0.6)',
+  fontWeight: 600,
+  width: '32px',
+  textAlign: 'center',
+  fontSize: '1rem',
+});
+
+const LegendContainer = styled(Box)({
+  display: 'flex',
+  justifyContent: 'center',
+  gap: '32px',
+  marginTop: '24px',
+  flexWrap: 'wrap',
+});
+
+const LegendItem = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  color: 'rgba(255, 255, 255, 0.8)',
+  fontWeight: 500,
+  fontSize: '0.9rem',
+});
+
+const LegendSeat = styled(Box)(({ vip, reserved }) => ({
+  width: '20px',
+  height: '20px',
+  borderRadius: '6px',
+  background: vip 
+    ? 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)'
+    : reserved 
+    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+    : 'rgba(255, 255, 255, 0.1)',
+  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+}));
+
+const ErrorText = styled(Typography)({
+  color: '#ef4444',
+  fontWeight: 500,
+  marginTop: '8px',
+  textAlign: 'center',
+});
 
 const SeatGrid = ({ section }) => {
   if (!section) return <Typography color="error">Section not loaded</Typography>;
@@ -164,543 +746,147 @@ const SeatGrid = ({ section }) => {
   };
 
   return (
-    <>
-      <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        .professional-container {
-          background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-          min-height: 100vh;
-          font-family: 'Inter', sans-serif;
-          padding: 20px;
-        }
-        
-        .main-card {
-          background: #ffffff;
-          border-radius: 16px;
-          box-shadow: 
-            0 4px 20px rgba(0, 0, 0, 0.08),
-            0 1px 3px rgba(0, 0, 0, 0.05);
-          padding: 32px;
-          margin: 0 auto;
-          max-width: 1200px;
-          border: 1px solid rgba(0, 123, 255, 0.1);
-          transition: all 0.3s ease;
-        }
-        
-        .main-card:hover {
-          box-shadow: 
-            0 8px 30px rgba(0, 0, 0, 0.12),
-            0 2px 6px rgba(0, 0, 0, 0.08);
-          transform: translateY(-2px);
-        }
-        
-        .professional-title {
-          font-family: 'Inter', sans-serif;
-          font-weight: 700;
-          font-size: 2.25rem;
-          color: #1a202c;
-          text-align: center;
-          margin-bottom: 32px;
-          position: relative;
-        }
-        
-        .professional-title::after {
-          content: '';
-          position: absolute;
-          bottom: -8px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 80px;
-          height: 4px;
-          background: linear-gradient(90deg, #007bff, #00c8c8);
-          border-radius: 2px;
-        }
-        
-        .selection-mode-container {
-          background: #f8f9fa;
-          border-radius: 12px;
-          padding: 20px;
-          margin-bottom: 32px;
-          border: 1px solid #e9ecef;
-        }
-        
-        .mode-label {
-          font-weight: 600;
-          color: #495057;
-          margin-bottom: 16px;
-          font-size: 1.1rem;
-        }
-        
-        .professional-toggle-group {
-          display: flex;
-          gap: 8px;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-        
-        .professional-toggle-button {
-          background: #ffffff !important;
-          border: 2px solid #e9ecef !important;
-          color: #495057 !important;
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 500 !important;
-          border-radius: 8px !important;
-          padding: 12px 24px !important;
-          transition: all 0.2s ease !important;
-          font-size: 0.95rem !important;
-          min-width: 140px !important;
-        }
-        
-        .professional-toggle-button:hover {
-          background: #f8f9fa !important;
-          border-color: #007bff !important;
-          transform: translateY(-1px) !important;
-          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15) !important;
-        }
-        
-        .professional-toggle-button.Mui-selected {
-          background: #007bff !important;
-          border-color: #007bff !important;
-          color: #ffffff !important;
-          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
-        }
-        
-        .seat-grid-container {
-          background: #ffffff;
-          border-radius: 12px;
-          padding: 32px;
-          border: 1px solid #e9ecef;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-          display: inline-block;
-          margin: 0 auto;
-        }
-        
-        .seat-grid {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
-        
-        .seat-row {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-        }
-        
-        .row-label {
-          color: #6c757d;
-          font-weight: 600;
-          font-family: 'Inter', sans-serif;
-          width: 32px;
-          text-align: center;
-          font-size: 1rem;
-        }
-        
-        .professional-seat {
-          width: 48px;
-          height: 48px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 8px;
-          cursor: pointer;
-          user-select: none;
-          font-weight: 600;
-          font-family: 'Inter', sans-serif;
-          font-size: 0.85rem;
-          transition: all 0.2s ease;
-          position: relative;
-          border: 2px solid transparent;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .professional-seat:hover {
-          transform: translateY(-2px) scale(1.05);
-          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        }
-        
-        .professional-seat.available {
-          background: #e9ecef;
-          color: #495057;
-        }
-        
-        .professional-seat.available:hover {
-          background: #dee2e6;
-          border-color: #007bff;
-        }
-        
-        .professional-seat.vip {
-          background: linear-gradient(135deg, #ffd700, #ffed4e);
-          color: #1a202c;
-          box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-        }
-        
-        .professional-seat.vip:hover {
-          box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-        }
-        
-        .professional-seat.reserved {
-          background: linear-gradient(135deg, #dc3545, #e74c3c);
-          color: #ffffff;
-          box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-        }
-        
-        .professional-seat.reserved:hover {
-          box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-        }
-        
-        .professional-seat.selected {
-          border-color: #007bff !important;
-          box-shadow: 
-            0 0 0 3px rgba(0, 123, 255, 0.2),
-            0 6px 16px rgba(0, 123, 255, 0.3) !important;
-          animation: selectedPulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes selectedPulse {
-          0%, 100% { 
-            box-shadow: 
-              0 0 0 3px rgba(0, 123, 255, 0.2),
-              0 6px 16px rgba(0, 123, 255, 0.3);
-          }
-          50% { 
-            box-shadow: 
-              0 0 0 6px rgba(0, 123, 255, 0.3),
-              0 8px 20px rgba(0, 123, 255, 0.4);
-          }
-        }
-        
-        .legend-container {
-          display: flex;
-          justify-content: center;
-          gap: 32px;
-          margin-top: 24px;
-          flex-wrap: wrap;
-        }
-        
-        .legend-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: #495057;
-          font-family: 'Inter', sans-serif;
-          font-weight: 500;
-          font-size: 0.9rem;
-        }
-        
-        .legend-seat {
-          width: 20px;
-          height: 20px;
-          border-radius: 4px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .professional-modal {
-          background: #ffffff !important;
-          border-radius: 16px !important;
-          box-shadow: 
-            0 20px 60px rgba(0, 0, 0, 0.15),
-            0 8px 20px rgba(0, 0, 0, 0.1) !important;
-          border: 1px solid rgba(0, 123, 255, 0.1) !important;
-        }
-        
-        .professional-modal-title {
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 600 !important;
-          color: #1a202c !important;
-          text-align: center !important;
-          font-size: 1.5rem !important;
-          padding: 24px 24px 16px 24px !important;
-          border-bottom: 1px solid #e9ecef !important;
-        }
-        
-        .professional-modal-content {
-          padding: 24px !important;
-        }
-        
-        .professional-textfield {
-          margin-bottom: 20px !important;
-        }
-        
-        .professional-textfield .MuiOutlinedInput-root {
-          border-radius: 8px !important;
-          font-family: 'Inter', sans-serif !important;
-          background: #f8f9fa !important;
-        }
-        
-        .professional-textfield .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-          border-color: #e9ecef !important;
-          border-width: 2px !important;
-        }
-        
-        .professional-textfield .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-          border-color: #007bff !important;
-        }
-        
-        .professional-textfield .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-          border-color: #007bff !important;
-          box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1) !important;
-        }
-        
-        .professional-textfield .MuiInputLabel-root {
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 500 !important;
-          color: #495057 !important;
-        }
-        
-        .professional-textfield .MuiInputLabel-root.Mui-focused {
-          color: #007bff !important;
-        }
-        
-        .professional-button {
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 600 !important;
-          border-radius: 8px !important;
-          padding: 12px 24px !important;
-          transition: all 0.2s ease !important;
-          text-transform: none !important;
-          font-size: 0.95rem !important;
-        }
-        
-        .professional-button-secondary {
-          background: #f8f9fa !important;
-          border: 2px solid #e9ecef !important;
-          color: #495057 !important;
-        }
-        
-        .professional-button-secondary:hover {
-          background: #e9ecef !important;
-          border-color: #dee2e6 !important;
-          transform: translateY(-1px) !important;
-        }
-        
-        .professional-button-primary {
-          background: linear-gradient(135deg, #007bff, #0056b3) !important;
-          border: none !important;
-          color: #ffffff !important;
-          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3) !important;
-        }
-        
-        .professional-button-primary:hover {
-          background: linear-gradient(135deg, #0056b3, #004085) !important;
-          transform: translateY(-1px) !important;
-          box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4) !important;
-        }
-        
-        .professional-switch .MuiSwitch-switchBase.Mui-checked {
-          color: #007bff !important;
-        }
-        
-        .professional-switch .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
-          background-color: rgba(0, 123, 255, 0.5) !important;
-        }
-        
-        .error-text {
-          color: #dc3545 !important;
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 500 !important;
-          margin-top: 8px !important;
-        }
-        
-        .form-control-label {
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 500 !important;
-          color: #495057 !important;
-        }
-        
-        @media (max-width: 768px) {
-          .professional-title {
-            font-size: 1.8rem;
-          }
-          
-          .main-card {
-            padding: 20px;
-            margin: 10px;
-          }
-          
-          .professional-toggle-group {
-            flex-direction: column;
-            align-items: center;
-          }
-          
-          .professional-toggle-button {
-            min-width: 200px !important;
-          }
-          
-          .legend-container {
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-          }
-        }
-      `}</style>
+    <ThemeProvider theme={cosmicTheme}>
+      <CosmicContainer>
+        <FloatingParticles />
+        <GlassmorphismPaper>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography variant="h4" gutterBottom sx={{ fontSize: '3rem', mb: 2 }}>
+              Cosmic Seat Manager ✨
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
+              Configure your galactic seating arrangements with stellar precision
+            </Typography>
+          </Box>
 
-      <div className="professional-container">
-        <div className="main-card">
-          <Typography className="professional-title">
-            Seating Management System
-          </Typography>
+          <SelectionModeContainer>
+            <Typography sx={{ 
+              fontWeight: 600, 
+              color: 'rgba(255, 255, 255, 0.9)', 
+              mb: 2, 
+              fontSize: '1.1rem',
+              textAlign: 'center'
+            }}>
+              🎯 Selection Mode
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <ToggleButtonGroup
+                value={selectionMode}
+                exclusive
+                onChange={(e, newMode) => newMode && setSelectionMode(newMode)}
+                sx={{ gap: 1 }}
+              >
+                <ToggleButton value="single">Single Seat</ToggleButton>
+                <ToggleButton value="row">Entire Row</ToggleButton>
+                <ToggleButton value="col">Entire Column</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </SelectionModeContainer>
 
-          <div className="selection-mode-container">
-            <Typography className="mode-label">Selection Mode</Typography>
-            <ToggleButtonGroup
-              value={selectionMode}
-              exclusive
-              onChange={(e, val) => {
-                if (val !== null) {
-                  setSelectionMode(val);
-                  setSelectedSeat(null);
-                  setSelectedRowOrCol(null);
-                }
-              }}
-              className="professional-toggle-group"
-            >
-              <ToggleButton value="single" className="professional-toggle-button">
-                Single Seat
-              </ToggleButton>
-              <ToggleButton value="row" className="professional-toggle-button">
-                Whole Row
-              </ToggleButton>
-              <ToggleButton value="col" className="professional-toggle-button">
-                Whole Column
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </div>
-
-          <div style={{ textAlign: 'center' }}>
-            <div className="seat-grid-container">
-              <div className="seat-grid">
-                {grid.map((rowSeats, rowIndex) => (
-                  <div key={rowIndex} className="seat-row">
-                    <div className="row-label">
-                      {String.fromCharCode(65 + rowIndex)}
-                    </div>
-                    {rowSeats.map((seat, colIndex) =>
-                      seat ? (
-                        <div
-                          key={seat.id}
-                          onClick={() => handleSeatClick(seat)}
-                          className={`professional-seat ${
-                            seat.vip ? 'vip' : seat.reserved ? 'reserved' : 'available'
-                          } ${
-                            (selectionMode === "single" && selectedSeat?.id === seat.id) ||
-                            (selectionMode === "row" && selectedRowOrCol === seat.row) ||
-                            (selectionMode === "col" && selectedRowOrCol === seat.number)
-                              ? 'selected' : ''
-                          }`}
-                          style={{
-                            backgroundColor: seat.vip || seat.reserved ? undefined : seat.color || section.color || "#e9ecef",
-                          }}
-                          title={`Seat ${seat.code} - ${seat.reserved ? "Reserved" : "Available"}${
-                            seat.vip ? " (VIP)" : ""
-                          } - $${seat.price}`}
-                        >
-                          {seat.code}
-                        </div>
-                      ) : (
-                        <div key={`empty-${colIndex}`} style={{ width: 48, height: 48 }} />
-                      )
-                    )}
-                  </div>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
+            <SeatGridContainer>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                {grid.map((row, rowIndex) => (
+                  <Box key={rowIndex} sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <RowLabel>{rowIndex + 1}</RowLabel>
+                    {row.map((seat, colIndex) => (
+                      <SeatButton
+                        key={colIndex}
+                        selected={selectedSeat?.id === seat?.id}
+                        vip={seat?.vip}
+                        reserved={seat?.reserved}
+                        rowSelected={selectionMode === "row" && selectedRowOrCol === seat?.row}
+                        colSelected={selectionMode === "col" && selectedRowOrCol === seat?.number}
+                        onClick={() => seat && handleSeatClick(seat)}
+                        sx={{ 
+                          opacity: seat ? 1 : 0.3,
+                          cursor: seat ? 'pointer' : 'default'
+                        }}
+                      >
+                        {seat ? seat.number : ''}
+                      </SeatButton>
+                    ))}
+                  </Box>
                 ))}
-              </div>
-            </div>
-          </div>
+              </Box>
 
-          <div className="legend-container">
-            <div className="legend-item">
-              <div className="legend-seat" style={{ background: '#e9ecef' }}></div>
-              <span>Available</span>
-            </div>
-            <div className="legend-item">
-              <div className="legend-seat" style={{ background: 'linear-gradient(135deg, #ffd700, #ffed4e)' }}></div>
-              <span>VIP</span>
-            </div>
-            <div className="legend-item">
-              <div className="legend-seat" style={{ background: 'linear-gradient(135deg, #dc3545, #e74c3c)' }}></div>
-              <span>Reserved</span>
-            </div>
-            <div className="legend-item">
-              <div className="legend-seat" style={{ background: '#e9ecef', border: '2px solid #007bff' }}></div>
-              <span>Selected</span>
-            </div>
-          </div>
-        </div>
-      </div>
+              <LegendContainer>
+                <LegendItem>
+                  <LegendSeat />
+                  <span>Available</span>
+                </LegendItem>
+                <LegendItem>
+                  <LegendSeat vip />
+                  <span>VIP</span>
+                </LegendItem>
+                <LegendItem>
+                  <LegendSeat reserved />
+                  <span>Reserved</span>
+                </LegendItem>
+              </LegendContainer>
+            </SeatGridContainer>
+          </Box>
 
-      <Dialog 
-        open={selectionMode === "single" ? !!selectedSeat : selectedRowOrCol != null} 
-        onClose={handleClose}
-        PaperProps={{
-          className: "professional-modal"
-        }}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle className="professional-modal-title">
-          {selectionMode === "single"
-            ? `Edit Seat ${selectedSeat?.code}`
-            : selectionMode === "row"
-            ? `Edit Row ${String.fromCharCode(64 + selectedRowOrCol)}`
-            : `Edit Column ${selectedRowOrCol}`}
-        </DialogTitle>
-        <DialogContent className="professional-modal-content">
-          <TextField
-            label="Price ($)"
-            type="number"
-            fullWidth
-            value={tempPrice}
-            onChange={(e) => setTempPrice(e.target.value)}
-            className="professional-textfield"
-            variant="outlined"
-          />
-          <FormControlLabel
-            control={
-              <Switch 
-                checked={tempVIP} 
-                onChange={(e) => setTempVIP(e.target.checked)}
-                className="professional-switch"
-              />
-            }
-            label="VIP Seat"
-            className="form-control-label"
-          />
-          <TextField
-            label="Seat Color"
-            type="color"
-            fullWidth
-            value={tempColor}
-            onChange={(e) => setTempColor(e.target.value)}
-            className="professional-textfield"
-            variant="outlined"
-            sx={{ mt: 2 }}
-          />
-          {error && <Typography className="error-text">{error}</Typography>}
-        </DialogContent>
-        <DialogActions sx={{ padding: '16px 24px 24px 24px', gap: '12px' }}>
-          <Button 
-            onClick={handleClose} 
-            className="professional-button professional-button-secondary"
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleSave} 
-            className="professional-button professional-button-primary"
-          >
-            Save Changes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+          {error && <ErrorText>{error}</ErrorText>}
+        </GlassmorphismPaper>
+
+        <Dialog 
+          open={selectedSeat || selectedRowOrCol !== null} 
+          onClose={handleClose}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            🎫 Configure Seat Properties
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Price ($)"
+              type="number"
+              fullWidth
+              value={tempPrice}
+              onChange={(e) => setTempPrice(e.target.value)}
+              sx={{ mb: 2, mt: 1 }}
+            />
+            <TextField
+              label="Color"
+              type="color"
+              fullWidth
+              value={tempColor}
+              onChange={(e) => setTempColor(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={tempVIP}
+                  onChange={(e) => setTempVIP(e.target.checked)}
+                />
+              }
+              label="VIP Seat"
+              sx={{ color: 'rgba(255, 255, 255, 0.8)' }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ p: 3, gap: 2 }}>
+            <Button onClick={handleClose} variant="outlined">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} variant="contained">
+              Save Changes
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </CosmicContainer>
+    </ThemeProvider>
   );
 };
 
+
+
+
 const AddSectionForm = ({ eventId }) => {
   const [sectionName, setSectionName] = useState("");
-  const [sectionColor, setSectionColor] = useState("#e9ecef");
+  const [sectionColor, setSectionColor] = useState("#6366f1");
   const [sectionPrice, setSectionPrice] = useState("");
   const [numberOfRows, setNumberOfRows] = useState("");
   const [numberOfColumns, setNumberOfColumns] = useState("");
@@ -726,7 +912,7 @@ const AddSectionForm = ({ eventId }) => {
 
   const resetForm = () => {
     setSectionName("");
-    setSectionColor("#e9ecef");
+    setSectionColor("#6366f1");
     setSectionPrice("");
     setNumberOfRows("");
     setNumberOfColumns("");
@@ -856,328 +1042,133 @@ const AddSectionForm = ({ eventId }) => {
   };
 
   return (
-    <>
-      <style jsx>{`
-        .section-form-container {
-          background: #ffffff;
-          border-radius: 16px;
-          box-shadow: 
-            0 4px 20px rgba(0, 0, 0, 0.08),
-            0 1px 3px rgba(0, 0, 0, 0.05);
-          padding: 32px;
-          margin: 24px auto;
-          max-width: 1200px;
-          border: 1px solid rgba(0, 123, 255, 0.1);
-        }
+    <ThemeProvider theme={cosmicTheme}>
+      <CosmicContainer>
+        <FloatingParticles />
         
-        .section-form-title {
-          font-family: 'Inter', sans-serif;
-          font-weight: 600;
-          font-size: 1.75rem;
-          color: #1a202c;
-          margin-bottom: 24px;
-          position: relative;
-        }
-        
-        .section-form-title::after {
-          content: '';
-          position: absolute;
-          bottom: -6px;
-          left: 0;
-          width: 60px;
-          height: 3px;
-          background: linear-gradient(90deg, #007bff, #00c8c8);
-          border-radius: 2px;
-        }
-        
-        .form-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 24px;
-          margin-bottom: 32px;
-        }
-        
-        .color-input-container {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        
-        .color-input-label {
-          font-family: 'Inter', sans-serif;
-          font-weight: 500;
-          color: #495057;
-          font-size: 0.95rem;
-        }
-        
-        .professional-color-input {
-          width: 100%;
-          height: 56px;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          background: #f8f9fa;
-        }
-        
-        .professional-color-input:hover {
-          border-color: #007bff;
-          box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-        }
-        
-        .section-list-container {
-          background: #f8f9fa;
-          border-radius: 12px;
-          padding: 24px;
-          margin-top: 32px;
-          border: 1px solid #e9ecef;
-        }
-        
-        .section-list-title {
-          font-family: 'Inter', sans-serif;
-          font-weight: 600;
-          font-size: 1.5rem;
-          color: #1a202c;
-          margin-bottom: 20px;
-        }
-        
-        .section-item {
-          background: #ffffff;
-          border-radius: 8px;
-          padding: 20px;
-          margin-bottom: 16px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border: 1px solid #e9ecef;
-          transition: all 0.2s ease;
-        }
-        
-        .section-item:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          border-color: #007bff;
-        }
-        
-        .section-info {
-          flex: 1;
-        }
-        
-        .section-name {
-          font-weight: 600;
-          font-size: 1.1rem;
-          color: #1a202c;
-          margin-bottom: 4px;
-        }
-        
-        .section-details {
-          font-size: 0.9rem;
-          color: #6c757d;
-          display: flex;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-        
-        .section-actions {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-        
-        .action-button {
-          font-family: 'Inter', sans-serif !important;
-          font-weight: 500 !important;
-          font-size: 0.85rem !important;
-          padding: 8px 16px !important;
-          border-radius: 6px !important;
-          transition: all 0.2s ease !important;
-          text-transform: none !important;
-          min-width: auto !important;
-        }
-        
-        .action-button-view {
-          background: #e3f2fd !important;
-          color: #1976d2 !important;
-          border: 1px solid #bbdefb !important;
-        }
-        
-        .action-button-view:hover {
-          background: #bbdefb !important;
-          transform: translateY(-1px) !important;
-        }
-        
-        .action-button-edit {
-          background: #fff3e0 !important;
-          color: #f57c00 !important;
-          border: 1px solid #ffcc02 !important;
-        }
-        
-        .action-button-edit:hover {
-          background: #ffcc02 !important;
-          transform: translateY(-1px) !important;
-        }
-        
-        .action-button-delete {
-          background: #ffebee !important;
-          color: #d32f2f !important;
-          border: 1px solid #ffcdd2 !important;
-        }
-        
-        .action-button-delete:hover {
-          background: #ffcdd2 !important;
-          transform: translateY(-1px) !important;
-        }
-        
-        @media (max-width: 768px) {
-          .section-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 16px;
-          }
+        <GlassmorphismPaper>
+          <FormTitle>
+            {editingSection ? "✨ Edit Cosmic Section ✨" : "🌟 Add New Cosmic Section 🌟"}
+          </FormTitle>
           
-          .section-actions {
-            width: 100%;
-            justify-content: flex-end;
-          }
-          
-          .form-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-      `}</style>
-
-      <div className="section-form-container">
-        <Typography className="section-form-title">
-          {editingSection ? "Edit Section" : "Add New Section"}
-        </Typography>
-        
-        <div className="form-grid">
-          <TextField
-            label="Section Name"
-            fullWidth
-            value={sectionName}
-            onChange={(e) => setSectionName(e.target.value)}
-            className="professional-textfield"
-            variant="outlined"
-          />
-          
-          <div className="color-input-container">
-            <label className="color-input-label">Section Color</label>
-            <input
-              type="color"
-              value={sectionColor}
-              onChange={(e) => setSectionColor(e.target.value)}
-              className="professional-color-input"
+          <FormGrid>
+            <TextField
+              label="Section Name"
+              fullWidth
+              value={sectionName}
+              onChange={(e) => setSectionName(e.target.value)}
+              variant="outlined"
             />
-          </div>
-          
-          <TextField
-            label="Price ($)"
-            type="number"
-            fullWidth
-            value={sectionPrice}
-            onChange={(e) => setSectionPrice(e.target.value)}
-            className="professional-textfield"
-            variant="outlined"
-          />
-          
-          {!editingSection && (
-            <>
-              <TextField
-                label="Number of Rows"
-                type="number"
-                fullWidth
-                value={numberOfRows}
-                onChange={(e) => setNumberOfRows(e.target.value)}
-                className="professional-textfield"
-                variant="outlined"
+            
+            <ColorInputContainer>
+              <ColorInputLabel>Section Color</ColorInputLabel>
+              <CosmicColorInput
+                type="color"
+                value={sectionColor}
+                onChange={(e) => setSectionColor(e.target.value)}
               />
-              <TextField
-                label="Number of Columns"
-                type="number"
-                fullWidth
-                value={numberOfColumns}
-                onChange={(e) => setNumberOfColumns(e.target.value)}
-                className="professional-textfield"
-                variant="outlined"
-              />
-            </>
-          )}
-        </div>
-        
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <Button 
-            onClick={editingSection ? handleUpdateSection : handleAddSection}
-            className="professional-button professional-button-primary"
-          >
-            {editingSection ? "Update Section" : "Add Section + Seats"}
-          </Button>
-          {editingSection && (
+            </ColorInputContainer>
+            
+            <TextField
+              label="Price ($)"
+              type="number"
+              fullWidth
+              value={sectionPrice}
+              onChange={(e) => setSectionPrice(e.target.value)}
+              variant="outlined"
+            />
+            
+            {!editingSection && (
+              <>
+                <TextField
+                  label="Number of Rows"
+                  type="number"
+                  fullWidth
+                  value={numberOfRows}
+                  onChange={(e) => setNumberOfRows(e.target.value)}
+                  variant="outlined"
+                />
+                <TextField
+                  label="Number of Columns"
+                  type="number"
+                  fullWidth
+                  value={numberOfColumns}
+                  onChange={(e) => setNumberOfColumns(e.target.value)}
+                  variant="outlined"
+                />
+              </>
+            )}
+          </FormGrid>
+          
+          <ButtonContainer>
             <Button 
-              onClick={resetForm} 
-              className="professional-button professional-button-secondary"
+              onClick={editingSection ? handleUpdateSection : handleAddSection}
+              variant="contained"
+              size="large"
             >
-              Cancel
+              {editingSection ? "🔄 Update Section" : "🚀 Add Section + Seats"}
             </Button>
-          )}
-        </div>
+            {editingSection && (
+              <Button 
+                onClick={resetForm} 
+                variant="outlined"
+                size="large"
+              >
+                ❌ Cancel
+              </Button>
+            )}
+          </ButtonContainer>
 
-        <div className="section-list-container">
-          <Typography className="section-list-title">
-            Existing Sections
-          </Typography>
-          
-          {sections.map((sec) => (
-            <div key={sec.id} className="section-item">
-              <div className="section-info">
-                <div className="section-name">{sec.name}</div>
-                <div className="section-details">
-                  <span>{sec.totalSeats} seats</span>
-                  <span>${sec.price}</span>
-                  <span style={{ 
-                    display: 'inline-block', 
-                    width: '16px', 
-                    height: '16px', 
-                    backgroundColor: sec.color, 
-                    borderRadius: '3px',
-                    border: '1px solid #dee2e6'
-                  }}></span>
-                </div>
-              </div>
-              <div className="section-actions">
-                <Button
-                  onClick={() => {
-                    setSelectedSection(sec);
-                    setSelectedSectionId(sec.id);
-                  }}
-                  className="action-button action-button-view"
-                >
-                  View
-                </Button>
-                <Button
-                  onClick={() => handleEditClick(sec)}
-                  className="action-button action-button-edit"
-                >
-                  Edit
-                </Button>
-                <Button
-                  onClick={() => handleDeleteSection(sec.id)}
-                  className="action-button action-button-delete"
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+          <SectionListContainer>
+            <SectionListTitle>
+              🎭 Existing Cosmic Sections
+            </SectionListTitle>
+            
+            {sections.map((sec) => (
+              <SectionItem key={sec.id}>
+                <SectionInfo>
+                  <SectionName>{sec.name}</SectionName>
+                  <SectionDetails>
+                    <span>🪑 {sec.totalSeats} seats</span>
+                    <span>💰 ${sec.price}</span>
+                    <ColorSwatch color={sec.color} />
+                  </SectionDetails>
+                </SectionInfo>
+                <SectionActions>
+                  <ActionButton
+                    variant="view"
+                    onClick={() => {
+                      setSelectedSection(sec);
+                      setSelectedSectionId(sec.id);
+                    }}
+                  >
+                    👁️ View
+                  </ActionButton>
+                  <ActionButton
+                    variant="edit"
+                    onClick={() => handleEditClick(sec)}
+                  >
+                    ✏️ Edit
+                  </ActionButton>
+                  <ActionButton
+                    variant="delete"
+                    onClick={() => handleDeleteSection(sec.id)}
+                  >
+                    🗑️ Delete
+                  </ActionButton>
+                </SectionActions>
+              </SectionItem>
+            ))}
+          </SectionListContainer>
+        </GlassmorphismPaper>
 
-      {selectedSection && (
-        <div style={{ marginTop: '24px' }}>
-          <SeatGrid section={selectedSection} />
-        </div>
-      )}
-    </>
+        {selectedSection && (
+          <div style={{ marginTop: '24px' }}>
+            <SeatGrid section={selectedSection} />
+          </div>
+        )}
+      </CosmicContainer>
+    </ThemeProvider>
   );
 };
 

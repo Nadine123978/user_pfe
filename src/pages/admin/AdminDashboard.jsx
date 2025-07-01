@@ -1,141 +1,325 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Paper, Typography, Button, Toolbar, CssBaseline } from '@mui/material';
+import { Box, Grid, Typography, Button, Toolbar, CssBaseline } from '@mui/material';
 import { Dashboard, Category, Event, Group, Bookmark, BookOnline, Cancel } from '@mui/icons-material';
 import Sidebar from '../../components/admin/Sidebar';
 import Header from '../../components/admin/Header';
 import axios from 'axios';
+import { styled, createTheme, ThemeProvider, keyframes } from '@mui/material/styles';
 
-const drawerWidth = 240;
+// ثيم بنفسجي-أزرق مخصص (cosmic design)
+const cosmicTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#6366f1',  // بنفسجي أزرق
+    },
+    secondary: {
+      main: '#06b6d4',
+    },
+    background: {
+      default: '#0f172a',
+      paper: 'rgba(255, 255, 255, 0.05)',
+    },
+    text: {
+      primary: '#ffffff',
+      secondary: 'rgba(255, 255, 255, 0.8)',
+    },
+  },
+  typography: {
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    h2: {
+      fontWeight: 800,
+      background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+    },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: '12px',
+          textTransform: 'none',
+          fontWeight: 600,
+          fontSize: '14px',
+          padding: '12px 24px',
+          transition: 'all 0.3s ease',
+          '&.MuiButton-contained': {
+            background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
+            '&:hover': {
+              background: 'linear-gradient(135deg, #5855eb 0%, #0891b2 100%)',
+              boxShadow: '0 8px 32px rgba(99, 102, 241, 0.4)',
+              transform: 'translateY(-2px)',
+            },
+          },
+          '&.MuiButton-outlined': {
+            border: '1px solid rgba(99, 102, 241, 0.5)',
+            color: '#6366f1',
+            '&:hover': {
+              border: '1px solid #6366f1',
+              background: 'rgba(99, 102, 241, 0.1)',
+              transform: 'translateY(-2px)',
+            },
+          },
+        },
+      },
+    },
+  },
+});
 
-const StatCard = ({ title, value, color, icon, onClick }) => (
-  <Paper
-    elevation={0}
-    sx={{
-      p: 4,
-      background: `linear-gradient(135deg, ${color}15 0%, ${color}08 100%)`,
-      borderLeft: `4px solid ${color}`,
-      borderRadius: 4,
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      minHeight: 180,
-      position: 'relative',
-      overflow: 'hidden',
-      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-      cursor: 'pointer',
-      border: '1px solid rgba(0, 0, 0, 0.04)',
-      boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
-      backdropFilter: 'blur(10px)',
-      '&:hover': {
-        transform: 'translateY(-8px) scale(1.02)',
-        boxShadow: `0 12px 40px ${color}25`,
-        borderLeft: `4px solid ${color}`,
-        background: `linear-gradient(135deg, ${color}20 0%, ${color}10 100%)`,
-        '& .stat-icon': {
-          transform: 'scale(1.15) rotate(8deg)',
-          color: color,
-        },
-        '& .view-button': {
-          backgroundColor: color,
-          color: '#fff',
-          transform: 'translateY(-2px)',
-          boxShadow: `0 6px 20px ${color}40`,
-        },
-        '& .stat-value': {
-          transform: 'scale(1.05)',
-        }
-      },
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: -50,
-        right: -50,
-        width: '120px',
-        height: '120px',
-        background: `radial-gradient(circle, ${color}08 0%, transparent 70%)`,
-        borderRadius: '50%',
-      },
-      '&::after': {
-        content: '""',
-        position: 'absolute',
-        bottom: -30,
-        left: -30,
-        width: '80px',
-        height: '80px',
-        background: `radial-gradient(circle, ${color}05 0%, transparent 70%)`,
-        borderRadius: '50%',
-      }
-    }}
-  >
+// Keyframe animations
+const floatAnimation = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+`;
+
+const sparkleAnimation = keyframes`
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+`;
+
+const shimmerAnimation = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+const pulseGlow = keyframes`
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.6); }
+`;
+
+// Styled components
+const CosmicContainer = styled(Box)({
+  display: 'flex',
+  minHeight: '100vh',
+  background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #2d1b69 100%)',
+  position: 'relative',
+  overflow: 'hidden',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: `
+      radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%)
+    `,
+    animation: `${floatAnimation} 8s ease-in-out infinite`,
+  },
+});
+
+const FloatingParticles = styled(Box)({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  pointerEvents: 'none',
+  zIndex: 0,
+  '&::before, &::after': {
+    content: '""',
+    position: 'absolute',
+    width: '4px',
+    height: '4px',
+    background: '#6366f1',
+    borderRadius: '50%',
+    animation: `${sparkleAnimation} 4s linear infinite`,
+  },
+  '&::before': {
+    top: '20%',
+    left: '15%',
+    animationDelay: '0s',
+  },
+  '&::after': {
+    top: '70%',
+    right: '20%',
+    animationDelay: '2s',
+    background: '#06b6d4',
+  },
+});
+
+const MainContent = styled(Box)({
+  flexGrow: 1,
+  marginLeft: '240px', // Account for sidebar width
+  padding: '32px',
+  position: 'relative',
+  zIndex: 1,
+  minHeight: '100vh',
+  background: 'transparent',
+});
+
+const HeroSection = styled(Box)({
+  marginBottom: '48px',
+  textAlign: 'center',
+  position: 'relative',
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '200px',
+    height: '200px',
+    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
+    borderRadius: '50%',
+    zIndex: -1,
+  },
+});
+
+const HeroTitle = styled(Typography)({
+  fontWeight: 800,
+  fontSize: '3.5rem',
+  marginBottom: '16px',
+  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+  WebkitBackgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  backgroundClip: 'text',
+  textShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+  '@media (max-width: 768px)': {
+    fontSize: '2.5rem',
+  },
+});
+
+const HeroSubtitle = styled(Typography)({
+  color: 'rgba(255, 255, 255, 0.8)',
+  fontSize: '1.2rem',
+  fontWeight: 500,
+  maxWidth: '600px',
+  margin: '0 auto',
+  lineHeight: 1.6,
+});
+
+const StatCard = styled(Box)(({ color }) => ({
+  padding: '32px',
+  background: 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(20px)',
+  borderRadius: '20px',
+  border: '1px solid rgba(255, 255, 255, 0.1)',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  minHeight: '200px',
+  position: 'relative',
+  overflow: 'hidden',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  cursor: 'pointer',
+  '&:hover': {
+    transform: 'translateY(-12px) scale(1.02)',
+    boxShadow: `0 20px 60px ${color}40`,
+    background: 'rgba(255, 255, 255, 0.08)',
+    borderColor: `${color}50`,
+    '& .stat-icon': {
+      transform: 'scale(1.2) rotate(10deg)',
+      color: color,
+      animation: `${pulseGlow} 2s ease-in-out infinite`,
+    },
+    '& .view-button': {
+      background: `linear-gradient(135deg, ${color} 0%, ${color}CC 100%)`,
+      color: '#fff',
+      transform: 'translateY(-4px)',
+      boxShadow: `0 8px 32px ${color}60`,
+    },
+    '& .stat-value': {
+      transform: 'scale(1.1)',
+      textShadow: `0 0 20px ${color}80`,
+    },
+    '&::after': {
+      opacity: 1,
+    },
+  },
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '3px',
+    background: `linear-gradient(90deg, ${color}, #6366f1)`,
+  },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: '-100%',
+    width: '100%',
+    height: '100%',
+    background: `linear-gradient(90deg, transparent, ${color}20, transparent)`,
+    transition: 'all 0.6s ease',
+    opacity: 0,
+  },
+}));
+
+const StatIcon = styled(Box)({
+  fontSize: '56px',
+  transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+  filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+  color: 'rgba(255, 255, 255, 0.7)',
+});
+
+const StatValue = styled(Typography)({
+  fontWeight: 800,
+  fontSize: '3rem',
+  lineHeight: 1.1,
+  color: '#ffffff',
+  transition: 'all 0.3s ease',
+  textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
+});
+
+const StatTitle = styled(Typography)({
+  fontSize: '0.9rem',
+  fontWeight: 600,
+  color: 'rgba(255, 255, 255, 0.7)',
+  marginBottom: '16px',
+  letterSpacing: '0.5px',
+  textTransform: 'uppercase',
+});
+
+const ViewButton = styled(Button)({
+  marginTop: 'auto',
+  background: 'rgba(255, 255, 255, 0.1)',
+  color: 'rgba(255, 255, 255, 0.9)',
+  fontWeight: 700,
+  borderRadius: '12px',
+  fontSize: '0.85rem',
+  textTransform: 'none',
+  padding: '12px 24px',
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  '&:hover': {
+    background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+    color: '#fff',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 8px 32px rgba(99, 102, 241, 0.4)',
+  },
+});
+
+const StatsGrid = styled(Grid)({
+  '& .MuiGrid-item': {
+    display: 'flex',
+  },
+});
+
+const StatCardComponent = ({ title, value, color, icon, onClick }) => (
+  <StatCard color={color} onClick={onClick}>
     <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={3}>
       <Box flex={1}>
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            color: '#64748b',
-            mb: 2,
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase'
-          }}
-        >
-          {title}
-        </Typography>
-        <Typography 
-          className="stat-value"
-          variant="h3" 
-          sx={{ 
-            fontWeight: 800,
-            fontSize: '2.75rem',
-            lineHeight: 1.1,
-            color: '#1e293b',
-            transition: 'all 0.3s ease',
-            textShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
-          }}
-        >
-          {value}
-        </Typography>
+        <StatTitle>{title}</StatTitle>
+        <StatValue className="stat-value">{value}</StatValue>
       </Box>
-      <Box 
-        className="stat-icon"
-        sx={{ 
-          fontSize: 56,
-          color: `${color}80`,
-          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))'
-        }}
-      >
+      <StatIcon className="stat-icon">
         {icon}
-      </Box>
+      </StatIcon>
     </Box>
-    <Button
-      onClick={onClick}
-      className="view-button"
-      sx={{ 
-        mt: 'auto',
-        backgroundColor: '#f8fafc',
-        color: color,
-        fontWeight: 700,
-        borderRadius: 3,
-        fontSize: '0.8rem',
-        textTransform: 'none',
-        py: 1.5,
-        px: 3,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)',
-        border: `1px solid ${color}20`,
-        '&:hover': {
-          backgroundColor: color,
-          color: '#fff',
-        }
-      }}
-      variant="contained"
-    >
-      View Details
-    </Button>
-  </Paper>
+    <ViewButton className="view-button" variant="contained">
+      View Details ✨
+    </ViewButton>
+  </StatCard>
 );
 
 export default function AdminDashboard() {
@@ -170,152 +354,114 @@ export default function AdminDashboard() {
       .catch(err => console.error('Error fetching stats:', err));
   }, []);
 
-  // Beautiful lighter color scheme inspired by the reference image
+  // Cosmic color scheme
   const colors = {
-    categories: '#6366f1',    // Soft indigo - Professional, organized
-    sponsors: '#10b981',      // Fresh emerald - Growth, partnership
-    events: '#f59e0b',        // Warm amber - Energy, activity
-    users: '#06b6d4',         // Bright cyan - Community, engagement
-    bookings: '#3b82f6',      // Vibrant blue - Information, data
-    newBookings: '#8b5cf6',   // Soft purple - New, special attention
-    confirmedBookings: '#10b981', // Success emerald - Success, completion
-    cancelledBookings: '#ef4444', // Alert red - Issues, attention needed
-    subscribers: '#6366f1'    // Primary indigo - Important
+    categories: '#6366f1',    // Primary cosmic purple
+    sponsors: '#10b981',      // Emerald green
+    events: '#f59e0b',        // Amber yellow
+    users: '#06b6d4',         // Cyan blue
+    bookings: '#3b82f6',      // Blue
+    newBookings: '#8b5cf6',   // Purple
+    confirmedBookings: '#10b981', // Green
+    cancelledBookings: '#ef4444', // Red
+    subscribers: '#6366f1'    // Primary purple
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <Header />
-      <Sidebar />
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%)',
-          minHeight: '100vh',
-          p: 4,
-          position: 'relative',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '300px',
-            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(16, 185, 129, 0.02) 100%)',
-            zIndex: 0,
-          }
-        }}
-      >
-        <Box sx={{ position: 'relative', zIndex: 1 }}>
-          <Box sx={{ mb: 5 }}>
-            <Typography 
-              variant="h2" 
-              sx={{ 
-                fontWeight: 800,
-                color: '#0f172a',
-                fontSize: '3rem',
-                mb: 2,
-                background: 'linear-gradient(135deg, #1e293b 0%, #475569 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                textShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
-              }}
-            >
-              Dashboard
-            </Typography>
-            <Typography 
-              variant="h6" 
-              sx={{ 
-                color: '#64748b',
-                fontSize: '1.2rem',
-                fontWeight: 500,
-                maxWidth: '600px'
-              }}
-            >
-              Welcome back! Here's a comprehensive overview of your event management platform's performance and key metrics.
-            </Typography>
-          </Box>
+    <ThemeProvider theme={cosmicTheme}>
+      <CosmicContainer>
+        <CssBaseline />
+        <FloatingParticles />
+        <Header />
+        <Sidebar />
+        
+        <MainContent>
+          <HeroSection>
+            <HeroTitle variant="h2">
+              🌟 Cosmic Dashboard
+            </HeroTitle>
+            <HeroSubtitle variant="h6">
+              Welcome back to your galactic command center! Here's a comprehensive overview of your event management platform's stellar performance and key metrics.
+            </HeroSubtitle>
+          </HeroSection>
           
-          <Grid container spacing={4} alignItems="stretch">
+          <StatsGrid container spacing={4} alignItems="stretch">
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Listed Categories" 
+              <StatCardComponent 
+                title="📂 Listed Categories" 
                 value={stats.categories} 
                 color={colors.categories} 
                 icon={<Category fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Active Sponsors" 
+              <StatCardComponent 
+                title="🤝 Active Sponsors" 
                 value={stats.sponsors} 
                 color={colors.sponsors} 
                 icon={<Dashboard fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Total Events" 
+              <StatCardComponent 
+                title="🎪 Total Events" 
                 value={stats.events} 
                 color={colors.events} 
                 icon={<Event fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Registered Users" 
+              <StatCardComponent 
+                title="👥 Registered Users" 
                 value={stats.users} 
                 color={colors.users} 
                 icon={<Group fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Total Bookings" 
+              <StatCardComponent 
+                title="📋 Total Bookings" 
                 value={stats.bookings} 
                 color={colors.bookings} 
                 icon={<Bookmark fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="New Bookings" 
+              <StatCardComponent 
+                title="🆕 New Bookings" 
                 value={stats.newBookings} 
                 color={colors.newBookings} 
                 icon={<BookOnline fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Confirmed Bookings" 
+              <StatCardComponent 
+                title="✅ Confirmed Bookings" 
                 value={stats.confirmedBookings} 
                 color={colors.confirmedBookings} 
                 icon={<BookOnline fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Cancelled Bookings" 
+              <StatCardComponent 
+                title="❌ Cancelled Bookings" 
                 value={stats.cancelledBookings} 
                 color={colors.cancelledBookings} 
                 icon={<Cancel fontSize="inherit" />} 
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCard 
-                title="Newsletter Subscribers" 
+              <StatCardComponent 
+                title="📧 Newsletter Subscribers" 
                 value={stats.subscribers} 
                 color={colors.subscribers} 
                 icon={<Group fontSize="inherit" />} 
               />
             </Grid>
-          </Grid>
-        </Box>
-      </Box>
-    </Box>
+          </StatsGrid>
+        </MainContent>
+      </CosmicContainer>
+    </ThemeProvider>
   );
 }
 
