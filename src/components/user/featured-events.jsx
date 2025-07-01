@@ -20,6 +20,9 @@ const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
   transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
+  height: '100%', // ✅ Ensure all cards have same height
+  display: 'flex',
+  flexDirection: 'column',
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
     boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)',
@@ -214,14 +217,26 @@ const FeaturedEvents = () => {
             </SeeAllButton>
         </Box>
 
+        {/* ✅ Modified Grid layout for consistent card dimensions */}
         <Grid container spacing={4} sx={{ maxWidth: 1400, mx: 'auto' }}>
           {visibleEvents.map((event) => (
-            <Grid item xs={12} sm={6} lg={4} key={event.id}>
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={6} 
+              lg={3} 
+              key={event.id}
+              sx={{ 
+                display: 'flex',
+                minHeight: '500px' // ✅ Ensure minimum height for consistency
+              }}
+            >
               <StyledCard>
                 <Box sx={{ position: 'relative' }}>
                   <CardMedia
                     component="img"
-                    height="240"
+                    height="200" // ✅ Fixed height for all images
                     image={event.imageUrl?.startsWith("http" ) ? event.imageUrl : `http://localhost:8081${event.imageUrl}`}
                     alt={event.title}
                     sx={{ 
@@ -246,52 +261,65 @@ const FeaturedEvents = () => {
                   </Box>
                 </Box>
                 
-                <CardContent sx={{ p: 3 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 700,
-                      color: ' #200245',
-                      mb: 2,
-                      lineHeight: 1.3,
-                      fontFamily: "'Inter', sans-serif",
-                    }}
-                  >
-                    {event.title}
-                  </Typography>
-                  
-                  <Stack spacing={1.5} sx={{ mb: 3 }}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} />
-                      <Typography
-                        variant="body2"
-                        sx={{ color:'  #200245', fontWeight: 500 }}
-                      >
-                        {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        }) : "Date N/A"}
-                      </Typography>
-                    </Stack>
+                <CardContent sx={{ 
+                  p: 3, 
+                  flexGrow: 1, // ✅ Allow content to grow and fill available space
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}>
+                  <Box>
+                    <Typography
+                      variant="h6" // ✅ Reduced from h5 to h6 for better fit
+                      sx={{
+                        fontWeight: 700,
+                        color: ' #200245',
+                        mb: 2,
+                        lineHeight: 1.3,
+                        fontFamily: "'Inter', sans-serif",
+                        minHeight: '48px', // ✅ Consistent title height
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {event.title}
+                    </Typography>
                     
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} />
-                      <Typography
-                        variant="body2"
-                        sx={{ 
-                          color: ' #200245',
-                          fontWeight: 500,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {event.location || "Location N/A"}
-                      </Typography>
+                    <Stack spacing={1.5} sx={{ mb: 3 }}>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} />
+                        <Typography
+                          variant="body2"
+                          sx={{ color:'  #200245', fontWeight: 500 }}
+                        >
+                          {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          }) : "Date N/A"}
+                        </Typography>
+                      </Stack>
+                      
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} />
+                        <Typography
+                          variant="body2"
+                          sx={{ 
+                            color: ' #200245',
+                            fontWeight: 500,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {event.location || "Location N/A"}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
+                  </Box>
                   
                   <GradientButton
                     onClick={() => handleButtonClick(event)}
@@ -313,3 +341,4 @@ const FeaturedEvents = () => {
 };
 
 export default FeaturedEvents;
+

@@ -13,15 +13,12 @@ import ContactPage from './pages/user/Contact';
 import Forgetpage from './pages/user/Forgetpage';
 import ResetPassPage from './pages/user/ResetPassPage';
 import WhirlingDervishShow from './components/user/WhirlingDervishShow';
-import { useNavigate } from "react-router-dom";
-
 
 // Admin layout and pages
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AddCategory from './pages/admin/AddCategory';
-import AdminEventImagesManager from './/pages/admin/AdminEventImagesManager';
-
+import AdminEventImagesManager from './pages/admin/AdminEventImagesManager';
 
 import SuperAdminDashboard from './pages/superadmin/SuperAdminDashboard';
 import MainLayout from './components/superadmin/layout/MainLayout';
@@ -43,14 +40,15 @@ import UserBookings from './pages/admin/UserBookings';
 import CategoryEventsPage from './pages/user/CategoryEventsPage';
 import CheckoutPage from './pages/user/CheckoutPage';
 import BlogPage from './pages/user/Blogs';
-import AllTrendingCategories from "./pages/user/AllTrendingCategories";
+import AllTrendingCategories from './pages/user/AllTrendingCategories';
 import MyBookings from './pages/user/MyBookings';
 import AddLocation from './pages/admin/AddLocation';
 import EditEvent from './pages/admin/EditEvent';
 import AllUpcomingEvent from './pages/user/AllUpcomingEvent';
 import EmailInterface from './pages/admin/EmailInterface';
 
- // أعلى الملف
+import { useNavigate } from "react-router-dom";
+
 function SessionChecker() {
   const navigate = useNavigate();
 
@@ -58,20 +56,19 @@ function SessionChecker() {
     const loginTime = localStorage.getItem("loginTime");
     const token = localStorage.getItem("token");
 
-    const maxSessionTime = 60 * 60 * 1000; // = 1 ساعة
+    const maxSessionTime = 60 * 60 * 1000; // ساعة
 
     if (loginTime && token) {
-      const timePassed = Date.now() - parseInt(loginTime);
+      const timePassed = Date.now() - parseInt(loginTime, 10);
       if (timePassed > maxSessionTime) {
-        localStorage.clear(); // مسح كل شي بعد انتهاء الجلسة
-        navigate("/login"); // رجوع لصفحة الدخول
+        localStorage.clear();
+        navigate("/login");
       }
     }
-  }, []);
+  }, [navigate]);
 
   return null;
 }
-
 
 function App() {
   const [role, setRole] = useState(null);
@@ -98,8 +95,8 @@ function App() {
 
   return (
     <Router>
-          <SessionChecker /> {/* ⬅️ هون تحقق من انتهاء الجلسة */}
-            <ToastContainer />
+      <SessionChecker />
+      <ToastContainer />
       <Routes>
         {/* صفحات عامة */}
         <Route path="/" element={<Home />} />
@@ -110,36 +107,29 @@ function App() {
         <Route path="/reset-password" element={<ResetPassPage />} />
         <Route path="/categories" element={<AllTrendingCategories />} />
         <Route path="/my-bookings" element={<MyBookings />} />
-<Route path="/blogs" element={<BlogPage />} />
-  
-
-        {/* صفحات المستخدم */}
+        <Route path="/blogs" element={<BlogPage />} />
         <Route path="/event/:id/tickets" element={<SeatMap />} />
         <Route path="/booking/:id" element={<Booking />} />
         <Route path="/events/:eventId" element={<WhirlingDervishShow />} />
-          
         <Route path="/category/:id/events" element={<CategoryEventsPage />} />
         <Route path="/all-trending-categories" element={<AllTrendingCategories />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/all-upcoming-event" element={<AllUpcomingEvent />} />
 
-
-         
-
-
-          <Route
-    path="/secure1234"  // نفس الرابط اللي وضعته في Login عند التنقل
-    element={
-      role === "ROLE_SUPER_ADMIN" ? (
-        <MainLayout>
-        <SuperAdminDashboard />
-        </MainLayout>
-      ) : (
-        <Navigate to="/login" replace />
-      )
-    }
-  />
+        {/* صفحة السوبر أدمن */}
+        <Route
+          path="/secure1234"
+          element={
+            role === "ROLE_SUPER_ADMIN" ? (
+              <MainLayout>
+                <SuperAdminDashboard />
+              </MainLayout>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
 
         {/* صفحة الأدمن محمية */}
         <Route
@@ -150,39 +140,39 @@ function App() {
         />
 
         {/* صفحة داشبورد المستخدم */}
-
         <Route
           path="/dashboard"
-          element={
-            role === "ROLE_USER" ? <Home /> : <Navigate to="/login" replace />
-          }
+          element={role === "ROLE_USER" ? <Home /> : <Navigate to="/login" replace />}
         />
 
         {/* مجموعة صفحات الأدمن داخل AdminLayout */}
-   <Route path="/admin" element={role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />}>
-  <Route index element={<AdminDashboard />} />
-  <Route path="category/add" element={<AddCategory />} />
-  <Route path="category/manage" element={<ManageCategories />} />
-  <Route path="category/edit/:id" element={<EditCategory />} />
-  <Route path="gallery" element={<AdminEventImagesManager />} />
-  <Route path="bookings/all" element={<AllBookings />} />
-  <Route path="bookings/new" element={<NewBookings />} />
-  <Route path="bookings/cancelled" element={<CancelledBookings />} />
-  <Route path="bookings/confirmed" element={<ConfirmedBookings />} />
-  <Route path="bookings/:id" element={<BookingDetails />} />
-  <Route path="events/add" element={<AddEvent />} />
-  <Route path="location/add" element={<AddLocation />} />
-  <Route path="/admin/events/manage" element={<ManageEvents />} />
-  <Route path="edit-event/:id" element={<EditEvent />} />
-  <Route path="seating" element={<SelectEventPage />} />
-  <Route path="seating/:eventId" element={<ManageSeatingPage />} />
-  <Route path="manage-seats" element={<EditSeatsPage />} />
-  <Route path="users" element={<ManageUsers />} />
-  <Route path="users/:userId/bookings" element={<UserBookings />} />
-  <Route path="inbox" element={<EmailInterface />} />
-</Route>
-
-
+        <Route
+          path="/admin"
+          element={
+            role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="category/add" element={<AddCategory />} />
+          <Route path="category/manage" element={<ManageCategories />} />
+          <Route path="category/edit/:id" element={<EditCategory />} />
+          <Route path="gallery" element={<AdminEventImagesManager />} />
+          <Route path="bookings/all" element={<AllBookings />} />
+          <Route path="bookings/new" element={<NewBookings />} />
+          <Route path="bookings/cancelled" element={<CancelledBookings />} />
+          <Route path="bookings/confirmed" element={<ConfirmedBookings />} />
+          <Route path="bookings/:id" element={<BookingDetails />} />
+          <Route path="events/add" element={<AddEvent />} />
+          <Route path="location/add" element={<AddLocation />} />
+          <Route path="events/manage" element={<ManageEvents />} />
+          <Route path="edit-event/:id" element={<EditEvent />} />
+          <Route path="seating" element={<SelectEventPage />} />
+          <Route path="seating/:eventId" element={<ManageSeatingPage />} />
+          <Route path="manage-seats" element={<EditSeatsPage />} />
+          <Route path="users" element={<ManageUsers />} />
+          <Route path="users/:userId/bookings" element={<UserBookings />} />
+          <Route path="inbox" element={<EmailInterface />} />
+        </Route>
       </Routes>
     </Router>
   );
