@@ -34,10 +34,7 @@ const EditEvent = () => {
   const [categories, setCategories] = useState([]);
   const [locations, setLocations] = useState([]);
 
-  
-
   useEffect(() => {
-    
     const token = localStorage.getItem("token");
     const headers = { Authorization: `Bearer ${token}` };
 
@@ -96,7 +93,7 @@ const EditEvent = () => {
         },
       });
       alert("Event updated successfully!");
-      navigate("/manage-events"); // الرجوع لقائمة الأحداث بعد التعديل
+      navigate("/admin/events/manage"); // الرجوع لقائمة الأحداث بعد التعديل
     } catch (err) {
       console.error("Error updating event:", err);
       alert("Failed to update event");
@@ -198,8 +195,16 @@ const EditEvent = () => {
                 type="file"
                 onChange={(e) => setFile(e.target.files[0])}
               />
-              <Button variant="contained" component="span">
+              <Button variant="contained" component="span" sx={{ mr: 2 }}>
                 Upload New Image
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate(`/admin/seating/${id}`)}
+              >
+                Manage Seating
               </Button>
             </label>
           </Grid>

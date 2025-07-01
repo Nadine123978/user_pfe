@@ -19,9 +19,9 @@ const StyledCard = styled(Card)(({ theme }) => ({
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
   transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
+  height: '100%', // ✅ Ensure all cards have same height
   display: 'flex',
   flexDirection: 'column',
-  height: '100%',  // يملأ ارتفاع الحاوية
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
     boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)',
@@ -220,20 +220,20 @@ const FeaturedEvents = () => {
             <Grid item xs={12} sm={6} lg={4} key={event.id} sx={{ display: 'flex' }}>
               <StyledCard>
                 <Box sx={{ position: 'relative' }}>
-           <CardMedia
-  component="img"
-  image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
-  alt={event.title}
-  sx={{
-    objectFit: 'cover',
-    width: '100%',
-    height: 240,
-    transition: 'transform 0.3s ease',
-    '&:hover': {
-      transform: 'scale(1.05)',
-    },
-  }}
-/>
+                  <CardMedia
+                    component="img"
+                    image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
+                    alt={event.title}
+                    sx={{
+                      objectFit: 'cover',
+                      width: '100%',
+                      height: 240,
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                      },
+                    }}
+                  />
 
                   <Box
                     sx={{
@@ -252,25 +252,24 @@ const FeaturedEvents = () => {
                 
                 <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <Box>
-                   <Typography
-  variant="h5"
-  sx={{
-    fontWeight: 700,
-    color: ' #200245',
-    mb: 2,
-    lineHeight: 1.3,
-    fontFamily: "'Inter', sans-serif",
-    display: '-webkit-box',
-    WebkitLineClamp: 2,      // تحديد عدد الأسطر (2 هنا)
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  }}
->
-  {event.title}
-</Typography>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 700,
+                        color: ' #200245',
+                        mb: 2,
+                        lineHeight: 1.3,
+                        fontFamily: "'Inter', sans-serif",
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,      // تحديد عدد الأسطر (2 هنا)
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {event.title}
+                    </Typography>
 
-                    
                     <Stack spacing={1.5} sx={{ mb: 3 }}>
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} />
@@ -289,23 +288,22 @@ const FeaturedEvents = () => {
                       
                       <Stack direction="row" alignItems="center" spacing={1}>
                         <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} />
-                      <Typography
-  variant="body2"
-  sx={{ 
-    color: ' #200245',
-    fontWeight: 500,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  }}
->
-  {event.location
-    ? (event.location.length > 25
-        ? event.location.substring(0, 25) + "..."
-        : event.location)
-    : "Location N/A"}
-</Typography>
-
+                        <Typography
+                          variant="body2"
+                          sx={{ 
+                            color: ' #200245',
+                            fontWeight: 500,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {event.location
+                            ? (event.location.length > 25
+                                ? event.location.substring(0, 25) + "..."
+                                : event.location)
+                            : "Location N/A"}
+                        </Typography>
                       </Stack>
                     </Stack>
                   </Box>

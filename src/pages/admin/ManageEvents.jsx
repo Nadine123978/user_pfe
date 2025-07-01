@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 const ManageEvents = () => {
@@ -48,25 +51,24 @@ const fetchEvents = async (status) => {
     fetchEvents(selectedTab);
   }, [selectedTab]);
 
-  const handlePublish = async (eventId) => {
-    if (!window.confirm("Are you sure you want to publish this event?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:8081/api/events/${eventId}/publish`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      alert("Event published successfully!");
-      fetchEvents(selectedTab);
-    } catch (error) {
-      console.error("Error publishing event:", error);
-      const errMsg = error.response?.data || "Failed to publish event.";
-      alert(errMsg);
-    }
-  };
+const handlePublish = async (eventId) => {
+  try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:8081/api/events/${eventId}/publish`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    toast.success("Event published successfully");
+    fetchEvents(selectedTab);
+  } catch (error) {
+    console.error("Error publishing event:", error.response?.data || error.message);
+    toast.error("Failed to publish event");
+  }
+};
+
 
   const handleDelete = async (eventId) => {
     if (!window.confirm("Are you sure you want to delete this draft?")) return;
