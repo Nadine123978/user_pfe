@@ -138,7 +138,7 @@ const Sidebar = () => {
       sx={{
         width: drawerWidth,
         flexShrink: 0,
-        [`& .MuiDrawer-paper`]: {
+    '& .MuiDrawer-paper': {  // ✅ هيدا هو الشكل الصحيح
           width: drawerWidth,
           boxSizing: 'border-box',
           backgroundColor: '#ffffff',
@@ -469,5 +469,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
-
+export default Sidebar;
