@@ -49,6 +49,7 @@ import AddLocation from './pages/admin/AddLocation';
 import EditEvent from './pages/admin/EditEvent';
 import AllUpcomingEvent from './pages/user/AllUpcomingEvent';
 import EmailInterface from './pages/admin/EmailInterface';
+import ManageLocations from './pages/admin/ManageLocation';
 
  // أعلى الملف
 function SessionChecker() {
@@ -163,6 +164,7 @@ function App() {
   <Route index element={<AdminDashboard />} />
   <Route path="category/add" element={<AddCategory />} />
   <Route path="category/manage" element={<ManageCategories />} />
+    <Route path="location/manage" element={<ManageLocations />} />
   <Route path="category/edit/:id" element={<EditCategory />} />
   <Route path="gallery" element={<AdminEventImagesManager />} />
   <Route path="bookings/all" element={<AllBookings />} />

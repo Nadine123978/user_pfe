@@ -12,14 +12,16 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-// Styled components for enhanced visual appeal
 const StyledCard = styled(Card)(({ theme }) => ({
-  background:'#ffffff',
+  background: '#ffffff',
   borderRadius: 20,
   overflow: 'hidden',
   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
   transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
   border: '1px solid rgba(255, 255, 255, 0.1)',
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',  // يملأ ارتفاع الحاوية
   '&:hover': {
     transform: 'translateY(-12px) scale(1.02)',
     boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)',
@@ -27,7 +29,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 }));
 
 const SeeAllButton = styled(Button)(({ theme }) => ({
-  background: 'rgba(255, 255, 255, 0.1)', // More subtle background for dark theme
+  background: 'rgba(255, 255, 255, 0.1)',
   backdropFilter: 'blur(10px)',
   border: '1px solid rgba(255, 255, 255, 0.2)',
   color: 'white',
@@ -88,7 +90,7 @@ const SectionContainer = styled(Box)(({ theme }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23E91E63" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" )',
+    background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23E91E63\' fill-opacity=\'0.03\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'4\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" )',
     zIndex: 1,
   },
 }));
@@ -117,7 +119,7 @@ const FeaturedEvents = () => {
           {
             headers: { Authorization: `Bearer ${token}` },
           }
-         );
+        );
         setEvents(response.data);
       } catch (error) {
         console.error("❌ Error fetching events:", error);
@@ -172,7 +174,6 @@ const FeaturedEvents = () => {
     return event.alreadyBooked && (status === 'PAID' || status === 'CONFIRMED');
   };
 
-  // ✅ Show only 4 events maximum
   const visibleEvents = events.slice(0, 4);
 
   return (
@@ -206,37 +207,40 @@ const FeaturedEvents = () => {
           >
             Discover extraordinary experiences handpicked just for you
           </Typography>        
-              <SeeAllButton
-              endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate("/all-upcoming-event")}
-            >
-              Explore All Events
-            </SeeAllButton>
+          <SeeAllButton
+            endIcon={<ArrowForwardIcon />}
+            onClick={() => navigate("/all-upcoming-event")}
+          >
+            Explore All Events
+          </SeeAllButton>
         </Box>
 
         <Grid container spacing={4} sx={{ maxWidth: 1400, mx: 'auto' }}>
           {visibleEvents.map((event) => (
-            <Grid item xs={12} sm={6} lg={4} key={event.id}>
+            <Grid item xs={12} sm={6} lg={4} key={event.id} sx={{ display: 'flex' }}>
               <StyledCard>
                 <Box sx={{ position: 'relative' }}>
-                  <CardMedia
-                    component="img"
-                    height="240"
-                    image={event.imageUrl?.startsWith("http" ) ? event.imageUrl : `http://localhost:8081${event.imageUrl}`}
-                    alt={event.title}
-                    sx={{ 
-                      objectFit: 'cover',
-                      transition: 'transform 0.3s ease',
-                      '&:hover': {
-                        transform: 'scale(1.05 )',
-                      },
-                    }}
-                  />
+           <CardMedia
+  component="img"
+  image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
+  alt={event.title}
+  sx={{
+    objectFit: 'cover',
+    width: '100%',
+    height: 240,
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+      transform: 'scale(1.05)',
+    },
+  }}
+/>
+
                   <Box
                     sx={{
                       position: 'absolute',
                       top: 16,
                       right: 16,
+                      zIndex: 3,
                     }}
                   >
                     <PriceChip 
@@ -246,53 +250,66 @@ const FeaturedEvents = () => {
                   </Box>
                 </Box>
                 
-                <CardContent sx={{ p: 3 }}>
-                  <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 700,
-                      color: ' #200245',
-                      mb: 2,
-                      lineHeight: 1.3,
-                      fontFamily: "'Inter', sans-serif",
-                    }}
-                  >
-                    {event.title}
-                  </Typography>
-                  
-                  <Stack spacing={1.5} sx={{ mb: 3 }}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} />
-                      <Typography
-                        variant="body2"
-                        sx={{ color:'  #200245', fontWeight: 500 }}
-                      >
-                        {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        }) : "Date N/A"}
-                      </Typography>
-                    </Stack>
+                <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Box>
+                   <Typography
+  variant="h5"
+  sx={{
+    fontWeight: 700,
+    color: ' #200245',
+    mb: 2,
+    lineHeight: 1.3,
+    fontFamily: "'Inter', sans-serif",
+    display: '-webkit-box',
+    WebkitLineClamp: 2,      // تحديد عدد الأسطر (2 هنا)
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }}
+>
+  {event.title}
+</Typography>
+
                     
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} />
+                    <Stack spacing={1.5} sx={{ mb: 3 }}>
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} />
+                        <Typography
+                          variant="body2"
+                          sx={{ color:'  #200245', fontWeight: 500 }}
+                        >
+                          {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          }) : "Date N/A"}
+                        </Typography>
+                      </Stack>
+                      
+                      <Stack direction="row" alignItems="center" spacing={1}>
+                        <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} />
                       <Typography
-                        variant="body2"
-                        sx={{ 
-                          color: ' #200245',
-                          fontWeight: 500,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {event.location || "Location N/A"}
-                      </Typography>
+  variant="body2"
+  sx={{ 
+    color: ' #200245',
+    fontWeight: 500,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }}
+>
+  {event.location
+    ? (event.location.length > 25
+        ? event.location.substring(0, 25) + "..."
+        : event.location)
+    : "Location N/A"}
+</Typography>
+
+                      </Stack>
                     </Stack>
-                  </Stack>
-                  
+                  </Box>
+
                   <GradientButton
                     onClick={() => handleButtonClick(event)}
                     fullWidth
@@ -306,7 +323,6 @@ const FeaturedEvents = () => {
             </Grid>
           ))}
         </Grid>
-
       </ContentWrapper>
     </SectionContainer>
   );
