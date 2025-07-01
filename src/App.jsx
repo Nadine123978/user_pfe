@@ -47,6 +47,7 @@ import AllTrendingCategories from "./pages/user/AllTrendingCategories";
 import MyBookings from './pages/user/MyBookings';
 import AddLocation from './pages/admin/AddLocation';
 import EditEvent from './pages/admin/EditEvent';
+import AllUpcomingEvent from './pages/user/AllUpcomingEvent';
 import EmailInterface from './pages/admin/EmailInterface';
 
  // أعلى الملف
@@ -121,6 +122,8 @@ function App() {
         <Route path="/all-trending-categories" element={<AllTrendingCategories />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/Home" element={<Home />} />
+        <Route path="/all-upcoming-event" element={<AllUpcomingEvent />} />
+
 
          
 

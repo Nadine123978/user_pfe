@@ -141,12 +141,19 @@ const CheckoutPage = () => {
 
       <OrderTimer orderNumber={bookingId} onCancel={handleCancelBooking} />
 
-      <TicketCheckout
-        tickets={selectedSeats}
-        orderNumber={bookingId}
-        paymentSuccess={paymentSuccess}
-        setPaymentSuccess={setPaymentSuccess}
-      />
+<TicketCheckout
+  tickets={selectedSeats}        // هنا نمرر selectedSeats بدل tickets
+  orderNumber={bookingId}        // إذا ما عندك orderNumber حقيقي، ممكن تستخدم bookingId مؤقتاً
+  bookingId={bookingId}
+  paymentSuccess={paymentSuccess}
+  setPaymentSuccess={setPaymentSuccess}
+  onPaymentDone={() => {
+    // مثلا تعيد تحميل أو تحديث
+    console.log('Payment done');
+  }}
+/>
+
+
     </Box>
   );
 };
