@@ -40,7 +40,7 @@ const Sidebar = () => {
   // Check if current path matches the given path
   const isActive = (path) => location.pathname === path;
 
-  // Enhanced ListItem component with professional styling
+  // Enhanced ListItem component with light, professional styling
   const StyledListItem = ({ 
     children, 
     onClick, 
@@ -58,15 +58,16 @@ const Sidebar = () => {
       sx={{
         px: isSubItem ? 4 : 3,
         py: 1.5,
-        mx: 1,
+        mx: 1.5,
         my: 0.5,
-        borderRadius: 2,
+        borderRadius: 3,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         position: 'relative',
         cursor: 'pointer',
         ...(isActive && {
-          backgroundColor: 'rgba(79, 70, 229, 0.15)',
-          borderLeft: '4px solid #4f46e5',
+          backgroundColor: 'rgba(99, 102, 241, 0.12)',
+          borderLeft: '4px solid #6366f1',
+          boxShadow: '0 2px 8px rgba(99, 102, 241, 0.15)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -74,17 +75,19 @@ const Sidebar = () => {
             top: 0,
             bottom: 0,
             width: '4px',
-            backgroundColor: '#4f46e5',
+            backgroundColor: '#6366f1',
             borderRadius: '0 2px 2px 0',
           }
         }),
         '&:hover': {
           backgroundColor: isLogout 
-            ? 'rgba(239, 68, 68, 0.1)' 
-            : 'rgba(255, 255, 255, 0.08)',
+            ? 'rgba(239, 68, 68, 0.08)' 
+            : 'rgba(99, 102, 241, 0.06)',
           transform: 'translateX(4px)',
+          boxShadow: '0 2px 12px rgba(0, 0, 0, 0.08)',
           '& .MuiListItemIcon-root': {
             transform: 'scale(1.1)',
+            color: isLogout ? '#ef4444' : '#6366f1',
           }
         },
         '&:active': {
@@ -96,11 +99,11 @@ const Sidebar = () => {
     </ListItem>
   );
 
-  // Enhanced ListItemIcon with consistent styling
-  const StyledListItemIcon = ({ children, isLogout = false }) => (
+  // Enhanced ListItemIcon with light theme styling
+  const StyledListItemIcon = ({ children, isLogout = false, isActive = false }) => (
     <ListItemIcon 
       sx={{ 
-        color: isLogout ? '#ef4444' : '#ffffff',
+        color: isLogout ? '#ef4444' : (isActive ? '#6366f1' : '#6b7280'),
         minWidth: 40,
         transition: 'all 0.3s ease',
         '& .MuiSvgIcon-root': {
@@ -113,17 +116,17 @@ const Sidebar = () => {
     </ListItemIcon>
   );
 
-  // Enhanced ListItemText with better typography
-  const StyledListItemText = ({ primary, isLogout = false }) => (
+  // Enhanced ListItemText with light theme typography
+  const StyledListItemText = ({ primary, isLogout = false, isActive = false }) => (
     <ListItemText 
       primary={primary}
       sx={{ 
         '& .MuiListItemText-primary': { 
           fontSize: '0.875rem',
-          fontWeight: 500,
-          color: isLogout ? '#ef4444' : '#ffffff',
+          fontWeight: isActive ? 600 : 500,
+          color: isLogout ? '#ef4444' : (isActive ? '#6366f1' : '#374151'),
           letterSpacing: '0.025em',
-          transition: 'color 0.3s ease'
+          transition: 'all 0.3s ease'
         } 
       }} 
     />
@@ -138,9 +141,10 @@ const Sidebar = () => {
         [`& .MuiDrawer-paper`]: {
           width: drawerWidth,
           boxSizing: 'border-box',
-          backgroundColor: '#1a2332',
-          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-          backgroundImage: 'linear-gradient(180deg, #1a2332 0%, #1e293b 100%)',
+          backgroundColor: '#ffffff',
+          borderRight: '1px solid rgba(0, 0, 0, 0.08)',
+          backgroundImage: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
+          boxShadow: '2px 0 12px rgba(0, 0, 0, 0.04)',
         },
       }}
     >
@@ -149,17 +153,23 @@ const Sidebar = () => {
       {/* Brand Section */}
       <Box sx={{ 
         p: 3, 
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        mb: 1
+        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+        mb: 1,
+        backgroundColor: '#ffffff',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.02)'
       }}>
         <Typography 
           variant="h6" 
           sx={{ 
             fontWeight: 700, 
-            color: '#ffffff',
+            color: '#1f2937',
             fontSize: '1.1rem',
             letterSpacing: '0.5px',
-            textAlign: 'center'
+            textAlign: 'center',
+            background: 'linear-gradient(135deg, #1f2937 0%, #6366f1 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
           }}
         >
           Event Manager
@@ -167,11 +177,12 @@ const Sidebar = () => {
         <Typography 
           variant="caption" 
           sx={{ 
-            color: 'rgba(255, 255, 255, 0.6)',
+            color: '#6b7280',
             fontSize: '0.75rem',
             textAlign: 'center',
             display: 'block',
-            mt: 0.5
+            mt: 0.5,
+            fontWeight: 500
           }}
         >
           Admin Panel
@@ -184,15 +195,18 @@ const Sidebar = () => {
           to="/admin"
           isActive={isActive('/admin')}
         >
-          <StyledListItemIcon><Dashboard /></StyledListItemIcon>
-          <StyledListItemText primary="Dashboard" />
+          <StyledListItemIcon isActive={isActive('/admin')}><Dashboard /></StyledListItemIcon>
+          <StyledListItemText primary="Dashboard" isActive={isActive('/admin')} />
         </StyledListItem>
 
         {/* Category */}
         <StyledListItem onClick={handleClickCategory}>
           <StyledListItemIcon><Category /></StyledListItemIcon>
           <StyledListItemText primary="Category" />
-          {openCategory ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+          {openCategory ? 
+            <ExpandLess sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} /> : 
+            <ExpandMore sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} />
+          }
         </StyledListItem>
         <Collapse in={openCategory} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -202,8 +216,8 @@ const Sidebar = () => {
               to="/admin/category/add"
               isActive={isActive('/admin/category/add')}
             >
-              <StyledListItemIcon><Add /></StyledListItemIcon>
-              <StyledListItemText primary="Add" />
+              <StyledListItemIcon isActive={isActive('/admin/category/add')}><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add" isActive={isActive('/admin/category/add')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -211,8 +225,8 @@ const Sidebar = () => {
               to="/admin/category/manage"
               isActive={isActive('/admin/category/manage')}
             >
-              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="Manage" />
+              <StyledListItemIcon isActive={isActive('/admin/category/manage')}><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage" isActive={isActive('/admin/category/manage')} />
             </StyledListItem>
           </List>
         </Collapse>
@@ -221,7 +235,10 @@ const Sidebar = () => {
         <StyledListItem onClick={handleClickLocation}>
           <StyledListItemIcon><LocationOn /></StyledListItemIcon>
           <StyledListItemText primary="Location" />
-          {openLocation ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+          {openLocation ? 
+            <ExpandLess sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} /> : 
+            <ExpandMore sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} />
+          }
         </StyledListItem>
         <Collapse in={openLocation} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -231,8 +248,8 @@ const Sidebar = () => {
               to="/admin/location/add"
               isActive={isActive('/admin/location/add')}
             >
-              <StyledListItemIcon><Add /></StyledListItemIcon>
-              <StyledListItemText primary="Add" />
+              <StyledListItemIcon isActive={isActive('/admin/location/add')}><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add" isActive={isActive('/admin/location/add')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -240,8 +257,8 @@ const Sidebar = () => {
               to="/admin/location/manage"
               isActive={isActive('/admin/location/manage')}
             >
-              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="Manage" />
+              <StyledListItemIcon isActive={isActive('/admin/location/manage')}><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage" isActive={isActive('/admin/location/manage')} />
             </StyledListItem>
           </List>
         </Collapse>
@@ -252,14 +269,17 @@ const Sidebar = () => {
           to="/admin/seating"
           isActive={isActive('/admin/seating')}
         >
-          <StyledListItemIcon><EventSeat /></StyledListItemIcon>
-          <StyledListItemText primary="Manage Section" />
+          <StyledListItemIcon isActive={isActive('/admin/seating')}><EventSeat /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Section" isActive={isActive('/admin/seating')} />
         </StyledListItem>
 
         <StyledListItem onClick={handleClickSeating}>
           <StyledListItemIcon><EventSeat /></StyledListItemIcon>
           <StyledListItemText primary="Manage Seating" />
-          {openSeating ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+          {openSeating ? 
+            <ExpandLess sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} /> : 
+            <ExpandMore sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} />
+          }
         </StyledListItem>
 
         <Collapse in={openSeating} timeout="auto" unmountOnExit>
@@ -270,8 +290,8 @@ const Sidebar = () => {
               to="/admin/manage-seats"
               isActive={isActive('/admin/manage-seats')}
             >
-              <StyledListItemIcon><Add /></StyledListItemIcon>
-              <StyledListItemText primary="Add Seat" />
+              <StyledListItemIcon isActive={isActive('/admin/manage-seats')}><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add Seat" isActive={isActive('/admin/manage-seats')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -279,8 +299,8 @@ const Sidebar = () => {
               to="/admin/seating/managee"
               isActive={isActive('/admin/seating/managee')}
             >
-              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="Manage Seats" />
+              <StyledListItemIcon isActive={isActive('/admin/seating/managee')}><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage Seats" isActive={isActive('/admin/seating/managee')} />
             </StyledListItem>
           </List>
         </Collapse>
@@ -291,15 +311,18 @@ const Sidebar = () => {
           to="/admin/sponsors"
           isActive={isActive('/admin/sponsors')}
         >
-          <StyledListItemIcon><MenuBook /></StyledListItemIcon>
-          <StyledListItemText primary="Manage Sponsors" />
+          <StyledListItemIcon isActive={isActive('/admin/sponsors')}><MenuBook /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Sponsors" isActive={isActive('/admin/sponsors')} />
         </StyledListItem>
 
         {/* Events */}
         <StyledListItem onClick={handleClickEvents}>
           <StyledListItemIcon><Event /></StyledListItemIcon>
           <StyledListItemText primary="Events" />
-          {openEvents ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+          {openEvents ? 
+            <ExpandLess sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} /> : 
+            <ExpandMore sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} />
+          }
         </StyledListItem>
         <Collapse in={openEvents} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -309,8 +332,8 @@ const Sidebar = () => {
               to="/admin/events/add"
               isActive={isActive('/admin/events/add')}
             >
-              <StyledListItemIcon><Add /></StyledListItemIcon>
-              <StyledListItemText primary="Add Event" />
+              <StyledListItemIcon isActive={isActive('/admin/events/add')}><Add /></StyledListItemIcon>
+              <StyledListItemText primary="Add Event" isActive={isActive('/admin/events/add')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -318,8 +341,8 @@ const Sidebar = () => {
               to="/admin/events/manage"
               isActive={isActive('/admin/events/manage')}
             >
-              <StyledListItemIcon><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="Manage Events" />
+              <StyledListItemIcon isActive={isActive('/admin/events/manage')}><ManageAccounts /></StyledListItemIcon>
+              <StyledListItemText primary="Manage Events" isActive={isActive('/admin/events/manage')} />
             </StyledListItem>
           </List>
         </Collapse>
@@ -329,8 +352,8 @@ const Sidebar = () => {
           to="/admin/gallery"
           isActive={isActive('/admin/gallery')}
         >
-          <StyledListItemIcon><MenuBook /></StyledListItemIcon>
-          <StyledListItemText primary="Gallery" />
+          <StyledListItemIcon isActive={isActive('/admin/gallery')}><MenuBook /></StyledListItemIcon>
+          <StyledListItemText primary="Gallery" isActive={isActive('/admin/gallery')} />
         </StyledListItem>
 
         <StyledListItem 
@@ -338,8 +361,8 @@ const Sidebar = () => {
           to="/admin/users"
           isActive={isActive('/admin/users')}
         >
-          <StyledListItemIcon><SupervisorAccount /></StyledListItemIcon>
-          <StyledListItemText primary="Manage Users" />
+          <StyledListItemIcon isActive={isActive('/admin/users')}><SupervisorAccount /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Users" isActive={isActive('/admin/users')} />
         </StyledListItem>
 
         <StyledListItem 
@@ -347,15 +370,18 @@ const Sidebar = () => {
           to="/admin/subscribers"
           isActive={isActive('/admin/subscribers')}
         >
-          <StyledListItemIcon><Subscriptions /></StyledListItemIcon>
-          <StyledListItemText primary="Manage Subscribers" />
+          <StyledListItemIcon isActive={isActive('/admin/subscribers')}><Subscriptions /></StyledListItemIcon>
+          <StyledListItemText primary="Manage Subscribers" isActive={isActive('/admin/subscribers')} />
         </StyledListItem>
 
         {/* Bookings */}
         <StyledListItem onClick={handleClickBookings}>
           <StyledListItemIcon><BookOnline /></StyledListItemIcon>
           <StyledListItemText primary="Manage Bookings" />
-          {openBookings ? <ExpandLess sx={{ color: '#ffffff' }} /> : <ExpandMore sx={{ color: '#ffffff' }} />}
+          {openBookings ? 
+            <ExpandLess sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} /> : 
+            <ExpandMore sx={{ color: '#6b7280', transition: 'all 0.3s ease' }} />
+          }
         </StyledListItem>
         <Collapse in={openBookings} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
@@ -365,8 +391,8 @@ const Sidebar = () => {
               to="/admin/bookings/all"
               isActive={isActive('/admin/bookings/all')}
             >
-              <StyledListItemIcon><MenuBook /></StyledListItemIcon>
-              <StyledListItemText primary="All Bookings" />
+              <StyledListItemIcon isActive={isActive('/admin/bookings/all')}><MenuBook /></StyledListItemIcon>
+              <StyledListItemText primary="All Bookings" isActive={isActive('/admin/bookings/all')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -374,8 +400,8 @@ const Sidebar = () => {
               to="/admin/bookings/new"
               isActive={isActive('/admin/bookings/new')}
             >
-              <StyledListItemIcon><Add /></StyledListItemIcon>
-              <StyledListItemText primary="New Bookings" />
+              <StyledListItemIcon isActive={isActive('/admin/bookings/new')}><Add /></StyledListItemIcon>
+              <StyledListItemText primary="New Bookings" isActive={isActive('/admin/bookings/new')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -383,8 +409,8 @@ const Sidebar = () => {
               to="/admin/bookings/cancelled"
               isActive={isActive('/admin/bookings/cancelled')}
             >
-              <StyledListItemIcon><MenuBook /></StyledListItemIcon>
-              <StyledListItemText primary="Cancelled Bookings" />
+              <StyledListItemIcon isActive={isActive('/admin/bookings/cancelled')}><MenuBook /></StyledListItemIcon>
+              <StyledListItemText primary="Cancelled Bookings" isActive={isActive('/admin/bookings/cancelled')} />
             </StyledListItem>
             <StyledListItem 
               isSubItem 
@@ -392,8 +418,8 @@ const Sidebar = () => {
               to="/admin/bookings/confirmed"
               isActive={isActive('/admin/bookings/confirmed')}
             >
-              <StyledListItemIcon><MenuBook /></StyledListItemIcon>
-              <StyledListItemText primary="Confirmed Bookings" />
+              <StyledListItemIcon isActive={isActive('/admin/bookings/confirmed')}><MenuBook /></StyledListItemIcon>
+              <StyledListItemText primary="Confirmed Bookings" isActive={isActive('/admin/bookings/confirmed')} />
             </StyledListItem>
           </List>
         </Collapse>
@@ -404,8 +430,8 @@ const Sidebar = () => {
           to="/admin/inbox"
           isActive={isActive('/admin/inbox')}
         >
-          <StyledListItemIcon><Inbox /></StyledListItemIcon>
-          <StyledListItemText primary="Inbox" />
+          <StyledListItemIcon isActive={isActive('/admin/inbox')}><Inbox /></StyledListItemIcon>
+          <StyledListItemText primary="Inbox" isActive={isActive('/admin/inbox')} />
         </StyledListItem>
 
         <StyledListItem 
@@ -413,8 +439,8 @@ const Sidebar = () => {
           to="/admin/news"
           isActive={isActive('/admin/news')}
         >
-          <StyledListItemIcon><Newspaper /></StyledListItemIcon>
-          <StyledListItemText primary="News" />
+          <StyledListItemIcon isActive={isActive('/admin/news')}><Newspaper /></StyledListItemIcon>
+          <StyledListItemText primary="News" isActive={isActive('/admin/news')} />
         </StyledListItem>
 
         <StyledListItem 
@@ -422,12 +448,17 @@ const Sidebar = () => {
           to="/admin/settings"
           isActive={isActive('/admin/settings')}
         >
-          <StyledListItemIcon><Settings /></StyledListItemIcon>
-          <StyledListItemText primary="Website Setting" />
+          <StyledListItemIcon isActive={isActive('/admin/settings')}><Settings /></StyledListItemIcon>
+          <StyledListItemText primary="Website Setting" isActive={isActive('/admin/settings')} />
         </StyledListItem>
 
         {/* Logout with special styling */}
-        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <Box sx={{ 
+          mt: 2, 
+          pt: 2, 
+          borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+          mx: 1.5
+        }}>
           <StyledListItem onClick={handleLogout} isLogout>
             <StyledListItemIcon isLogout><Logout /></StyledListItemIcon>
             <StyledListItemText primary="Logout" isLogout />
