@@ -18,14 +18,27 @@ const AllBookings = () => {
         const response = await axios.get('http://localhost:8081/api/bookings', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setBookings(response.data);
+        console.log('Bookings data:', response.data);
+
+        // افصل فقط بيانات الـ bookings بدون إعادة الـ event.bookings داخل كل event
+        const cleanData = response.data.map(booking => {
+
+          const { event, ...rest } = booking;
+          return {
+            ...rest,
+            event: event ? { ...event, bookings: undefined } : null,
+          };
+        });
+          console.log('Cleaned bookings:', cleanData);
+
+        setBookings(cleanData);
       } catch (error) {
         console.error('Failed to fetch bookings:', error);
       }
     };
 
     fetchBookings();
-  }, []);
+  }, []);  // <-- إغلاق الـ useEffect
 
   return (
     <Paper sx={{ padding: 2 }}>
@@ -39,38 +52,50 @@ const AllBookings = () => {
               <TableCell>Event</TableCell>
               <TableCell>User</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Seat Code</TableCell>
+              <TableCell>Seat Codes</TableCell>
               <TableCell>Price</TableCell>
               <TableCell>Created At</TableCell>
-              <TableCell>Action</TableCell> {/* ✅ عمود جديد */}
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {bookings.map((booking, index) => (
-              <TableRow key={booking.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{booking.id}</TableCell>
-                <TableCell>{booking.event?.title}</TableCell>
-                <TableCell>{booking.user?.fullName}</TableCell>
-                <TableCell>{booking.status}</TableCell>
-                <TableCell>{booking.seat?.code}</TableCell>
-                <TableCell>{booking.price} $</TableCell>
-                <TableCell>{new Date(booking.createdAt).toLocaleString()}</TableCell>
+  {bookings.map((booking, index) => {
+    console.log(booking.seats);  // هون تحط اللوج لتشوف بيانات المقاعد
+ console.log(`Booking ID: ${booking.id}, Seats:`, booking.seats);
+    return (
+      <TableRow key={booking.id}>
+        <TableCell>{index + 1}</TableCell>
+        <TableCell>{booking.id}</TableCell>
+        <TableCell>{booking.event?.title || 'No Event'}</TableCell>
+        <TableCell>{booking.user?.username || 'No User'}</TableCell>
+        <TableCell>{booking.status}</TableCell>
+       <TableCell>
+  {booking.seats && booking.seats.length > 0
+    ? booking.seats.map(seat => seat.code).join(', ')
+    : <em>No seats for this booking</em>}
+</TableCell>
 
-                {/* ✅ زر Action */}
-                <TableCell>
-                  <Tooltip title="View Details">
-                    <IconButton
-                      color="primary"
-                      onClick={() => navigate(`/admin/bookings/${booking.id}`)}
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+        <TableCell>{booking.price ? `${booking.price} $` : 'N/A'}</TableCell>
+        <TableCell>
+          {booking.createdAt
+            ? new Date(booking.createdAt).toLocaleString()
+            : 'N/A'}
+        </TableCell>
+        <TableCell>
+          <Tooltip title="View Details">
+            <IconButton
+              color="primary"
+              onClick={() => navigate(`/admin/bookings/${booking.id}`)}
+            >
+              <VisibilityIcon />
+            </IconButton>
+          </Tooltip>
+        </TableCell>
+      </TableRow>
+    );
+  })}
+</TableBody>
+
         </Table>
       </TableContainer>
     </Paper>

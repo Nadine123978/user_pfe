@@ -18,6 +18,8 @@ const BookingDetails = () => {
         const response = await axios.get(`http://localhost:8081/api/bookings/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("Booking details fetched:", response.data);
+
         setBooking(response.data);
       } catch (err) {
         setError("Failed to fetch booking details");
@@ -29,33 +31,35 @@ const BookingDetails = () => {
     fetchBookingDetails();
   }, [id]);
 
-  const handleConfirmBooking = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `http://localhost:8081/api/bookings/confirm`,
-        null,
-        {
-          params: {
-            bookingId: booking.id,
-            paymentMethod: "CASH", // يمكنك تغييره لاحقًا
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      alert("Booking confirmed successfully!");
-      window.location.reload();
-    } catch (error) {
-      console.error("Failed to confirm booking:", error);
-      alert("Error confirming booking");
-    }
-  };
+ const handleConfirmBooking = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.put(
+      `http://localhost:8081/api/bookings/${booking.id}/confirm`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    setBooking(response.data); // حدث حالة الحجز بالبيانات الجديدة
+
+    alert("Booking confirmed successfully by admin!");
+  } catch (error) {
+    alert(error.response?.data || "Error confirming booking by admin");
+  }
+};
+
 
   if (loading) return <CircularProgress sx={{ m: 4 }} />;
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!booking) return <Alert severity="info">No booking found</Alert>;
+
+  const isPending = booking.status?.trim().toUpperCase() === "PENDING";
+  const isPaid = booking.status?.trim().toUpperCase() === "PAID";
+  const isConfirmed = booking.confirmed === true;
 
   return (
     <Paper sx={{ padding: 3, maxWidth: 800, margin: 'auto', mt: 4 }}>
@@ -82,63 +86,69 @@ const BookingDetails = () => {
 
       <Box sx={{ mb: 2 }}>
         <Typography variant="h6">User</Typography>
-        <Typography>
-          <strong>Full Name:</strong> {booking.user?.fullName ?? booking.user?.username ?? "N/A"}
-        </Typography>
-        <Typography><strong>Email:</strong> {booking.user?.email}</Typography>
+        <Typography><strong>Username:</strong> {booking.user?.username || 'N/A'}</Typography>
+        <Typography><strong>Email:</strong> {booking.user?.email || 'N/A'}</Typography>
       </Box>
 
       <Divider sx={{ mb: 2 }} />
 
       <Box sx={{ mb: 2 }}>
-        <Typography variant="h6">Seat</Typography>
-        <Typography><strong>Code:</strong> {booking.seat?.code ?? "N/A"}</Typography>
-        <Typography><strong>Price:</strong> {booking.price ? `${booking.price} $` : "N/A"}</Typography>
-        <Typography><strong>Payment Method:</strong> {booking.paymentMethod || "N/A"}</Typography>
+        <Typography variant="h6">Seat(s)</Typography>
+        <Typography>
+          <strong>Codes / IDs:</strong>{' '}
+          {booking.seats && booking.seats.length > 0
+            ? booking.seats.map(seat => seat.code).join(', ')
+            : 'N/A'}
+        </Typography>
+        <Typography><strong>Price:</strong> {booking.price ? `${booking.price} $` : 'N/A'}</Typography>
+        <Typography><strong>Payment Method:</strong> {booking.paymentMethod || 'N/A'}</Typography>
       </Box>
 
-      {/* ✅ زر تأكيد الحجز */}
-      {!booking.confirmed && booking.status === "PENDING" && (
+      {/* زر تأكيد الحجز - مع تعطيل / تفعيل حسب الحالة */}
+      {!isConfirmed && (
         <Box sx={{ textAlign: 'right', mt: 3 }}>
-          <Button variant="contained" color="success" onClick={handleConfirmBooking}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={handleConfirmBooking}
+            disabled={isPending} // معطل إذا الحالة PENDING
+          >
             Confirm Booking
           </Button>
         </Box>
       )}
 
-      {/* ✅ زر تحميل التذكرة بعد التأكيد */}
-      {booking.confirmed && (
+      {/* زر تحميل التذكرة بعد التأكيد */}
+      {isConfirmed && (
         <Box sx={{ textAlign: 'right', mt: 2 }}>
-       <Button
-  variant="outlined"
-  color="primary"
-  onClick={async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:8081/api/bookings/${booking.id}/ticket`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob', // مهم لتحميل PDF
-      });
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={async () => {
+              try {
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`http://localhost:8081/api/bookings/${booking.id}/ticket`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                  responseType: 'blob',
+                });
 
-      // إنشاء رابط لتحميل الملف
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `ticket_${booking.id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error("Error downloading ticket:", error);
-      alert("Unable to download ticket.");
-    }
-  }}
->
-  Download Ticket (PDF)
-</Button>
-
+                const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `ticket_${booking.id}.pdf`);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+              } catch (error) {
+                console.error("Error downloading ticket:", error);
+                alert("Unable to download ticket.");
+              }
+            }}
+          >
+            Download Ticket (PDF)
+          </Button>
         </Box>
       )}
     </Paper>

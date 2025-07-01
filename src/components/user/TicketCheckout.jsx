@@ -14,6 +14,7 @@ import {
   TextField,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const GradientButton = styled(Button)(({ disabled }) => ({
   background: disabled
@@ -41,7 +42,7 @@ const GradientButton = styled(Button)(({ disabled }) => ({
 const TicketCheckout = ({
   tickets,
   orderNumber,
-  bookingId,         // لازم تمرر هذا من الأب
+  bookingId,
   paymentSuccess,
   setPaymentSuccess,
   onPaymentDone,
@@ -67,6 +68,7 @@ const TicketCheckout = ({
     { id: 'Libanpost', label: 'Libanpost' },
     { id: 'CashUnited', label: 'Cash United' },
     { id: 'Tylleum', label: 'Pay with Tylleum' },
+    { id: 'PayPal', label: 'PayPal' }, // PayPal added here
   ];
 
   const isOffline = ['OMT', 'MyMonty', 'Malik', 'Libanpost', 'CashUnited'].includes(selectedPayment);
@@ -78,7 +80,6 @@ const TicketCheckout = ({
     }
     return true;
   };
-
   // *** هنا أضفت استخراج الإيميل من التوكن JWT ***
   const getEmailFromToken = () => {
   const token = localStorage.getItem('token');
@@ -187,6 +188,7 @@ const TicketCheckout = ({
     }
   };
 
+  
   return (
     <Box
       maxWidth={600}
@@ -262,34 +264,42 @@ const TicketCheckout = ({
         )}
       </Box>
 
-      <Card sx={{ backgroundColor: '#2C0050', borderRadius: '12px' }}>
-        <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box>
-            <Typography>Payment Fee</Typography>
-            <Typography variant="h5">TOTAL</Typography>
-          </Box>
-          <Box textAlign="right">
-            <Typography variant="h5" color="#E91E63">
-              ${total.toFixed(2)}
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
-
-      <Box textAlign="center">
-        <GradientButton onClick={handlePayment} disabled={!isFormValid() || isPaying || paymentSuccess}>
-          {isPaying ? (
-            <>
-              <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
-              Processing...
-            </>
-          ) : paymentSuccess ? (
-            'Payment Successful'
-          ) : (
-            'Pay Now'
-          )}
-        </GradientButton>
-      </Box>
+      {selectedPayment === 'PayPal' ? (
+        <PayPalScriptProvider options={{ "client-id": "YOUR_CLIENT_ID_HERE" }}>
+          <PayPalButtons
+            style={{ layout: "vertical" }}
+            createOrder={(data, actions) => {
+              return actions.order.create({
+                purchase_units: [{
+                  amount: { value: total.toFixed(2) }
+                }]
+              });
+            }}
+            onApprove={(data, actions) => {
+              return actions.order.capture().then((details) => {
+                console.log('Payment Approved by', details.payer.name.given_name);
+                setPaymentSuccess(true);
+                if (onPaymentDone) onPaymentDone();
+              });
+            }}
+          />
+        </PayPalScriptProvider>
+      ) : (
+        <Box textAlign="center">
+          <GradientButton onClick={handlePayment} disabled={!isFormValid() || isPaying || paymentSuccess}>
+            {isPaying ? (
+              <>
+                <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+                Processing...
+              </>
+            ) : paymentSuccess ? (
+              'Payment Successful'
+            ) : (
+              'Pay Now'
+            )}
+          </GradientButton>
+        </Box>
+      )}
 
       {paymentSuccess && <Alert severity="success" sx={{ mt: 2 }}>Your payment was successful!</Alert>}
       {errorMessage && <Alert severity="error" sx={{ mt: 2 }}>{errorMessage}</Alert>}
