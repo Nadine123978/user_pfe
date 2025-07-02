@@ -414,7 +414,7 @@ const SelectEventPage = () => {
         
         <LuxuryHeader>
           <CosmicTitle variant="h1">
-            ✨ Select Event for Seating Management ✨
+            Select Event for Seating Management 
           </CosmicTitle>
           <SubTitle variant="h6">
             Choose an event to configure its premium seating arrangements
@@ -439,7 +439,7 @@ const SelectEventPage = () => {
             {events.length === 0 ? (
               <EmptyState>
                 <EmptyStateTitle>
-                  🌌 No Events Available
+                   No Events Available
                 </EmptyStateTitle>
                 <EmptyStateText>
                   Create some amazing events to manage their seating arrangements
@@ -468,7 +468,7 @@ const SelectEventPage = () => {
                       variant="contained"
                       onClick={() => handleSelect(event.id)}
                     >
-                      💎 Manage Premium Seating
+                       Manage Seating
                     </LuxuryButton>
                   </EventContent>
                 </LuxuryEventCard>

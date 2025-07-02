@@ -752,7 +752,7 @@ const SeatGrid = ({ section }) => {
         <GlassmorphismPaper>
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography variant="h4" gutterBottom sx={{ fontSize: '3rem', mb: 2 }}>
-              Cosmic Seat Manager ✨
+              Cosmic Seat Manager 
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
               Configure your galactic seating arrangements with stellar precision
@@ -767,7 +767,7 @@ const SeatGrid = ({ section }) => {
               fontSize: '1.1rem',
               textAlign: 'center'
             }}>
-              🎯 Selection Mode
+              Selection Mode
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <ToggleButtonGroup
@@ -856,16 +856,7 @@ const SeatGrid = ({ section }) => {
               onChange={(e) => setTempColor(e.target.value)}
               sx={{ mb: 2 }}
             />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={tempVIP}
-                  onChange={(e) => setTempVIP(e.target.checked)}
-                />
-              }
-              label="VIP Seat"
-              sx={{ color: 'rgba(255, 255, 255, 0.8)' }}
-            />
+          
           </DialogContent>
           <DialogActions sx={{ p: 3, gap: 2 }}>
             <Button onClick={handleClose} variant="outlined">
@@ -1048,7 +1039,7 @@ const AddSectionForm = ({ eventId }) => {
         
         <GlassmorphismPaper>
           <FormTitle>
-            {editingSection ? "✨ Edit Cosmic Section ✨" : "🌟 Add New Cosmic Section 🌟"}
+            {editingSection ? "Edit Cosmic Section " : " Add New Cosmic Section "}
           </FormTitle>
           
           <FormGrid>
@@ -1121,7 +1112,7 @@ const AddSectionForm = ({ eventId }) => {
 
           <SectionListContainer>
             <SectionListTitle>
-              🎭 Existing Cosmic Sections
+               Existing Cosmic Sections
             </SectionListTitle>
             
             {sections.map((sec) => (

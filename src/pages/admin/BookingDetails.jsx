@@ -470,12 +470,12 @@ const BookingDetails = () => {
         
         <GlassmorphismPaper>
           <PageTitle>
-            🎫 Cosmic Booking Details ✨
+             Cosmic Booking Details 
           </PageTitle>
 
           <SectionContainer>
             <SectionTitle>
-              📋 Booking Information
+               Booking Information
             </SectionTitle>
             <InfoText><strong>Booking ID:</strong> #{booking.id}</InfoText>
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 1 }}>
@@ -498,7 +498,7 @@ const BookingDetails = () => {
 
           <SectionContainer>
             <SectionTitle>
-              🎪 Event Information
+               Event Information
             </SectionTitle>
             <InfoText><strong>Title:</strong> {booking.event?.title}</InfoText>
             <InfoText><strong>Event ID:</strong> #{booking.event?.id}</InfoText>
@@ -508,7 +508,7 @@ const BookingDetails = () => {
 
           <SectionContainer>
             <SectionTitle>
-              👤 User Information
+               User Information
             </SectionTitle>
             <InfoText><strong>Username:</strong> {booking.user?.username || 'N/A'}</InfoText>
             <InfoText><strong>Email:</strong> {booking.user?.email || 'N/A'}</InfoText>
@@ -518,7 +518,7 @@ const BookingDetails = () => {
 
           <SectionContainer>
             <SectionTitle>
-              🪑 Seat Information
+               Seat Information
             </SectionTitle>
             <InfoText>
               <strong>Seat Codes:</strong>{' '}
@@ -539,7 +539,7 @@ const BookingDetails = () => {
                 disabled={isPending} // معطل إذا الحالة PENDING
                 size="large"
               >
-                {isPending ? "⏳ Pending Payment" : "✅ Confirm Booking"}
+                {isPending ? " Pending Payment" : " Confirm Booking"}
               </ActionButton>
             </Box>
           )}

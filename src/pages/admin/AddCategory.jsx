@@ -17,7 +17,7 @@ import {
   Error,
   Close,
   Celebration,
-  AutoAwesome,
+
   Category as CategoryIcon
 } from '@mui/icons-material';
 import axios from 'axios';
@@ -510,11 +510,9 @@ const AddCategory = () => {
           <Fade in timeout={1000}>
             <HeroHeader>
               <HeroBadge>
-                <AutoAwesome sx={{ color: '#ffd700', fontSize: 28 }} />
-                <HeroTitle variant="h3">
+                 <HeroTitle variant="h3">
                   Add Cosmic Category
                 </HeroTitle>
-                <CategoryIcon sx={{ color: '#06b6d4', fontSize: 28 }} />
               </HeroBadge>
               <HeroSubtitle variant="h6">
                 Create beautiful categories with stunning visuals in the cosmic realm
@@ -552,7 +550,6 @@ const AddCategory = () => {
                 {/* Category Name Input */}
                 <Box sx={{ mb: 4 }}>
                   <SectionTitle>
-                    <CategoryIcon sx={{ color: '#06b6d4' }} />
                     Category Name
                   </SectionTitle>
                   <TextField
@@ -567,7 +564,6 @@ const AddCategory = () => {
                 {/* File Upload Section */}
                 <Box sx={{ mb: 4 }}>
                   <SectionTitle>
-                    <PhotoCamera sx={{ color: '#f59e0b' }} />
                     Category Image
                   </SectionTitle>
 
@@ -651,9 +647,7 @@ const AddCategory = () => {
                       Creating Cosmic Category...
                     </>
                   ) : (
-                    <>
-                      <Celebration sx={{ mr: 1 }} />
-                      Create Cosmic Category
+                    <>                      Create Cosmic Category
                     </>
                   )}
                 </SubmitButton>

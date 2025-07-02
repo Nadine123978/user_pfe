@@ -32,7 +32,6 @@ import {
   TrendingUp as TrendingUpIcon,
   Image as ImageIcon,
   CalendarToday as CalendarIcon,
-  Visibility as VisibilityIcon,
   Star as StarIcon,
   AutoAwesome as AutoAwesomeIcon,
   FilterList as FilterIcon
@@ -310,7 +309,7 @@ const StatCard = styled(Card)(({ color }) => ({
   },
 }));
 
-const CategoryCard = styled(Card)(({ status }) => ({
+const CategoryCard = styled(Card)({
   height: '320px',
   position: 'relative',
   overflow: 'hidden',
@@ -322,9 +321,9 @@ const CategoryCard = styled(Card)(({ status }) => ({
     left: 0,
     right: 0,
     height: '3px',
-    background: `linear-gradient(90deg, ${getStatusColor(status)}, #6366f1)`,
+    background: 'linear-gradient(90deg, #6366f1, #06b6d4)',
   },
-}));
+});
 
 const LoadingSkeleton = styled(Card)({
   height: '320px',
@@ -422,21 +421,8 @@ const ManageCategories = () => {
     return null;
   };
 
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'active': return '#10b981';
-      case 'inactive': return '#6b7280';
-      default: return '#f59e0b';
-    }
-  };
-
-  const getStatusLabel = (status) => {
-    return status || 'Inactive';
-  };
-
   // Statistics
   const totalCategories = categories.length;
-  const activeCategories = categories.filter(cat => cat.status?.toLowerCase() === 'active').length;
   const trendingCategories = categories.filter(cat => cat.isTrending).length;
 
   return (
@@ -449,16 +435,14 @@ const ManageCategories = () => {
           <Fade in timeout={1000}>
             <HeroHeader>
               <HeroBadge>
-                <AutoAwesomeIcon sx={{ color: '#ffd700', fontSize: 32 }} />
                 <HeroTitle variant="h3">
                   Cosmic Categories Manager
                 </HeroTitle>
-                <CategoryIcon sx={{ color: '#06b6d4', fontSize: 32 }} />
               </HeroBadge>
 
               {/* Statistics Cards */}
-              <Grid container spacing={3} sx={{ maxWidth: 800, margin: '0 auto' }}>
-                <Grid item xs={12} md={4}>
+              <Grid container spacing={3} sx={{ maxWidth: 600, margin: '0 auto' }}>
+                <Grid item xs={12} md={6}>
                   <Zoom in timeout={1200}>
                     <StatCard color="#6366f1">
                       <CategoryIcon sx={{ color: '#6366f1', fontSize: 40, mb: 1 }} />
@@ -471,21 +455,8 @@ const ManageCategories = () => {
                     </StatCard>
                   </Zoom>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
                   <Zoom in timeout={1400}>
-                    <StatCard color="#10b981">
-                      <VisibilityIcon sx={{ color: '#10b981', fontSize: 40, mb: 1 }} />
-                      <Typography variant="h4" sx={{ color: 'white', fontWeight: 700 }}>
-                        {activeCategories}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                        Active Categories
-                      </Typography>
-                    </StatCard>
-                  </Zoom>
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <Zoom in timeout={1600}>
                     <StatCard color="#f59e0b">
                       <TrendingUpIcon sx={{ color: '#f59e0b', fontSize: 40, mb: 1 }} />
                       <Typography variant="h4" sx={{ color: 'white', fontWeight: 700 }}>
@@ -537,7 +508,7 @@ const ManageCategories = () => {
                   return (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={cat.id}>
                       <Zoom in timeout={2200 + index * 100}>
-                        <CategoryCard status={cat.status}>
+                        <CategoryCard>
                           {/* Category Image */}
                           <Box sx={{ position: 'relative', height: 160 }}>
                             {imageUrl ? (
@@ -548,10 +519,10 @@ const ManageCategories = () => {
                                 alt={cat.name}
                                 sx={{
                                   objectFit: 'cover',
-                                  transition: 'all 0.3s ease',
+                                  transition: 'transform 0.3s ease',
                                   '&:hover': {
                                     transform: 'scale(1.05)',
-                                  }
+                                  },
                                 }}
                               />
                             ) : (
@@ -567,46 +538,25 @@ const ManageCategories = () => {
                                 <ImageIcon sx={{ fontSize: 60, color: 'rgba(255, 255, 255, 0.5)' }} />
                               </Box>
                             )}
-                            
-                            {/* Status Badge */}
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                top: 8,
-                                right: 8,
-                              }}
-                            >
-                              <Chip
-                                label={getStatusLabel(cat.status)}
-                                size="small"
-                                sx={{
-                                  backgroundColor: getStatusColor(cat.status),
-                                  color: 'white',
-                                  fontWeight: 600,
-                                }}
-                              />
-                            </Box>
 
                             {/* Trending Badge */}
                             {cat.isTrending && (
-                              <Box
+                              <Chip
+                                label="Trending"
+                                size="small"
                                 sx={{
                                   position: 'absolute',
                                   top: 8,
-                                  left: 8,
-                                }}
-                              >
-                                <Chip
-                                  icon={<StarIcon sx={{ fontSize: 16 }} />}
-                                  label="Trending"
-                                  size="small"
-                                  sx={{
-                                    backgroundColor: '#f59e0b',
+                                  right: 8,
+                                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                                  color: 'white',
+                                  fontWeight: 600,
+                                  '& .MuiChip-icon': {
                                     color: 'white',
-                                    fontWeight: 600,
-                                  }}
-                                />
-                              </Box>
+                                  },
+                                }}
+                                icon={<StarIcon />}
+                              />
                             )}
                           </Box>
 
@@ -618,7 +568,6 @@ const ManageCategories = () => {
                                 color: 'white',
                                 fontWeight: 600,
                                 mb: 1,
-                                fontSize: '1.1rem',
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
@@ -626,33 +575,27 @@ const ManageCategories = () => {
                             >
                               {cat.name}
                             </Typography>
-                            
+
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                mb: 2,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {cat.description || 'No description available'}
+                            </Typography>
+
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                              <CalendarIcon sx={{ fontSize: 16, color: 'rgba(255, 255, 255, 0.6)' }} />
-                              <Typography
-                                variant="caption"
-                                sx={{ color: 'rgba(255, 255, 255, 0.6)' }}
-                              >
-                                {cat.createdAt ? new Date(cat.createdAt).toLocaleDateString() : 'Unknown'}
+                              <CalendarIcon sx={{ fontSize: 16, color: 'rgba(255, 255, 255, 0.5)' }} />
+                              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                                {new Date(cat.createdAt).toLocaleDateString()}
                               </Typography>
                             </Box>
-
-                            {cat.description && (
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  color: 'rgba(255, 255, 255, 0.7)',
-                                  fontSize: '0.85rem',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  display: '-webkit-box',
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: 'vertical',
-                                }}
-                              >
-                                {cat.description}
-                              </Typography>
-                            )}
                           </CardContent>
 
                           {/* Category Actions */}
@@ -661,12 +604,12 @@ const ManageCategories = () => {
                               <Tooltip title="Edit Category">
                                 <IconButton
                                   size="small"
-                                  onClick={() => navigate(`/admin/category/edit/${cat.id}`)}
+                                  onClick={() => navigate(`/admin/categories/edit/${cat.id}`)}
                                   sx={{
+                                    background: 'rgba(99, 102, 241, 0.2)',
                                     color: '#6366f1',
-                                    background: 'rgba(99, 102, 241, 0.1)',
                                     '&:hover': {
-                                      background: 'rgba(99, 102, 241, 0.2)',
+                                      background: 'rgba(99, 102, 241, 0.3)',
                                       transform: 'scale(1.1)',
                                     },
                                   }}
@@ -674,16 +617,16 @@ const ManageCategories = () => {
                                   <EditIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
-                              
+
                               <Tooltip title="Delete Category">
                                 <IconButton
                                   size="small"
                                   onClick={() => handleClickDelete(cat.id)}
                                   sx={{
+                                    background: 'rgba(239, 68, 68, 0.2)',
                                     color: '#ef4444',
-                                    background: 'rgba(239, 68, 68, 0.1)',
                                     '&:hover': {
-                                      background: 'rgba(239, 68, 68, 0.2)',
+                                      background: 'rgba(239, 68, 68, 0.3)',
                                       transform: 'scale(1.1)',
                                     },
                                   }}
@@ -692,16 +635,6 @@ const ManageCategories = () => {
                                 </IconButton>
                               </Tooltip>
                             </Box>
-
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: 'rgba(255, 255, 255, 0.5)',
-                                fontSize: '0.75rem',
-                              }}
-                            >
-                              ID: {cat.id}
-                            </Typography>
                           </CardActions>
                         </CategoryCard>
                       </Zoom>
@@ -709,29 +642,39 @@ const ManageCategories = () => {
                   );
                 })
               )}
+
+              {/* Empty State */}
+              {!loading && filteredCategories.length === 0 && (
+                <Grid item xs={12}>
+                  <Box
+                    sx={{
+                      textAlign: 'center',
+                      py: 8,
+                      px: 4,
+                      background: 'rgba(255, 255, 255, 0.05)',
+                      borderRadius: '20px',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                    }}
+                  >
+                    <CategoryIcon sx={{ fontSize: 80, color: 'rgba(255, 255, 255, 0.3)', mb: 2 }} />
+                    <Typography variant="h5" sx={{ color: 'white', mb: 1, fontWeight: 600 }}>
+                      No Categories Found
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 3 }}>
+                      {searchTerm ? 'Try adjusting your search terms' : 'Start by creating your first category'}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      onClick={() => navigate('/admin/categories/add')}
+                      sx={{ px: 4, py: 1.5 }}
+                    >
+                      Create Category
+                    </Button>
+                  </Box>
+                </Grid>
+              )}
             </Grid>
           </Fade>
-
-          {/* No Results */}
-          {!loading && filteredCategories.length === 0 && (
-            <Fade in timeout={2500}>
-              <Box
-                sx={{
-                  textAlign: 'center',
-                  py: 8,
-                  color: 'rgba(255, 255, 255, 0.6)',
-                }}
-              >
-                <CategoryIcon sx={{ fontSize: 80, mb: 2, opacity: 0.5 }} />
-                <Typography variant="h6" sx={{ mb: 1 }}>
-                  No cosmic categories found
-                </Typography>
-                <Typography variant="body2">
-                  {searchTerm ? 'Try adjusting your search terms' : 'Start by creating your first category'}
-                </Typography>
-              </Box>
-            </Fade>
-          )}
         </MainContent>
 
         {/* Delete Confirmation Dialog */}
@@ -742,28 +685,19 @@ const ManageCategories = () => {
           fullWidth
         >
           <DialogTitle>
-            🗑️ Confirm Deletion
+            Confirm Deletion
           </DialogTitle>
           <DialogContent>
-            <DialogContentText sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-              Are you sure you want to delete this cosmic category? This action cannot be undone and will remove all associated data.
+            <DialogContentText sx={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.1rem' }}>
+              Are you sure you want to delete this category? This action cannot be undone and will permanently remove the category from your system.
             </DialogContentText>
           </DialogContent>
           <DialogActions sx={{ p: 3, gap: 2 }}>
             <Button onClick={handleCancelDelete} variant="outlined">
               Cancel
             </Button>
-            <Button 
-              onClick={handleConfirmDelete} 
-              variant="contained"
-              sx={{
-                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                '&:hover': {
-                  background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                },
-              }}
-            >
-              Delete Forever
+            <Button onClick={handleConfirmDelete} variant="contained" color="error">
+              Delete Category
             </Button>
           </DialogActions>
         </Dialog>
@@ -771,15 +705,6 @@ const ManageCategories = () => {
     </ThemeProvider>
   );
 };
-
-// Helper function for status color (moved outside component)
-function getStatusColor(status) {
-  switch (status?.toLowerCase()) {
-    case 'active': return '#10b981';
-    case 'inactive': return '#6b7280';
-    default: return '#f59e0b';
-  }
-}
 
 export default ManageCategories;
 

@@ -152,7 +152,7 @@ function App() {
   <Route path="category/add" element={<AddCategory />} />
   <Route path="category/manage" element={<ManageCategories />} />
     <Route path="location/manage" element={<ManageLocations />} />
-  <Route path="category/edit/:id" element={<EditCategory />} />
+  <Route path="categories/edit/:id" element={<EditCategory />} />
   <Route path="gallery" element={<AdminEventImagesManager />} />
   <Route path="bookings/all" element={<AllBookings />} />
   <Route path="bookings/new" element={<NewBookings />} />

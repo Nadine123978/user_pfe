@@ -30,7 +30,7 @@ export default function EmailContent({ message }) {
           fontWeight: 500,
           color: '#6366f1',
         }}>
-          Select a message to view its cosmic details ✨
+          Select a message to view its cosmic details 
         </Typography>
       </Box>
     );
@@ -98,17 +98,17 @@ export default function EmailContent({ message }) {
           backgroundClip: 'text',
           marginBottom: '8px',
         }}>
-          {message.fullName} ✨
+          {message.fullName} 
         </Typography>
         <Typography sx={{ color: '#06b6d4', fontSize: '1rem', mb: 1 }}>
-          📧 {message.email}
+           {message.email}
         </Typography>
         <Typography sx={{
           fontSize: '0.9rem',
           color: 'rgba(255, 255, 255, 0.6)',
           fontStyle: 'italic',
         }}>
-          🕒 {new Date(message.createdAt).toLocaleString()}
+           {new Date(message.createdAt).toLocaleString()}
         </Typography>
       </Box>
 
@@ -148,7 +148,7 @@ export default function EmailContent({ message }) {
           }
         }}
       >
-        🚀 Reply
+         Reply
       </Button>
 
       {replyOpen && (
@@ -216,7 +216,7 @@ export default function EmailContent({ message }) {
 
       {replySent && (
         <Alert severity="success" sx={{ mt: 2 }}>
-          ✅ Reply sent successfully to {message.email}! 🚀
+           Reply sent successfully to {message.email}! 
         </Alert>
       )}
 

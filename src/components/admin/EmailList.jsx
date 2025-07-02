@@ -50,7 +50,7 @@ export default function EmailList({ onSelectMessage, selectedMessage }) {
         marginBottom: '20px',
         textAlign: 'center',
       }}>
-        📧 Messages ✨
+         Messages 
       </Typography>
       
       <Box sx={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
@@ -98,7 +98,7 @@ export default function EmailList({ onSelectMessage, selectedMessage }) {
             borderRadius: '12px',
             border: '1px solid rgba(99, 102, 241, 0.3)',
           }}>
-            🔍 Scanning cosmic messages...
+             Scanning cosmic messages...
           </Typography>
         ) : (
           <List sx={{ padding: 0 }}>

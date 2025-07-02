@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 
 const containerStyle = {
@@ -71,6 +71,9 @@ export default function ManageLocations() {
     googleMapsApiKey: "AIzaSyAhYcftcBcRbJnpSO0wcWryScwNqEXrdtc",
   });
 
+  // Map reference for controlling center and zoom
+  const mapRef = useRef(null);
+
   // Stored locations
   const [locations, setLocations] = useState([]);
 
@@ -88,6 +91,23 @@ export default function ManageLocations() {
 
   // Success status
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Map center state
+  const [mapCenter, setMapCenter] = useState(defaultCenter);
+  const [mapZoom, setMapZoom] = useState(10);
+
+  // Function to center map on specific coordinates
+  const centerMapOnLocation = (lat, lng, zoom = 14) => {
+    const newCenter = { lat, lng };
+    setMapCenter(newCenter);
+    setMapZoom(zoom);
+    
+    // Also pan the map if it's already loaded
+    if (mapRef.current) {
+      mapRef.current.panTo(newCenter);
+      mapRef.current.setZoom(zoom);
+    }
+  };
 
   // Reverse Geocoding: Get address from coordinates
   const getAddressFromCoords = async (lat, lng) => {
@@ -174,6 +194,11 @@ export default function ManageLocations() {
       setVenueName("");
       setSelectedPosition(null);
       setEditingId(null);
+      
+      // Reset map to default view
+      setMapCenter(defaultCenter);
+      setMapZoom(10);
+      
       fetchLocations();
     } catch (error) {
       alert("Error: " + error.message);
@@ -208,6 +233,9 @@ export default function ManageLocations() {
       lng: location.longitude,
     });
     setEditingId(location.id);
+    
+    // Center map on the location being edited
+    centerMapOnLocation(location.latitude, location.longitude, 16);
   };
 
   // Reset form
@@ -215,6 +243,20 @@ export default function ManageLocations() {
     setVenueName("");
     setSelectedPosition(null);
     setEditingId(null);
+    
+    // Reset map to default view
+    setMapCenter(defaultCenter);
+    setMapZoom(10);
+  };
+
+  // Handle map load
+  const onMapLoad = (map) => {
+    mapRef.current = map;
+  };
+
+  // Function to view location on map (for table rows)
+  const viewLocationOnMap = (location) => {
+    centerMapOnLocation(location.latitude, location.longitude, 16);
   };
 
   if (loadError) return (
@@ -317,9 +359,10 @@ export default function ManageLocations() {
           <div style={styles.mapContainer}>
             <GoogleMap
               mapContainerStyle={containerStyle}
-              center={selectedPosition || defaultCenter}
-              zoom={selectedPosition ? 14 : 10}
+              center={mapCenter}
+              zoom={mapZoom}
               onClick={onMapClick}
+              onLoad={onMapLoad}
               options={{
                 styles: mapStyles,
                 disableDefaultUI: false,
@@ -335,6 +378,16 @@ export default function ManageLocations() {
                 <Marker 
                   position={selectedPosition}
                   animation={window.google?.maps?.Animation?.DROP}
+                  icon={{
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                      <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" fill="#10b981" stroke="#ffffff" stroke-width="3"/>
+                        <circle cx="20" cy="20" r="8" fill="#ffffff"/>
+                      </svg>
+                    `),
+                    scaledSize: new window.google.maps.Size(40, 40),
+                    anchor: new window.google.maps.Point(20, 20)
+                  }}
                 />
               )}
               {locations.map((location) => (
@@ -401,6 +454,13 @@ export default function ManageLocations() {
                     <div style={styles.tableCell}>{loc.longitude.toFixed(6)}</div>
                     <div style={styles.tableCell}>
                       <button 
+                        onClick={() => viewLocationOnMap(loc)}
+                        style={styles.viewButton}
+                        title="View on map"
+                      >
+                        👁️ View
+                      </button>
+                      <button 
                         onClick={() => onEdit(loc)}
                         style={styles.editButton}
                       >
@@ -432,7 +492,6 @@ const styles = {
     position: 'relative',
     overflow: 'hidden',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    direction: 'rtl',
   },
   
   cosmicBackground: {
@@ -547,256 +606,273 @@ const styles = {
   },
   
   inputContainer: {
-    marginBottom: '24px',
+    marginBottom: '20px',
   },
   
   inputLabel: {
     display: 'block',
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: '1rem',
     fontWeight: '600',
     marginBottom: '8px',
-    color: '#06b6d4',
   },
   
   input: {
     width: '100%',
-    padding: '12px 16px',
-    borderRadius: '12px',
-    border: 'none',
-    fontSize: '1rem',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: '16px 20px',
+    background: 'rgba(255, 255, 255, 0.1)',
+    border: '2px solid rgba(255, 255, 255, 0.2)',
+    borderRadius: '16px',
     color: '#ffffff',
-    boxShadow: 'inset 0 0 12px rgba(139, 92, 246, 0.5)',
-    transition: 'background-color 0.3s ease',
+    fontSize: '1.1rem',
+    fontWeight: '500',
+    backdropFilter: 'blur(10px)',
+    transition: 'all 0.3s ease',
+    outline: 'none',
+    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+    boxSizing: 'border-box',
   },
   
   locationInfo: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    padding: '20px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    border: '2px solid rgba(16, 185, 129, 0.3)',
     borderRadius: '16px',
-    border: '1px solid rgba(139, 92, 246, 0.5)',
-    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)',
-    color: '#ffffff',
-    marginBottom: '24px',
+    padding: '20px',
+    marginBottom: '20px',
   },
   
   locationInfoTitle: {
-    margin: '0 0 12px 0',
-    fontWeight: '700',
+    color: '#10b981',
+    fontSize: '1.2rem',
+    fontWeight: '600',
+    margin: '0 0 10px 0',
   },
   
   locationCoords: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: '0.95rem',
     margin: 0,
-    fontWeight: '500',
+    lineHeight: '1.5',
   },
   
   buttonContainer: {
     display: 'flex',
+    flexDirection: 'column',
     gap: '12px',
-    alignItems: 'center',
   },
   
   saveButton: {
+    width: '100%',
+    padding: '18px',
     background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-    color: '#fff',
     border: 'none',
     borderRadius: '16px',
-    padding: '14px 28px',
-    fontSize: '1rem',
+    color: '#ffffff',
+    fontSize: '1.2rem',
     fontWeight: '700',
     cursor: 'pointer',
-    boxShadow: '0 8px 20px rgba(139, 92, 246, 0.5)',
-    transition: 'transform 0.2s ease',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 8px 16px rgba(139, 92, 246, 0.4)',
   },
   
   saveButtonDisabled: {
-    opacity: 0.5,
+    opacity: 0.6,
     cursor: 'not-allowed',
+    transform: 'none',
   },
   
   cancelButton: {
-    backgroundColor: '#f87171',
-    color: '#fff',
-    border: 'none',
+    width: '100%',
+    padding: '14px',
+    background: 'rgba(239, 68, 68, 0.2)',
+    border: '2px solid rgba(239, 68, 68, 0.5)',
     borderRadius: '16px',
-    padding: '14px 28px',
+    color: '#ef4444',
     fontSize: '1rem',
-    fontWeight: '700',
+    fontWeight: '600',
     cursor: 'pointer',
-    boxShadow: '0 8px 20px rgba(248, 113, 113, 0.5)',
-    transition: 'transform 0.2s ease',
+    transition: 'all 0.3s ease',
   },
   
   mapContainer: {
-    width: "100%",
-    height: "500px",
-    borderRadius: "20px",
-    overflow: "hidden",
-    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.3)",
+    borderRadius: '20px',
+    overflow: 'hidden',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+    border: '2px solid rgba(255, 255, 255, 0.1)',
   },
   
   tableSection: {
     position: 'relative',
     zIndex: 10,
+    padding: '40px 20px',
     maxWidth: '1400px',
-    margin: '40px auto 80px',
-    padding: '0 20px',
+    margin: '0 auto',
   },
   
   tableContainer: {
     background: 'rgba(255, 255, 255, 0.05)',
+    backdropFilter: 'blur(20px)',
     borderRadius: '24px',
-    border: '1px solid rgba(139, 92, 246, 0.3)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
     boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
-    overflowX: 'auto',
+    overflow: 'hidden',
   },
   
   table: {
     width: '100%',
-    borderCollapse: 'collapse',
-    color: '#fff',
   },
   
   tableHeader: {
     display: 'grid',
-    gridTemplateColumns: '2fr 1fr 1fr 1fr',
-    background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-    padding: '16px 24px',
-    fontWeight: '700',
-    fontSize: '1.1rem',
+    gridTemplateColumns: '2fr 1fr 1fr 2fr',
+    background: 'rgba(139, 92, 246, 0.2)',
+    padding: '20px',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
   },
   
   tableHeaderCell: {
-    padding: '8px 16px',
-    textAlign: 'left',
+    color: '#ffffff',
+    fontWeight: '700',
+    fontSize: '1.1rem',
   },
   
   tableRow: {
     display: 'grid',
-    gridTemplateColumns: '2fr 1fr 1fr 1fr',
-    borderBottom: '1px solid rgba(139, 92, 246, 0.3)',
-    padding: '16px 24px',
-    alignItems: 'center',
-    fontWeight: '500',
-    fontSize: '1rem',
+    gridTemplateColumns: '2fr 1fr 1fr 2fr',
+    padding: '20px',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    transition: 'all 0.3s ease',
   },
   
   tableRowEditing: {
-    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+    background: 'rgba(139, 92, 246, 0.1)',
+    borderLeft: '4px solid #8b5cf6',
   },
   
   tableCell: {
-    padding: '8px 16px',
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  
+  viewButton: {
+    padding: '8px 12px',
+    background: 'rgba(6, 182, 212, 0.2)',
+    border: '1px solid rgba(6, 182, 212, 0.5)',
+    borderRadius: '8px',
+    color: '#06b6d4',
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    marginRight: '8px',
   },
   
   editButton: {
-    backgroundColor: '#8b5cf6',
-    border: 'none',
-    borderRadius: '12px',
-    color: '#fff',
-    padding: '8px 16px',
+    padding: '8px 12px',
+    background: 'rgba(139, 92, 246, 0.2)',
+    border: '1px solid rgba(139, 92, 246, 0.5)',
+    borderRadius: '8px',
+    color: '#8b5cf6',
+    fontSize: '0.9rem',
+    fontWeight: '600',
     cursor: 'pointer',
+    transition: 'all 0.3s ease',
     marginRight: '8px',
-    transition: 'background-color 0.3s ease',
   },
   
   deleteButton: {
-    backgroundColor: '#ef4444',
-    border: 'none',
-    borderRadius: '12px',
-    color: '#fff',
-    padding: '8px 16px',
+    padding: '8px 12px',
+    background: 'rgba(239, 68, 68, 0.2)',
+    border: '1px solid rgba(239, 68, 68, 0.5)',
+    borderRadius: '8px',
+    color: '#ef4444',
+    fontSize: '0.9rem',
+    fontWeight: '600',
     cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
+    transition: 'all 0.3s ease',
   },
   
   emptyState: {
     textAlign: 'center',
-    padding: '80px 20px',
-    color: 'rgba(255, 255, 255, 0.5)',
+    padding: '60px 20px',
   },
   
   emptyIcon: {
-    fontSize: '6rem',
-    marginBottom: '24px',
+    fontSize: '4rem',
+    marginBottom: '20px',
   },
   
   emptyTitle: {
-    fontSize: '2rem',
-    marginBottom: '12px',
+    color: '#ffffff',
+    fontSize: '1.5rem',
+    fontWeight: '600',
+    marginBottom: '10px',
   },
   
   emptyText: {
-    fontSize: '1.2rem',
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: '1rem',
   },
   
   loadingContainer: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100vh',
-    color: '#8b5cf6',
-    fontWeight: '700',
-    fontSize: '1.5rem',
+    color: '#ffffff',
   },
   
   loadingSpinner: {
-    border: '8px solid #2d1b69',
-    borderTop: '8px solid #8b5cf6',
+    width: '60px',
+    height: '60px',
+    border: '4px solid rgba(139, 92, 246, 0.3)',
+    borderTop: '4px solid #8b5cf6',
     borderRadius: '50%',
-    width: '80px',
-    height: '80px',
-    animation: 'spin 1.5s linear infinite',
+    animation: 'spin 1s linear infinite',
     marginBottom: '20px',
   },
   
   loadingText: {
-    fontWeight: '700',
     fontSize: '1.2rem',
+    fontWeight: '600',
   },
   
   loadingTableContainer: {
-    padding: '40px',
-    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '60px 20px',
   },
   
   loadingTableText: {
-    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.8)',
     fontSize: '1.1rem',
-    color: '#8b5cf6',
+    fontWeight: '600',
+    margin: 0,
   },
   
   errorContainer: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2d1b69 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#1a1f3a',
   },
   
   errorMessage: {
     color: '#ef4444',
-    fontWeight: '700',
-    fontSize: '2rem',
-  },
-
-  '@keyframes spin': {
-    '0%': { transform: 'rotate(0deg)' },
-    '100%': { transform: 'rotate(360deg)' },
-  },
-
-  '@keyframes slideIn': {
-    '0%': { opacity: 0, transform: 'translateY(-20px)' },
-    '100%': { opacity: 1, transform: 'translateY(0)' },
-  },
-
-  '@keyframes sparkle': {
-    '0%, 100%': { backgroundPosition: '0 0' },
-    '50%': { backgroundPosition: '200px 100px' },
-  },
-
-  '@keyframes float': {
-    '0%, 100%': { transform: 'translateY(0)' },
-    '50%': { transform: 'translateY(-15px)' },
+    fontSize: '1.5rem',
+    fontWeight: '600',
+    textAlign: 'center',
+    padding: '40px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '2px solid rgba(239, 68, 68, 0.3)',
+    borderRadius: '16px',
   },
 };
+

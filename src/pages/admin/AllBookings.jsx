@@ -352,7 +352,7 @@ const AllBookings = () => {
           <GlassmorphismPaper>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Typography variant="h4" gutterBottom sx={{ fontSize: '3rem', mb: 2 }}>
-                Cosmic Booking Ledger ✨
+                Cosmic Booking Ledger 
               </Typography>
               <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
                 Manage your galactic event reservations with stellar precision

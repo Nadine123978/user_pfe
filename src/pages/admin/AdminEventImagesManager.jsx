@@ -460,7 +460,7 @@ export default function AdminEventImagesManager() {
           <GlassmorphismPaper>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Typography variant="h4" gutterBottom sx={{ fontSize: '3rem', mb: 2 }}>
-                Event Images Manager ✨
+                Event Images Manager 
               </Typography>
               <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
                 Cosmic gallery management for your stellar events
@@ -491,7 +491,7 @@ export default function AdminEventImagesManager() {
                               }
                             }}
                           >
-                            🖼️ Manage Images
+                             Manage Images
                           </Button>
                         </Box>
                       </EventCard>

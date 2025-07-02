@@ -394,7 +394,7 @@ const ManageEvents = () => {
           {/* Header Section */}
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography variant="h4" gutterBottom sx={{ fontSize: '3rem', mb: 2 }}>
-              ✨ Cosmic Event Command Center ✨
+               Cosmic Event Command Center 
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
               {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)} Events - {filteredEvents.length} found

@@ -415,7 +415,7 @@ export default function EmailInterface() {
         <MainContainer>
           <HeaderSection>
             <HeaderTitle>
-              📧 Cosmic Email Center ✨
+               Cosmic Email Center 
             </HeaderTitle>
             <HeaderSubtitle>
               Manage your galactic communications with stellar efficiency
@@ -423,12 +423,7 @@ export default function EmailInterface() {
           </HeaderSection>
 
           <EmailInterfaceContainer>
-            <SidebarSection>
-              <Sidebar />
-            </SidebarSection>
-            
-            <Divider />
-            
+  
             <EmailListSection>
               <EmailList
                 onSelectMessage={setSelectedMessage}

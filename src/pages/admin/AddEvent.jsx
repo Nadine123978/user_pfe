@@ -410,7 +410,7 @@ const AddEvent = () => {
           <GlassmorphismPaper>
             <Box sx={{ textAlign: 'center', mb: 6 }}>
               <Typography variant="h4" gutterBottom sx={{ fontSize: '3.2rem', mb: 3 }}>
-                ✨ Create Cosmic Event
+                 Create Cosmic Event
               </Typography>
               <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.2rem', lineHeight: 1.6 }}>
                 Bring your vision to life with our premium event creation studio
@@ -419,7 +419,7 @@ const AddEvent = () => {
             
             <form onSubmit={handleSubmit}>
               <FormSection>
-                <SectionTitle>📝 Event Details</SectionTitle>
+                <SectionTitle> Event Details</SectionTitle>
                 <Grid container spacing={4}>
                   <Grid item xs={12}>
                     <TextField 
@@ -447,7 +447,7 @@ const AddEvent = () => {
               </FormSection>
 
               <FormSection>
-                <SectionTitle>📅 Schedule & Location</SectionTitle>
+                <SectionTitle> Schedule & Location</SectionTitle>
                 <Grid container spacing={4}>
                   <Grid item xs={12} md={6}>
                     <TextField
@@ -473,7 +473,7 @@ const AddEvent = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <FormControl fullWidth required>
                       <InputLabel>Event Category</InputLabel>
                       <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
@@ -484,7 +484,7 @@ const AddEvent = () => {
                     </FormControl>
                   </Grid>
 
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <FormControl fullWidth required>
                       <InputLabel>Event Location</InputLabel>
                       <Select value={locationId} onChange={(e) => setLocationId(e.target.value)}>
@@ -498,7 +498,7 @@ const AddEvent = () => {
               </FormSection>
 
               <FormSection>
-                <SectionTitle>🖼️ Event Media</SectionTitle>
+                <SectionTitle> Event Media</SectionTitle>
                 <Grid container spacing={4}>
                   <Grid item xs={12}>
                     <label htmlFor="upload-photo">
@@ -506,7 +506,7 @@ const AddEvent = () => {
                       <UploadZone component="div">
                         <Box sx={{ position: 'relative', zIndex: 2 }}>
                           <Typography variant="h6" sx={{ mb: 2, color: '#6366f1', fontWeight: 700, fontSize: '1.3rem' }}>
-                            📸 Upload Event Image
+                             Upload Event Image
                           </Typography>
                           <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 1, fontSize: '1.1rem' }}>
                             Drag and drop your image here, or click to browse
@@ -544,7 +544,7 @@ const AddEvent = () => {
                     }
                   }}
                 >
-                  🚀 Create Cosmic Event
+                   Create Cosmic Event
                 </Button>
                 <Typography variant="body2" sx={{ mt: 2, color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}>
                   Event will be saved as draft and can be published later

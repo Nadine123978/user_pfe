@@ -6,10 +6,6 @@ import {
   TextField,
   Button,
   Paper,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormControlLabel,
   Checkbox,
   Grid,
@@ -33,7 +29,6 @@ import {
   Category as CategoryIcon,
   Image as ImageIcon,
   CloudUpload as CloudUploadIcon,
-  Visibility as VisibilityIcon,
   TrendingUp as TrendingUpIcon,
   Save as SaveIcon,
   ArrowBack as ArrowBackIcon,
@@ -51,7 +46,6 @@ const EditCategory = () => {
   const [category, setCategory] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [status, setStatus] = useState('Active');
   const [isTrending, setIsTrending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -63,7 +57,6 @@ const EditCategory = () => {
     axios.get(`http://localhost:8081/api/categories/${id}`)
       .then(res => {
         setCategory(res.data.name || '');
-        setStatus(res.data.status || 'Inactive');
         setIsTrending(res.data.is_trending || false);
         
         // Set existing image preview if available
@@ -86,7 +79,6 @@ const EditCategory = () => {
 
     const formData = new FormData();
     formData.append('name', category);
-    formData.append('status', status);
     formData.append('is_trending', isTrending ? 'true' : 'false');
     if (imageFile) formData.append('image', imageFile);
 
@@ -143,10 +135,6 @@ const EditCategory = () => {
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleImageChange(e.dataTransfer.files[0]);
     }
-  };
-
-  const getStatusColor = (status) => {
-    return status === 'Active' ? '#10b981' : '#6b7280';
   };
 
   if (loading) {
@@ -278,6 +266,7 @@ const EditCategory = () => {
                 <EditIcon sx={{ mr: 0.5, fontSize: 20 }} />
                 Edit Category
               </Typography>
+
             </Breadcrumbs>
 
             <Box
@@ -315,7 +304,6 @@ const EditCategory = () => {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
               }}
             >
-              <AutoAwesomeIcon sx={{ color: '#ffd700', fontSize: 32 }} />
               <Typography
                 variant="h3"
                 sx={{
@@ -330,7 +318,7 @@ const EditCategory = () => {
               >
                 Edit Category
               </Typography>
-              <EditIcon sx={{ color: '#06b6d4', fontSize: 32 }} />
+     
             </Box>
           </Box>
         </Fade>
@@ -372,7 +360,6 @@ const EditCategory = () => {
                     gap: 1,
                   }}
                 >
-                  <CategoryIcon sx={{ color: '#8b5cf6' }} />
                   Category Details
                 </Typography>
 
@@ -418,118 +405,32 @@ const EditCategory = () => {
                     }}
                   />
 
-                  {/* Status Select */}
-                  <FormControl 
-                    fullWidth 
-                    margin="normal"
-                    sx={{ mb: 3 }}
-                  >
-                    <InputLabel
-                      sx={{
-                        color: 'rgba(255, 255, 255, 0.7)',
-                        '&.Mui-focused': { color: '#8b5cf6' },
-                      }}
-                    >
-                      Status
-                    </InputLabel>
-                    <Select
-                      value={status}
-                      onChange={(e) => setStatus(e.target.value)}
-                      label="Status"
-                      sx={{
-                        background: 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: 2,
-                        color: 'white',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          background: 'rgba(255, 255, 255, 0.08)',
-                          borderColor: 'rgba(139, 92, 246, 0.5)',
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 25px rgba(139, 92, 246, 0.15)',
-                        },
-                        '&.Mui-focused': {
-                          background: 'rgba(255, 255, 255, 0.1)',
-                          borderColor: '#8b5cf6',
-                          boxShadow: '0 0 0 3px rgba(139, 92, 246, 0.1)',
-                        },
-                        '& fieldset': { border: 'none' },
-                        '& .MuiSvgIcon-root': { color: 'rgba(255, 255, 255, 0.7)' },
-                      }}
-                      MenuProps={{
-                        PaperProps: {
-                          sx: {
-                            background: 'rgba(30, 41, 59, 0.95)',
-                            backdropFilter: 'blur(20px)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: 2,
-                            '& .MuiMenuItem-root': {
-                              color: 'white',
-                              '&:hover': {
-                                background: 'rgba(139, 92, 246, 0.2)',
-                              },
-                              '&.Mui-selected': {
-                                background: 'rgba(139, 92, 246, 0.3)',
-                              },
-                            },
-                          },
-                        },
-                      }}
-                    >
-                      <MenuItem value="Active">
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box
-                            sx={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              background: '#10b981',
-                            }}
-                          />
-                          Active
-                        </Box>
-                      </MenuItem>
-                      <MenuItem value="Inactive">
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Box
-                            sx={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
-                              background: '#6b7280',
-                            }}
-                          />
-                          Inactive
-                        </Box>
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-
                   {/* Trending Toggle */}
                   <Box
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'space-between',
-                      p: 2,
-                      mb: 3,
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      backdropFilter: 'blur(10px)',
+                      gap: 2,
+                      p: 3,
+                      background: 'rgba(255, 255, 255, 0.03)',
                       borderRadius: 2,
                       border: '1px solid rgba(255, 255, 255, 0.1)',
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        background: 'rgba(255, 255, 255, 0.08)',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(139, 92, 246, 0.15)',
-                      },
+                      mb: 3,
                     }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <TrendingUpIcon sx={{ color: '#f59e0b' }} />
-                      <Typography sx={{ color: 'white', fontWeight: 500 }}>
-                        Is Trending
+                    <TrendingUpIcon sx={{ color: '#f59e0b', fontSize: 28 }} />
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ color: 'white', fontWeight: 600, mb: 0.5 }}
+                      >
+                        Trending Category
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                      >
+                        Mark this category as trending to highlight it
                       </Typography>
                     </Box>
                     <Switch
@@ -538,115 +439,34 @@ const EditCategory = () => {
                       sx={{
                         '& .MuiSwitch-switchBase.Mui-checked': {
                           color: '#f59e0b',
-                          '&:hover': {
-                            backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                          '& + .MuiSwitch-track': {
+                            backgroundColor: '#f59e0b',
                           },
-                        },
-                        '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                          backgroundColor: '#f59e0b',
-                        },
-                        '& .MuiSwitch-track': {
-                          backgroundColor: 'rgba(255, 255, 255, 0.3)',
                         },
                       }}
                     />
                   </Box>
 
-                  {/* Image Upload */}
-                  <Box sx={{ mb: 4 }}>
-                    <Typography
-                      sx={{
-                        color: 'white',
-                        fontWeight: 500,
-                        mb: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                      }}
-                    >
-                      <ImageIcon sx={{ color: '#06b6d4' }} />
-                      Category Image
-                    </Typography>
-                    
-                    <Box
-                      onDragEnter={handleDrag}
-                      onDragLeave={handleDrag}
-                      onDragOver={handleDrag}
-                      onDrop={handleDrop}
-                      sx={{
-                        border: `2px dashed ${dragActive ? '#8b5cf6' : 'rgba(255, 255, 255, 0.3)'}`,
-                        borderRadius: 3,
-                        p: 4,
-                        textAlign: 'center',
-                        background: dragActive 
-                          ? 'rgba(139, 92, 246, 0.1)' 
-                          : 'rgba(255, 255, 255, 0.05)',
-                        backdropFilter: 'blur(10px)',
-                        transition: 'all 0.3s ease',
-                        cursor: 'pointer',
-                        '&:hover': {
-                          borderColor: '#8b5cf6',
-                          background: 'rgba(139, 92, 246, 0.1)',
-                          transform: 'translateY(-2px)',
-                        },
-                      }}
-                      onClick={() => document.getElementById('image-upload').click()}
-                    >
-                      <CloudUploadIcon
-                        sx={{
-                          fontSize: 48,
-                          color: dragActive ? '#8b5cf6' : 'rgba(255, 255, 255, 0.6)',
-                          mb: 2,
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          color: 'white',
-                          mb: 1,
-                          fontSize: '1.1rem',
-                          fontWeight: 500,
-                        }}
-                      >
-                        Drag & drop your image here
-                      </Typography>
-                      <Typography
-                        sx={{
-                          color: 'rgba(255, 255, 255, 0.6)',
-                          fontSize: '0.9rem',
-                        }}
-                      >
-                        or click to browse • Max 250KB • JPG, PNG, GIF
-                      </Typography>
-                      
-                      <input
-                        id="image-upload"
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageChange(e.target.files[0])}
-                        style={{ display: 'none' }}
-                      />
-                    </Box>
-                  </Box>
-
                   {/* Submit Button */}
                   <Button
                     type="submit"
+                    fullWidth
                     variant="contained"
                     disabled={saving}
                     startIcon={saving ? <CircularProgress size={20} /> : <SaveIcon />}
                     sx={{
-                      width: '100%',
-                      py: 1.5,
+                      py: 2,
                       fontSize: '1.1rem',
                       fontWeight: 600,
-                      background: 'linear-gradient(45deg, #8b5cf6, #06b6d4)',
-                      borderRadius: 3,
+                      background: 'linear-gradient(45deg, #8b5cf6 30%, #06b6d4 90%)',
+                      borderRadius: 2,
                       textTransform: 'none',
+                      boxShadow: '0 8px 32px rgba(139, 92, 246, 0.3)',
                       transition: 'all 0.3s ease',
                       '&:hover': {
-                        background: 'linear-gradient(45deg, #7c3aed, #0891b2)',
+                        background: 'linear-gradient(45deg, #7c3aed 30%, #0891b2 90%)',
                         transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 25px rgba(139, 92, 246, 0.4)',
+                        boxShadow: '0 12px 40px rgba(139, 92, 246, 0.4)',
                       },
                       '&:disabled': {
                         background: 'rgba(255, 255, 255, 0.1)',
@@ -661,10 +481,30 @@ const EditCategory = () => {
             </Slide>
           </Grid>
 
-          {/* Preview Section */}
+          {/* Image Upload Section */}
           <Grid item xs={12} lg={6}>
             <Slide in direction="left" timeout={1400}>
-              <Box>
+              <Paper
+                elevation={0}
+                sx={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(20px)',
+                  borderRadius: 4,
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  p: 4,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    background: 'linear-gradient(90deg, #06b6d4, #8b5cf6)',
+                  }
+                }}
+              >
                 <Typography
                   variant="h5"
                   sx={{
@@ -676,139 +516,138 @@ const EditCategory = () => {
                     gap: 1,
                   }}
                 >
-                  <VisibilityIcon sx={{ color: '#06b6d4' }} />
-                  Live Preview
+                  Category Image
                 </Typography>
 
-                <Card
-                  sx={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    backdropFilter: 'blur(20px)',
-                    borderRadius: 4,
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    overflow: 'hidden',
-                    position: 'relative',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0 20px 40px rgba(139, 92, 246, 0.2)',
-                    },
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: '3px',
-                      background: `linear-gradient(90deg, ${getStatusColor(status)}, #8b5cf6)`,
-                    }
-                  }}
-                >
-                  {/* Category Image */}
-                  <Box sx={{ position: 'relative', height: 200 }}>
-                    {imagePreview ? (
+                {/* Image Preview */}
+                {imagePreview && (
+                  <Zoom in timeout={1600}>
+                    <Card
+                      sx={{
+                        mb: 3,
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
                       <CardMedia
                         component="img"
                         height="200"
                         image={imagePreview}
-                        alt={category || 'Category'}
+                        alt="Category preview"
                         sx={{
                           objectFit: 'cover',
-                          transition: 'all 0.3s ease',
+                          borderRadius: 1,
                         }}
                       />
-                    ) : (
-                      <Box
-                        sx={{
-                          height: 200,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          color: 'rgba(255, 255, 255, 0.6)',
-                        }}
-                      >
-                        <ImageIcon sx={{ fontSize: 64 }} />
-                      </Box>
-                    )}
-                    
-                    {/* Status Badge */}
-                    <Chip
-                      label={status}
-                      size="small"
-                      sx={{
-                        position: 'absolute',
-                        top: 12,
-                        left: 12,
-                        background: getStatusColor(status),
-                        color: 'white',
-                        fontWeight: 600,
-                      }}
-                    />
+                      <CardContent sx={{ p: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{ color: 'rgba(255, 255, 255, 0.8)', textAlign: 'center' }}
+                        >
+                          Current Category Image
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Zoom>
+                )}
 
-                    {/* Trending Badge */}
-                    {isTrending && (
-                      <Chip
-                        icon={<TrendingUpIcon />}
-                        label="Trending"
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: 12,
-                          right: 12,
-                          background: 'linear-gradient(45deg, #f59e0b, #f43f5e)',
-                          color: 'white',
-                          fontWeight: 600,
-                          '& .MuiChip-icon': { color: 'white' }
-                        }}
-                      />
-                    )}
-                  </Box>
+                {/* Image Upload Area */}
+                <Box
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  sx={{
+                    border: `2px dashed ${dragActive ? '#8b5cf6' : 'rgba(255, 255, 255, 0.3)'}`,
+                    borderRadius: 3,
+                    p: 4,
+                    textAlign: 'center',
+                    background: dragActive 
+                      ? 'rgba(139, 92, 246, 0.1)' 
+                      : 'rgba(255, 255, 255, 0.02)',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      borderColor: '#8b5cf6',
+                      background: 'rgba(139, 92, 246, 0.05)',
+                      transform: 'translateY(-2px)',
+                    },
+                  }}
+                  onClick={() => document.getElementById('image-upload').click()}
+                >
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e.target.files[0])}
+                    style={{ display: 'none' }}
+                  />
+                  
+                  <CloudUploadIcon
+                    sx={{
+                      fontSize: 48,
+                      color: dragActive ? '#8b5cf6' : 'rgba(255, 255, 255, 0.6)',
+                      mb: 2,
+                    }}
+                  />
+                  
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: 'white',
+                      fontWeight: 600,
+                      mb: 1,
+                    }}
+                  >
+                    {dragActive ? 'Drop image here' : 'Upload Category Image'}
+                  </Typography>
+                  
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      mb: 2,
+                    }}
+                  >
+                    Drag and drop an image here, or click to browse
+                  </Typography>
+                  
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: 'rgba(255, 255, 255, 0.5)',
+                    }}
+                  >
+                    Supported formats: JPG, PNG, GIF (Max 5MB)
+                  </Typography>
+                </Box>
 
-                  {/* Card Content */}
-                  <CardContent sx={{ p: 3 }}>
+                {imageFile && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      border: '1px solid rgba(16, 185, 129, 0.3)',
+                      borderRadius: 2,
+                    }}
+                  >
                     <Typography
-                      variant="h5"
+                      variant="body2"
                       sx={{
-                        color: 'white',
+                        color: '#10b981',
                         fontWeight: 600,
-                        mb: 2,
-                        background: category 
-                          ? 'linear-gradient(45deg, #ffffff, #8b5cf6)'
-                          : 'rgba(255, 255, 255, 0.5)',
-                        backgroundClip: 'text',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
                       }}
                     >
-                      {category || 'Category Name'}
+                      <CheckCircleIcon fontSize="small" />
+                      New image selected: {imageFile.name}
                     </Typography>
-                    
-                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      <Chip
-                        label={`Status: ${status}`}
-                        size="small"
-                        variant="outlined"
-                        sx={{
-                          color: 'rgba(255, 255, 255, 0.8)',
-                          borderColor: 'rgba(255, 255, 255, 0.3)',
-                        }}
-                      />
-                      {isTrending && (
-                        <Chip
-                          label="Trending"
-                          size="small"
-                          variant="outlined"
-                          sx={{
-                            color: '#f59e0b',
-                            borderColor: '#f59e0b',
-                          }}
-                        />
-                      )}
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Box>
+                  </Box>
+                )}
+              </Paper>
             </Slide>
           </Grid>
         </Grid>
@@ -825,11 +664,14 @@ const EditCategory = () => {
           onClose={() => setShowSuccess(false)}
           severity="success"
           sx={{
-            background: 'linear-gradient(45deg, #10b981, #06b6d4)',
+            background: 'rgba(16, 185, 129, 0.9)',
+            backdropFilter: 'blur(20px)',
             color: 'white',
-            '& .MuiAlert-icon': { color: 'white' },
+            fontWeight: 600,
+            '& .MuiAlert-icon': {
+              color: 'white',
+            },
           }}
-          icon={<CheckCircleIcon />}
         >
           Category updated successfully! Redirecting...
         </Alert>
