@@ -159,7 +159,7 @@ function Booking() {
         eventId={id}
         title={event.title}
         date={event.startDate}
-        location={event.location?.name}
+        location={event.location?.venueName}
         onAvailabilityConfirmed={handleAvailabilityConfirmed}
         eventData={event}
       />

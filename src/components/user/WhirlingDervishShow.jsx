@@ -45,7 +45,7 @@ const WhirlingDervishShow = ({ eventId, title, date, location, onAvailabilityCon
           textAlign: { xs: 'center', md: 'left' }, // Center on small screens, left-align on medium and up
         }}
       >
-        {new Date(date).toLocaleDateString()} at {location}
+        {new Date(date).toLocaleDateString()} in {location}
       </Typography>
 
       {/* EventDetails component - now a distinct card */}

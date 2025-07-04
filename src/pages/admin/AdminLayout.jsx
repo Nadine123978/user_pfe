@@ -6,25 +6,44 @@ import Header from '../../components/admin/Header';
 const drawerWidth = 240;
 
 export default function AdminLayout() {
+  const AdminLayout = ({ role }) => {
+  // فيك تستخدم role داخل الـ layout لتمييز التصرف إذا بدك لاحقاً
   return (
-   <Box sx={{ display: 'flex' }}>
-  <CssBaseline />
-  <Header />
-  <Sidebar />
-<Box
-  component="main"
-  sx={{
-    flexGrow: 1,
-    backgroundColor: '#f5f6fa',
-    minHeight: '100vh',
-    pt: 2,       // ✅ padding يمين ويسار أخف
-    width: `calc(100% - ${drawerWidth}px)`,
-  }}
->
-  <Toolbar sx={{ minHeight: '48px', p: 0 }} /> {/* ✅ خفف المسافة فوق */}
-  <Outlet />
-</Box>
+    <div className="admin-layout">
+      <Sidebar role={role} />
+      <Outlet />
+    </div>
+  );
+};
 
-</Box>
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <CssBaseline />
+      
+      {/* Header ثابت بأعلى كل صفحة */}
+      <Header />
+
+      {/* Sidebar ثابت على اليسار */}
+      <Sidebar />
+
+      {/* المحتوى الأساسي لكل صفحة */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          backgroundColor: '#0f172a', // نفس لون الـ Cosmic Dashboard
+          minHeight: '100vh',
+          pt: 2,
+          px: 4, // padding يسار ويمين
+  width: `calc(100% - ${drawerWidth}px)`
+        }}
+      >
+        {/* toolbar space under the header */}
+        <Toolbar sx={{ minHeight: '48px', p: 0 }} />
+        
+        {/* هون بتنحط كل صفحة Admin داخل <Outlet /> */}
+        <Outlet />
+      </Box>
+    </Box>
   );
 }

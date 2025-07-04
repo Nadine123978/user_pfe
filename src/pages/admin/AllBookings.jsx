@@ -439,16 +439,17 @@ const AllBookings = () => {
                           {booking.event?.title || 'Unknown Event'}
                         </EventCell>
                         <UserCell>
-                          {booking.user?.fullName || 'Unknown User'}
+                          {booking.user?.username || 'Unknown User'}
                         </UserCell>
                         <StatusCell status={booking.status?.toUpperCase()}>
                           {booking.status || 'Unknown'}
                         </StatusCell>
-                        <SeatsCell>
-                          {booking.numberOfSeats || 0} seats
-                        </SeatsCell>
+                        
+<SeatsCell>
+  {booking.numberOfSeats > 0 ? `${booking.numberOfSeats} seats` : 'No seats'}
+</SeatsCell>
                         <PriceCell>
-                          ${booking.totalPrice || '0.00'}
+                          ${booking.price || '0.00'}
                         </PriceCell>
                         <DateCell>
                           {booking.createdAt 

@@ -47,29 +47,46 @@ import EditEvent from './pages/admin/EditEvent';
 import AllUpcomingEvent from './pages/user/AllUpcomingEvent';
 import EmailInterface from './pages/admin/EmailInterface';
 import ManageLocations from './pages/admin/ManageLocation';
+import UserBookingDetails from './components/user/UserBookingDetails';
 
+import AdminTable from './components/superadmin/AdminTable';
 import { useNavigate } from "react-router-dom";
 
 function SessionChecker() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loginTime = localStorage.getItem("loginTime");
-    const token = localStorage.getItem("token");
+    const checkSession = () => {
+      const loginTime = localStorage.getItem("loginTime");
+      const token = localStorage.getItem("token");
 
-    const maxSessionTime = 60 * 60 * 1000; // ساعة
+      const maxSessionTime = 60 * 60 * 1000; // ساعة
 
-    if (loginTime && token) {
-      const timePassed = Date.now() - parseInt(loginTime, 10);
-      if (timePassed > maxSessionTime) {
-        localStorage.clear();
+      if (!token) {
+        // إذا لم يوجد توكن، أعد التوجيه
         navigate("/login");
+        return;
       }
-    }
+
+      if (loginTime) {
+        const timePassed = Date.now() - parseInt(loginTime, 10);
+        if (timePassed > maxSessionTime) {
+          localStorage.clear();
+          navigate("/login");
+        }
+      }
+    };
+
+    checkSession(); // تحقق مرة عند التركيب
+
+    const interval = setInterval(checkSession, 60000); // كل دقيقة
+
+    return () => clearInterval(interval);
   }, [navigate]);
 
   return null;
 }
+
 
 function App() {
   const [role, setRole] = useState(null);
@@ -85,12 +102,15 @@ function App() {
     }
     setLoading(false);
   };
-
-  useEffect(() => {
-    updateRoleFromStorage();
-    window.addEventListener("storage", updateRoleFromStorage);
-    return () => window.removeEventListener("storage", updateRoleFromStorage);
-  }, []);
+useEffect(() => {
+  updateRoleFromStorage();
+  window.addEventListener("storage", updateRoleFromStorage);
+  window.addEventListener("focus", updateRoleFromStorage);
+  return () => {
+    window.removeEventListener("storage", updateRoleFromStorage);
+    window.removeEventListener("focus", updateRoleFromStorage);
+  };
+}, []);
 
   if (loading) return <div>Loading...</div>;
 
@@ -117,7 +137,21 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/all-upcoming-event" element={<AllUpcomingEvent />} />
+<Route path="/user/detail/:id" element={<UserBookingDetails />} />
 
+
+<Route 
+  path="/login" 
+  element={
+    loading ? (
+      <div>Loading...</div>
+    ) : role ? (
+      <Navigate to="/dashboard" replace />
+    ) : (
+      <Login />
+    )
+  }
+/>
         {/* صفحة السوبر أدمن */}
         <Route
           path="/secure1234"
@@ -132,13 +166,7 @@ function App() {
           }
         />
 
-        {/* صفحة الأدمن محمية */}
-        <Route
-          path="/admin"
-          element={
-            role === "ROLE_ADMIN" ? <AdminDashboard /> : <Navigate to="/login" replace />
-          }
-        />
+   
 
         {/* صفحة داشبورد المستخدم */}
         <Route
@@ -147,7 +175,16 @@ function App() {
         />
 
         {/* مجموعة صفحات الأدمن داخل AdminLayout */}
-   <Route path="/admin" element={role === "ROLE_ADMIN" ? <AdminLayout /> : <Navigate to="/login" replace />}>
+<Route
+  path="/admin"
+  element={
+    role === "ROLE_ADMIN" || role === "ROLE_SUPER_ADMIN" ? (
+      <AdminLayout role={role} />
+    ) : (
+      <Navigate to="/login" replace />
+    )
+  }
+>
   <Route index element={<AdminDashboard />} />
   <Route path="category/add" element={<AddCategory />} />
   <Route path="category/manage" element={<ManageCategories />} />
@@ -169,6 +206,8 @@ function App() {
   <Route path="users" element={<ManageUsers />} />
   <Route path="users/:userId/bookings" element={<UserBookings />} />
   <Route path="inbox" element={<EmailInterface />} />
+   <Route path="super" element={<AdminTable />} />
+
 </Route>
 
 

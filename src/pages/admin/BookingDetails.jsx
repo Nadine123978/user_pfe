@@ -376,46 +376,71 @@ const BookingDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchBookingDetails = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:8081/api/bookings/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("Booking details fetched:", response.data);
+  const fetchBookingDetails = async () => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const response = await axios.get(`http://localhost:8081/api/bookings/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log("Booking details fetched:", response.data);
+    setBooking(response.data);
+    setError("");
+  } catch (err) {
+    setError("Failed to fetch booking details");
+  } finally {
+    setLoading(false);
+  }
+};
 
-        setBooking(response.data);
-      } catch (err) {
-        setError("Failed to fetch booking details");
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  fetchBookingDetails();
+}, [id]);
+
+const handleCancelBooking = async () => {
+  if (!window.confirm("هل أنت متأكد من إلغاء هذا الحجز؟")) return;
+
+  try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:8081/api/bookings/cancel/${booking.id}`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    };
+    );
 
-    fetchBookingDetails();
-  }, [id]);
+    await fetchBookingDetails();  // جلب البيانات الكاملة بعد الإلغاء
+
+    alert("تم إلغاء الحجز بنجاح!");
+  } catch (error) {
+    alert(error.response?.data || "حدث خطأ أثناء إلغاء الحجز");
+  }
+};
 
   const handleConfirmBooking = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.put(
-        `http://localhost:8081/api/bookings/${booking.id}/confirm`,
-        null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:8081/api/bookings/${booking.id}/confirm`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    // بعد التأكيد جلب البيانات من جديد
+    await fetchBookingDetails();
 
-      setBooking(response.data); // حدث حالة الحجز بالبيانات الجديدة
+    alert("Booking confirmed successfully by admin!");
+  } catch (error) {
+    alert(error.response?.data || "Error confirming booking by admin");
+  }
+};
 
-      alert("Booking confirmed successfully by admin!");
-    } catch (error) {
-      alert(error.response?.data || "Error confirming booking by admin");
-    }
-  };
 
   if (loading) {
     return (
@@ -520,29 +545,56 @@ const BookingDetails = () => {
             <SectionTitle>
                Seat Information
             </SectionTitle>
-            <InfoText>
-              <strong>Seat Codes:</strong>{' '}
-              {booking.seats && booking.seats.length > 0
-                ? booking.seats.map(seat => seat.code).join(', ')
-                : 'N/A'}
-            </InfoText>
+         <InfoText>
+  <strong>Seat Codes:</strong>{' '}
+  {booking.seats && booking.seats.length > 0
+    ? booking.seats.map(seat => seat.code).join(', ')
+    : 'No seats available '}
+</InfoText>
+
             <InfoText><strong>Total Price:</strong> {booking.price ? `$${booking.price}` : 'N/A'}</InfoText>
             <InfoText><strong>Payment Method:</strong> {booking.paymentMethod || 'N/A'}</InfoText>
+<InfoText>
+  <strong>Receipt Image:</strong>{' '}
+  {booking.receiptImageUrl ? (
+    <a href={`http://localhost:8081${booking.receiptImageUrl}`} target="_blank" rel="noopener noreferrer">
+      <img
+        src={`http://localhost:8081${booking.receiptImageUrl}`}
+        alt="Receipt"
+        style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '8px' }}
+      />
+    </a>
+  ) : (
+    'No receipt uploaded'
+  )}
+</InfoText>
+
+
           </SectionContainer>
 
-          {/* زر تأكيد الحجز - مع تعطيل / تفعيل حسب الحالة */}
-          {!isConfirmed && (
-            <Box sx={{ textAlign: 'center', mt: 4 }}>
-              <ActionButton
-                variant="success"
-                onClick={handleConfirmBooking}
-                disabled={isPending} // معطل إذا الحالة PENDING
-                size="large"
-              >
-                {isPending ? " Pending Payment" : " Confirm Booking"}
-              </ActionButton>
-            </Box>
-          )}
+          {/* أزرار التأكيد والإلغاء */}
+{!isConfirmed && booking.status?.toUpperCase() !== "CANCELLED" && (
+  <Box sx={{ textAlign: 'center', mt: 4, display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+    <ActionButton
+      variant="success"
+      onClick={handleConfirmBooking}
+      disabled={isPending}
+      size="large"
+    >
+      {isPending ? " Pending Payment" : " Confirm Booking"}
+    </ActionButton>
+
+    <ActionButton
+      variant="outlined"
+      color="error"
+      onClick={handleCancelBooking}
+      size="large"
+    >
+      Cancel Booking
+    </ActionButton>
+  </Box>
+)}
+
 
           {/* زر تحميل التذكرة بعد التأكيد */}
           {isConfirmed && (

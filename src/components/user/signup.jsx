@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   Button, TextField, Container, Typography, Box, InputAdornment,
@@ -11,8 +12,10 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../../firebase";
 import axios from 'axios';
 import { styled, keyframes } from '@mui/material/styles';
+import TermsExample from './TermsExample';
 
-// Enhanced keyframes for sophisticated background animation
+// (الكود الخاص بالأنيميشن والأزرار والـ TextField كما في كودك الأصلي...)
+
 const gradientShift = keyframes`
   0% { 
     background-position: 0% 50%; 
@@ -42,7 +45,6 @@ const floatingAnimation = keyframes`
   50% { transform: translateY(-5px) rotate(-1deg); }
   75% { transform: translateY(-15px) rotate(0.5deg); }
 `;
-
 // Modern gradient button with website color scheme
 const ModernButton = styled(Button)(({ theme, disabled }) => ({
   background: disabled
@@ -191,6 +193,7 @@ const ModernTextField = styled(TextField)(({ theme, error }) => ({
   }),
 }));
 
+
 export default function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -263,6 +266,10 @@ export default function SignUp() {
     }
   };
 
+  const [openTerms, setOpenTerms] = useState(false);
+const [openPrivacy, setOpenPrivacy] = useState(false);
+
+
   return (
     <Box sx={{
       minHeight: '100vh',
@@ -303,7 +310,7 @@ export default function SignUp() {
         zIndex: 0,
       },
     }}>
-      {/* Floating decorative elements with website colors */}
+      {/* Floating decorative elements */}
       <Box sx={{
         position: 'absolute',
         top: '20%',
@@ -354,7 +361,7 @@ export default function SignUp() {
             borderRadius: '24px 24px 0 0',
           },
         }}>
-          {/* Enhanced Brand Section with website colors */}
+          {/* Brand Section */}
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Box sx={{
               display: 'flex',
@@ -482,70 +489,28 @@ export default function SignUp() {
               sx={{ mb: 2 }}
             />
 
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agree}
-                  onChange={(e) => setAgree(e.target.checked)}
-                  sx={{ 
-                    color: errors.agree ? '#FF1744' : 'rgba(255,255,255,0.7)', 
-                    '&.Mui-checked': { 
-                      color: '#E91E63',
-                    },
-                    '&:hover': {
-                      backgroundColor: 'rgba(233, 30, 99, 0.1)',
-                    },
-                  }}
-                />
-              }
-              label={
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: errors.agree ? '#FF1744' : 'rgba(255,255,255,0.8)',
-                    fontSize: '0.95rem',
-                  }}
-                >
-                  I agree to the <strong>Terms</strong> and <strong>Conditions of Privacy</strong>
-                </Typography>
-              }
-              sx={{ mt: 1, mb: 2 }}
-            />
-            
-            {errors.agree && (
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: '#FF1744', 
-                  fontSize: '0.9rem',
-                  display: 'block',
-                  mb: 2,
-                }}
-              >
-                {errors.agree}
-              </Typography>
-            )}
-
-            {errors.submit && (
-              <Box sx={{
-                backgroundColor: 'rgba(255, 23, 68, 0.1)',
-                border: '1px solid rgba(255, 23, 68, 0.3)',
-                borderRadius: '12px',
-                padding: '12px 16px',
-                mb: 3,
-              }}>
-                <Typography 
-                  sx={{ 
-                    color: '#FCA5A5', 
-                    fontSize: '0.95rem',
-                    fontWeight: 500,
-                    textAlign: 'center',
-                  }}
-                >
-                  {errors.submit}
-                </Typography>
-              </Box>
-            )}
+            {/* Terms and Conditions with links */}
+          <FormControlLabel
+  control={
+    <Checkbox
+      checked={agree}
+      onChange={(e) => setAgree(e.target.checked)}
+      sx={{ 
+        color: errors.agree ? '#FF1744' : 'rgba(255,255,255,0.7)', 
+        '&.Mui-checked': { 
+          color: '#E91E63',
+        },
+        '&:hover': {
+          backgroundColor: 'rgba(233, 30, 99, 0.1)',
+        },
+      }}
+    />
+  }
+  label={
+    <TermsExample />  // هنا استدعي الكومبوننت اللي فيه اللينكات مع الـ Dialogs
+  }
+  sx={{ mt: 1, mb: 2 }}
+/>
 
             <ModernButton
               fullWidth
@@ -596,4 +561,3 @@ export default function SignUp() {
     </Box>
   );
 }
-

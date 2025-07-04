@@ -262,23 +262,37 @@ const ManageUsers = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8081/api/users", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching users", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token used for request:", token);
 
-    fetchUsers();
-  }, []);
+    const response = await axios.get(`http://localhost:8081/api/users/group/3`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+
+      console.log("Raw response data:", response.data);
+
+      const filteredUsers = response.data.filter(
+        user => user.group && user.group.id === 3
+      );
+
+      console.log("Filtered users (group id === 3):", filteredUsers);
+
+      setUsers(filteredUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+      console.log("Loading state set to false");
+    }
+  };
+
+  fetchUsers();
+}, []);
+
 
   return (
     <ThemeProvider theme={cosmicTheme}>
@@ -288,7 +302,7 @@ const ManageUsers = () => {
           <GlassmorphismPaper>
             <Box sx={{ textAlign: 'center', mb: 4 }}>
               <Typography variant="h4" gutterBottom sx={{ fontSize: '3rem', mb: 2 }}>
-                Manage Users ✨
+                Manage Users 
               </Typography>
               <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
                 Cosmic user management dashboard for your galactic community
@@ -311,10 +325,9 @@ const ManageUsers = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>#</TableCell>
-                    <TableCell>Full Name</TableCell>
                     <TableCell>Username</TableCell>
                     <TableCell>Status</TableCell>
-                    <TableCell>Reg. Date</TableCell>
+<TableCell>Email</TableCell>
                     <TableCell>Action</TableCell>
                   </TableRow>
                 </TableHead>
@@ -324,18 +337,17 @@ const ManageUsers = () => {
                       <IndexCell>
                         {String(index + 1).padStart(2, '0')}
                       </IndexCell>
-                      <NameCell>
-                        {user.fullName || "Unknown Entity"}
-                      </NameCell>
+                    
                       <UsernameCell>
                         {user.username}
                       </UsernameCell>
                       <StatusCell>
                         Active
                       </StatusCell>
-                      <DateCell>
-                        Classified
-                      </DateCell>
+                     <DateCell>
+  {user.email}
+</DateCell>
+
                       <TableCell>
                         <Button 
                           onClick={() => navigate(`/admin/users/${user.id}/bookings`)} 
@@ -348,7 +360,7 @@ const ManageUsers = () => {
                             }
                           }}
                         >
-                          🚀 View Bookings
+                           View Bookings
                         </Button>
                       </TableCell>
                     </TableRow>

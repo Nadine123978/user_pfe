@@ -70,6 +70,105 @@ export default function ManageLocations() {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyAhYcftcBcRbJnpSO0wcWryScwNqEXrdtc",
   });
+    const [isLoading, setIsLoading] = useState(false);
+  
+
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+const [showSuggestions, setShowSuggestions] = useState(false);
+const searchTimeoutRef = useRef(null);
+
+ const searchLocations = async (query) => {
+    if (!query || query.length < 3) {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `https://us1.locationiq.com/v1/search?key=pk.${LOCATIONIQ_TOKEN}&q=${encodeURIComponent(query)}&format=json&limit=5`
+      );
+      
+      const data = await response.json();
+      const suggestions = data.map(item => ({
+        display_name: item.display_name,
+        lat: parseFloat(item.lat),
+        lng: parseFloat(item.lon)
+      }));
+      
+      setSearchSuggestions(suggestions);
+      setShowSuggestions(true);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Error searching locations:', err);
+      setIsLoading(false);
+    }
+  };
+
+  // Handle input change with dual functionality
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setVenueName(value);
+
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Set search mode if user is typing
+    if (value.length > 0) {
+      setIsSearchMode(true);
+      
+      // Debounce search
+      searchTimeoutRef.current = setTimeout(() => {
+        searchLocations(value);
+      }, 300);
+    } else {
+      setIsSearchMode(false);
+      setShowSuggestions(false);
+      setSearchSuggestions([]);
+    }
+  };
+
+  // Handle suggestion selection
+  const handleSuggestionClick = (suggestion) => {
+    setVenueName(suggestion.display_name);
+    setSelectedPosition({ lat: suggestion.lat, lng: suggestion.lng });
+    setShowSuggestions(false);
+    setIsSearchMode(false);
+  };
+
+  // Using LocationIQ for Reverse Geocoding
+  const getAddressFromCoords = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://us1.locationiq.com/v1/reverse?key=pk.${LOCATIONIQ_TOKEN}&lat=${lat}&lon=${lng}&format=json`
+      );
+
+      const data = await response.json();
+      return data.display_name || '';
+    } catch (err) {
+      console.error('Error fetching address from LocationIQ:', err);
+      return '';
+    }
+  };
+
+  // When clicking on the map
+  const onMapClick = async (e) => {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    setSelectedPosition({ lat, lng });
+
+    const address = await getAddressFromCoords(lat, lng);
+    setVenueName(address);
+    setIsSearchMode(false);
+    setShowSuggestions(false);
+  };
+
+
+
+const [isSearchMode, setIsSearchMode] = useState(false);
 
   // Map reference for controlling center and zoom
   const mapRef = useRef(null);
@@ -109,19 +208,7 @@ export default function ManageLocations() {
     }
   };
 
-  // Reverse Geocoding: Get address from coordinates
-  const getAddressFromCoords = async (lat, lng) => {
-    try {
-      const res = await fetch(
-        `https://us1.locationiq.com/v1/reverse?key=${LOCATIONIQ_TOKEN}&lat=${lat}&lon=${lng}&format=json`
-      );
-      const data = await res.json();
-      return data.display_name || "";
-    } catch (error) {
-      console.error("Error fetching address:", error);
-      return "";
-    }
-  };
+
 
   // Fetch locations from API
   const fetchLocations = async () => {
@@ -141,15 +228,6 @@ export default function ManageLocations() {
     fetchLocations();
   }, []);
 
-  // On map click to select new location or edit
-  const onMapClick = async (e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    setSelectedPosition({ lat, lng });
-
-    const address = await getAddressFromCoords(lat, lng);
-    setVenueName(address);
-  };
 
   // Save new location or update existing
   const saveLocation = async () => {
@@ -226,17 +304,15 @@ export default function ManageLocations() {
   };
 
   // On clicking edit button in list
-  const onEdit = (location) => {
-    setVenueName(location.venueName);
-    setSelectedPosition({
-      lat: location.latitude,
-      lng: location.longitude,
-    });
-    setEditingId(location.id);
-    
-    // Center map on the location being edited
-    centerMapOnLocation(location.latitude, location.longitude, 16);
-  };
+const onEdit = (location) => {
+  setVenueName(location.venueName);
+  setSelectedPosition({
+    lat: location.latitude,
+    lng: location.longitude,
+  });
+  setEditingId(location.id);
+  centerMapOnLocation(location.latitude, location.longitude, 16);
+};
 
   // Reset form
   const resetForm = () => {
@@ -248,6 +324,7 @@ export default function ManageLocations() {
     setMapCenter(defaultCenter);
     setMapZoom(10);
   };
+
 
   // Handle map load
   const onMapLoad = (map) => {
@@ -284,13 +361,13 @@ export default function ManageLocations() {
       {/* Success Message */}
       {showSuccess && (
         <div style={styles.successMessage}>
-          ✨ Location saved successfully!
+           Location saved successfully!
         </div>
       )}
 
       {/* Header */}
       <div style={styles.header}>
-        <h1 style={styles.title}>🌟 Location Command Center</h1>
+        <h1 style={styles.title}> Location Command Center</h1>
         <p style={styles.subtitle}>Manage your locations with cosmic precision</p>
       </div>
 
@@ -299,27 +376,51 @@ export default function ManageLocations() {
         {/* Left Panel - Controls */}
         <div style={styles.leftPanel}>
           <h2 style={styles.sectionTitle}>
-            📍 Location Details
+             Location Details
           </h2>
           
           {/* Input Field */}
-          <div style={styles.inputContainer}>
-            <label style={styles.inputLabel}>
-              Venue Name
-            </label>
+          <div style={{ position: "relative", marginBottom: "20px" }}>
+  <div style={styles.inputContainer}>
+            <label htmlFor="venueName" style={styles.inputLabel}>Venue Name</label>
             <input
+              id="venueName"
               type="text"
-              placeholder="Enter venue name..."
               value={venueName}
-              onChange={(e) => setVenueName(e.target.value)}
-              style={styles.input}
+              onChange={handleInputChange}
+              style={{
+                ...styles.input,
+                ...(isSearchMode ? styles.inputFocused : {})
+              }}
+              placeholder="Type venue name or address..."
+              autoComplete="off"
+              onClick={e => e.stopPropagation()}
             />
+            {showSuggestions && (
+              <div style={styles.suggestionsContainer} onClick={e => e.stopPropagation()}>
+                {isLoading ? (
+                  <p style={{ padding: '16px', color: '#fff' }}>Loading...</p>
+                ) : (
+                  searchSuggestions.map((suggestion, idx) => (
+                    <div
+                      key={idx}
+                      style={styles.suggestion}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(139, 92, 246, 0.3)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {suggestion.display_name}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+            </div>
           </div>
-
-          {/* Selected Location Info */}
+             {/* Selected Location Info */}
           {selectedPosition && (
             <div style={styles.locationInfo}>
-              <h3 style={styles.locationInfoTitle}>✅ Selected Location</h3>
+              <h3 style={styles.locationInfoTitle}> Selected Location</h3>
               <p style={styles.locationCoords}>
                 Latitude: {selectedPosition.lat.toFixed(6)}<br/>
                 Longitude: {selectedPosition.lng.toFixed(6)}
@@ -337,7 +438,7 @@ export default function ManageLocations() {
               }}
               disabled={!venueName || !selectedPosition}
             >
-              {editingId ? "🔄 Update Location" : "💾 Save Location"}
+              {editingId ? " Update Location" : " Save Location"}
             </button>
             
             {editingId && (
@@ -345,7 +446,7 @@ export default function ManageLocations() {
                 onClick={resetForm}
                 style={styles.cancelButton}
               >
-                ❌ Cancel
+                 Cancel
               </button>
             )}
           </div>
@@ -354,7 +455,7 @@ export default function ManageLocations() {
         {/* Right Panel - Map */}
         <div style={styles.rightPanel}>
           <h2 style={styles.sectionTitle}>
-            🗺️ Interactive Map
+             Interactive Map
           </h2>
           <div style={styles.mapContainer}>
             <GoogleMap
@@ -417,7 +518,7 @@ export default function ManageLocations() {
       {/* Locations Table */}
       <div style={styles.tableSection}>
         <h2 style={styles.sectionTitle}>
-          📊 Locations Database
+           Locations Database
         </h2>
         
         {loading ? (
@@ -458,19 +559,19 @@ export default function ManageLocations() {
                         style={styles.viewButton}
                         title="View on map"
                       >
-                        👁️ View
+                         View
                       </button>
                       <button 
                         onClick={() => onEdit(loc)}
                         style={styles.editButton}
                       >
-                        ✏️ Edit
+                         Edit
                       </button>
                       <button 
                         onClick={() => deleteLocation(loc.id)}
                         style={styles.deleteButton}
                       >
-                        🗑️ Delete
+                         Delete
                       </button>
                     </div>
                   </div>
