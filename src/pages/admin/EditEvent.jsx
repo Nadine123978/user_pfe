@@ -366,6 +366,10 @@ const EditEvent = () => {
         ]);
         setCategories(catRes.data);
         setLocations(locRes.data);
+console.log("📦 Full event object = ", event);
+
+         console.log("✅ categoryId = ", event.category?.id);
+    console.log("✅ categories = ", catRes.data);
       } catch (error) {
         console.error("Error loading event or lists:", error);
         setError("Failed to load event data.");

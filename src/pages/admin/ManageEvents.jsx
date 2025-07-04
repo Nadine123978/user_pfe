@@ -321,50 +321,179 @@ const ManageEvents = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const tabs = ["draft", "active", "upcoming", "past"];
+const fetchEvents = async (status) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `http://localhost:8081/api/events/by-status?status=${status}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+const eventsWithDetails = await Promise.all(
+  response.data.map(async (event) => {
+    let gallery = [];
+    let section = null;
+    let seats = [];
 
-  const fetchEvents = async (status) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:8081/api/events/by-status?status=${status}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const galleryResponse = await axios.get(
+        `http://localhost:8081/api/events/${event.id}/images`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Events fetched:", response.data);
-      setEvents(
-        response.data.sort(
-          (a, b) => new Date(a.startDate) - new Date(b.startDate)
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching events:", error);
+      gallery = galleryResponse.data;
+    } catch (e) {
+      console.error(`Failed to fetch gallery for event ${event.id}`, e);
     }
-  };
+
+    try {
+      const sectionResponse = await axios.get(
+        `http://localhost:8081/api/sections/event/${event.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      section = sectionResponse.data;
+    } catch (e) {
+      console.error(`Failed to fetch section for event ${event.id}`, e);
+    }
+
+    try {
+     if (section && section.id) {
+  const seatsResponse = await axios.get(
+    `http://localhost:8081/api/seats/section/${section.id}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  seats = seatsResponse.data;
+}
+
+    } catch (e) {
+      console.error(`Failed to fetch seats for section ${section?.id}`, e);
+    }
+
+    const missingFields = [];
+    if (!event.title || event.title.trim() === "") missingFields.push("title");
+    if (!event.startDate) missingFields.push("startDate");
+    if (!event.endDate) missingFields.push("endDate");
+    if (!event.imageUrl || event.imageUrl.trim() === "") missingFields.push("main image");
+if (Array.isArray(section) && section.length > 0) {
+  const seatPromises = section.map(async (sec) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8081/api/seats/section/${sec.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (e) {
+      console.error(`Failed to fetch seats for section ${sec.id}`, e);
+      return [];
+    }
+  });
+
+  const allSeatsArrays = await Promise.all(seatPromises);
+  seats = allSeatsArrays.flat(); // دمج المقاعد من كل السكاشن
+}
+    if (!gallery || gallery.length === 0) missingFields.push("gallery (images)");
+    if (!seats || seats.length === 0) missingFields.push("seats");
+console.log(`Event ID: ${event.id}`, {
+  title: event.title,
+  startDate: event.startDate,
+  endDate: event.endDate,
+  imageUrl: event.imageUrl,
+  section, // بدل ما تقول event.section
+  gallery,
+  seats,
+  missingFields,
+});
+
+
+
+    return { ...event, gallery, section, seats, missingFields };
+  })
+);
+
+setEvents(
+  eventsWithDetails.sort(
+    (a, b) => new Date(a.startDate) - new Date(b.startDate)
+  )
+);
+
+  } catch (error) {
+    console.error("Error fetching events:", error);
+  }
+};
+
 
   useEffect(() => {
     fetchEvents(selectedTab);
   }, [selectedTab]);
 
   const handlePublish = async (eventId) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:8081/api/events/${eventId}/publish`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      toast.success("Event published successfully");
-      fetchEvents(selectedTab);
-    } catch (error) {
-      console.error("Error publishing event:", error.response?.data || error.message);
-      toast.error("Failed to publish event");
-    }
-  };
+  const eventToPublish = events.find(e => e.id === eventId);
+
+  if (!eventToPublish) {
+    toast.error("Event data not found.");
+    return;
+  }
+
+  // تحقق من الحقول النصية الأساسية
+  if (
+    !eventToPublish.title || eventToPublish.title.trim() === "" ||
+    !eventToPublish.startDate || !eventToPublish.endDate ||
+    !eventToPublish.imageUrl || eventToPublish.imageUrl.trim() === "" ||
+!Array.isArray(eventToPublish.section) || 
+eventToPublish.section.length === 0 || 
+!eventToPublish.section[0].name || 
+eventToPublish.section[0].name.trim() === ""
+  ) {
+    toast.error("Please fill in all required fields (title, dates, main image, section).");
+    return;
+  }
+
+  // تحقق من التواريخ
+  if (new Date(eventToPublish.startDate) > new Date(eventToPublish.endDate)) {
+    toast.error("Start date must be before end date.");
+    return;
+  }
+
+  // تحقق من gallery (مصفوفة الصور)
+  if (!Array.isArray(eventToPublish.gallery) || eventToPublish.gallery.length === 0) {
+    toast.error("Please add at least one image to the gallery.");
+    return;
+  }
+
+  // تحقق من seats (مثلاً مصفوفة أو رقم)
+  // لنفترض seats عبارة عن عدد المقاعد المتوفرة (رقم)
+ if (
+  !Array.isArray(eventToPublish.seats) ||
+  eventToPublish.seats.length === 0
+) {
+  toast.error("Please add seats information.");
+  return;
+}
+
+// (اختياري) تحقق إذا في مقاعد متاحة
+const hasAvailableSeats = eventToPublish.seats.some(seat => seat.available === true);
+if (!hasAvailableSeats) {
+  toast.error("At least one seat must be available.");
+  return;
+}
+
+  // كل الشروط متحققة، ننفذ النشر
+  try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:8081/api/events/${eventId}/publish`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    toast.success("Event published successfully");
+    fetchEvents(selectedTab);
+  } catch (error) {
+    console.error("Error publishing event:", error.response?.data || error.message);
+    toast.error("Failed to publish event");
+  }
+};
 
   const handleDelete = async (eventId) => {
     if (!window.confirm("Are you sure you want to delete this draft?")) return;
@@ -497,18 +626,32 @@ const ManageEvents = () => {
                       >
                         {event.title}
                       </Typography>
+                        <Typography 
+    variant="body2" 
+    sx={{ 
+      color: 'rgba(255, 255, 255, 0.7)', 
+      mb: 3,
+      lineHeight: 1.6,
+    }}
+  >
+    📅 From: {new Date(event.startDate).toLocaleString()} <br />
+    🕐 To: {new Date(event.endDate).toLocaleString()}
+  </Typography>
+
+  {/* إضافة عرض الحقول الناقصة بشكل واضح */}
+  {event.missingFields && event.missingFields.length > 0 && (
+    <Box sx={{ 
+      color: '#f87171', 
+      fontWeight: 'bold', 
+      mb: 2, 
+      fontSize: '0.85rem' 
+    }}>
+      ⚠️ Missing: {event.missingFields.join(", ")}
+    </Box>
+  )}
+
                       
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          color: 'rgba(255, 255, 255, 0.7)', 
-                          mb: 3,
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        📅 From: {new Date(event.startDate).toLocaleString()} <br />
-                        🕐 To: {new Date(event.endDate).toLocaleString()}
-                      </Typography>
+                  
 
                       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                         <Button
