@@ -517,7 +517,7 @@ const ManageEvents = () => {
                           onClick={() => navigate(`/admin/edit-event/${event.id}`)}
                           sx={{ flex: 1, minWidth: '80px' }}
                         >
-                          ✏️ Edit
+                           Edit
                         </Button>
                         
                         <Button
@@ -526,7 +526,7 @@ const ManageEvents = () => {
                           onClick={() => alert("Preview not implemented yet.")}
                           sx={{ flex: 1, minWidth: '80px' }}
                         >
-                          👁️ Preview
+                           Preview
                         </Button>
                         
                         {event.status === "draft" && (
@@ -544,7 +544,7 @@ const ManageEvents = () => {
                                 },
                               }}
                             >
-                              🚀 Publish
+                               Publish
                             </Button>
                             
                             <Button

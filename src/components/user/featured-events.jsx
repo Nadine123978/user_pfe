@@ -140,10 +140,12 @@ const FeaturedEvents = () => {
         case 'CANCELLED':
           navigate(`/booking/${event.id}`);
           break;
-        case 'PAID':
-        case 'CONFIRMED':
-          toast.info("You cannot book this event again.");
-          break;
+case 'PAID':
+case 'CONFIRMED':
+  navigate(`/user/detail/${event.bookingId}`);
+  break;
+
+
         default:
           navigate(`/booking/${event.id}`);
       }
@@ -169,10 +171,10 @@ const FeaturedEvents = () => {
     return "Book Now";
   };
 
-  const isButtonDisabled = (event) => {
-    const status = event.bookingStatus?.toUpperCase();
-    return event.alreadyBooked && (status === 'PAID' || status === 'CONFIRMED');
-  };
+ const isButtonDisabled = (event) => {
+  return false; // أو فقط تعطل في حالات معينة غير "PAID" و "CONFIRMED"
+};
+
 
   const visibleEvents = events.slice(0, 4);
 

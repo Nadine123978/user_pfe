@@ -145,7 +145,7 @@ const FloatingParticles = styled(Box)({
 
 const MainContent = styled(Box)({
   flexGrow: 1,
-  marginLeft: '240px', // Account for sidebar width
+  marginLeft: '100px', // This is the line to adjust
   padding: '32px',
   position: 'relative',
   zIndex: 1,
@@ -317,7 +317,7 @@ const StatCardComponent = ({ title, value, color, icon, onClick }) => (
       </StatIcon>
     </Box>
     <ViewButton className="view-button" variant="contained">
-      View Details ✨
+      View Details 
     </ViewButton>
   </StatCard>
 );
@@ -373,38 +373,29 @@ export default function AdminDashboard() {
         <CssBaseline />
         <FloatingParticles />
         <Header />
-        <Sidebar />
+      
         
         <MainContent>
           <HeroSection>
             <HeroTitle variant="h2">
-              🌟 Cosmic Dashboard
+               Admin Dashboard
             </HeroTitle>
-            <HeroSubtitle variant="h6">
-              Welcome back to your galactic command center! Here's a comprehensive overview of your event management platform's stellar performance and key metrics.
-            </HeroSubtitle>
+          
           </HeroSection>
           
           <StatsGrid container spacing={4} alignItems="stretch">
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="📂 Listed Categories" 
+                title=" Listed Categories" 
                 value={stats.categories} 
                 color={colors.categories} 
                 icon={<Category fontSize="inherit" />} 
               />
             </Grid>
+           
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="🤝 Active Sponsors" 
-                value={stats.sponsors} 
-                color={colors.sponsors} 
-                icon={<Dashboard fontSize="inherit" />} 
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCardComponent 
-                title="🎪 Total Events" 
+                title=" Total Events" 
                 value={stats.events} 
                 color={colors.events} 
                 icon={<Event fontSize="inherit" />} 
@@ -412,7 +403,7 @@ export default function AdminDashboard() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="👥 Registered Users" 
+                title=" Registered Users" 
                 value={stats.users} 
                 color={colors.users} 
                 icon={<Group fontSize="inherit" />} 
@@ -420,7 +411,7 @@ export default function AdminDashboard() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="📋 Total Bookings" 
+                title=" Total Bookings" 
                 value={stats.bookings} 
                 color={colors.bookings} 
                 icon={<Bookmark fontSize="inherit" />} 
@@ -428,7 +419,7 @@ export default function AdminDashboard() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="🆕 New Bookings" 
+                title=" New Bookings" 
                 value={stats.newBookings} 
                 color={colors.newBookings} 
                 icon={<BookOnline fontSize="inherit" />} 
@@ -436,7 +427,7 @@ export default function AdminDashboard() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="✅ Confirmed Bookings" 
+                title=" Confirmed Bookings" 
                 value={stats.confirmedBookings} 
                 color={colors.confirmedBookings} 
                 icon={<BookOnline fontSize="inherit" />} 
@@ -444,20 +435,13 @@ export default function AdminDashboard() {
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
               <StatCardComponent 
-                title="❌ Cancelled Bookings" 
+                title=" Cancelled Bookings" 
                 value={stats.cancelledBookings} 
                 color={colors.cancelledBookings} 
                 icon={<Cancel fontSize="inherit" />} 
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4} lg={3}>
-              <StatCardComponent 
-                title="📧 Newsletter Subscribers" 
-                value={stats.subscribers} 
-                color={colors.subscribers} 
-                icon={<Group fontSize="inherit" />} 
-              />
-            </Grid>
+          
           </StatsGrid>
         </MainContent>
       </CosmicContainer>

@@ -16,7 +16,6 @@ const AdminTableRow = ({ admin, onEdit , onDelete }) => {
           </Box>
         </Box>
       </TableCell>
-      <TableCell><AdminTypeChip type={admin.type} /></TableCell>
       <TableCell><StatusBadge status={admin.status} /></TableCell>
       <TableCell>{admin.date}</TableCell>
       <TableCell>{admin.ip}</TableCell>

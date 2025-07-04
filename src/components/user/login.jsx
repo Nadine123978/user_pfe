@@ -262,19 +262,22 @@ export default function Login() {
       const decoded = jwtDecode(token);
       const group = decoded.group || decoded.role || "USER";
       const normalizedRole = "ROLE_" + group.toUpperCase();
+localStorage.setItem("role", normalizedRole);
+localStorage.setItem("userId", decoded.userId);
+localStorage.setItem("token", token);
+localStorage.setItem("loginTime", Date.now());
 
-      localStorage.setItem("role", normalizedRole);
-      localStorage.setItem("userId", decoded.userId);
-      localStorage.setItem("token", token);
-      localStorage.setItem("loginTime", Date.now());
+// إشعار باقي التطبيق بتغيير التخزين
+window.dispatchEvent(new Event('storage'));
 
-      if (normalizedRole === SUPER_ADMIN_ROLE) {
-        navigate("/secure1234");
-      } else if (normalizedRole === ADMIN_ROLE) {
-        navigate("/admin");
-      } else {
-        navigate("/dashboard");
-      }
+if (normalizedRole === SUPER_ADMIN_ROLE) {
+  navigate("/secure1234");
+} else if (normalizedRole === ADMIN_ROLE) {
+  navigate("/admin");
+} else {
+  navigate("/dashboard");
+}
+
 
     } catch (error) {
       console.error('❌ Error:', error);

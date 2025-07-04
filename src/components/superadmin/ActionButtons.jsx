@@ -14,9 +14,7 @@ const ActionButtons = ({ onEdit, onDelete }) => (
       <DeleteIcon />
     </IconButton>
 
-    <IconButton>
-      <MoreVertIcon />
-    </IconButton>
+   
   </>
 );
 

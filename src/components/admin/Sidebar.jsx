@@ -10,6 +10,7 @@ import {
 } from '@mui/icons-material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { styled, keyframes } from '@mui/material/styles';
+import AdminTable from '../superadmin/AdminTable';
 
 const drawerWidth = 240;
 
@@ -39,8 +40,10 @@ const CosmicDrawer = styled(Drawer)({
     background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #2d1b69 100%)',
     borderRight: '1px solid rgba(99, 102, 241, 0.2)',
     boxShadow: '4px 0 24px rgba(0, 0, 0, 0.3)',
-    position: 'relative',
-    overflow: 'hidden',
+    position: 'fixed', // Changed from 'relative' to 'fixed'
+    height: '100vh', // Ensure it takes full viewport height
+    overflowY: 'auto', // Allow scrolling if content overflows
+    overflowX: 'hidden',
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -242,24 +245,17 @@ const LogoutSection = styled(Box)({
     background: 'linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent)',
   },
 });
-
 const Sidebar = () => {
   const [openCategory, setOpenCategory] = React.useState(false);
   const [openBookings, setOpenBookings] = React.useState(false);
   const [openEvents, setOpenEvents] = React.useState(false);
   const [openLocation, setOpenLocation] = React.useState(false);
-  const [openSection, setOpenSection] = React.useState(false);
-  const [openSeating, setOpenSeating] = React.useState(false);
-
-  const handleClickCategory = () => setOpenCategory(!openCategory);
-  const handleClickBookings = () => setOpenBookings(!openBookings);
-  const handleClickEvents = () => setOpenEvents(!openEvents);
-  const handleClickLocation = () => setOpenLocation(!openLocation);
-  const handleClickSection = () => setOpenSection(!openSection);
-  const handleClickSeating = () => setOpenSeating(!openSeating);
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  // جلب الدور من localStorage أو مصدر الصلاحيات
+  const role = localStorage.getItem('role'); // 'admin' أو 'superadmin'
 
   const handleLogout = () => {
     localStorage.removeItem("userId");
@@ -268,244 +264,268 @@ const Sidebar = () => {
     navigate("/login", { replace: true });
   };
 
-  // Check if current path matches the given path
   const isActive = (path) => location.pathname === path;
+
+  const handleClickCategory = () => setOpenCategory(!openCategory);
+  const handleClickBookings = () => setOpenBookings(!openBookings);
+  const handleClickEvents = () => setOpenEvents(!openEvents);
+  const handleClickLocation = () => setOpenLocation(!openLocation);
+
+  // لو الدور غير admin أو superadmin، اعيد توجيه تسجيل خروج
+  React.useEffect(() => {
+  if (!['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'].includes(role)) {
+  navigate('/login', { replace: true });
+}
+
+  }, [role, navigate]);
 
   return (
     <CosmicDrawer variant="permanent">
       <FloatingParticles />
       <Toolbar />
       
-      {/* Brand Section */}
-      <BrandSection>
-        <BrandTitle variant="h6">
-          ✨ Cosmic Events
-        </BrandTitle>
-        <BrandSubtitle variant="caption">
-          Admin Portal
-        </BrandSubtitle>
-      </BrandSection>
+     
+      {/* Dashboard خاص بالسوبر أدمن */}
+<Toolbar />
 
+{/* Dashboard خاص بالسوبر أدمن */}
+{role === 'ROLE_SUPER_ADMIN' && (
+  <StyledListItem
+    component={Link}
+    to="/admin/super"
+    isActive={isActive('/admin/super')}
+    button
+  >
+    <StyledListItemIcon isActive={isActive('/admin/super')}>
+      <SupervisorAccount />
+    </StyledListItemIcon>
+    <StyledListItemText
+      primary="Manage Admin"
+      isActive={isActive('/admin/super')}
+    />
+  </StyledListItem>
+)}
       <StyledList>
-        <StyledListItem 
-          component={Link} 
-          to="/admin"
-          isActive={isActive('/admin')}
-          button
-        >
+        {/* Dashboard - يظهر للجميع */}
+        <StyledListItem component={Link} to="/admin" isActive={isActive('/admin')} button>
           <StyledListItemIcon isActive={isActive('/admin')}><Dashboard /></StyledListItemIcon>
-          <StyledListItemText primary="🏠 Dashboard" isActive={isActive('/admin')} />
+          <StyledListItemText primary="Dashboard" isActive={isActive('/admin')} />
         </StyledListItem>
 
-        {/* Category */}
+        {/* Category - يظهر للجميع */}
         <StyledListItem onClick={handleClickCategory} button>
           <StyledListItemIcon><Category /></StyledListItemIcon>
-          <StyledListItemText primary="📂 Category" />
+          <StyledListItemText primary="Category" />
           <ExpandIcon isOpen={openCategory}>
             {openCategory ? <ExpandLess /> : <ExpandMore />}
           </ExpandIcon>
         </StyledListItem>
         <Collapse in={openCategory} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/category/add"
               isActive={isActive('/admin/category/add')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/category/add')}><Add /></StyledListItemIcon>
-              <StyledListItemText primary="➕ Add" isActive={isActive('/admin/category/add')} />
+              <StyledListItemText primary="Add" isActive={isActive('/admin/category/add')} />
             </StyledListItem>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/category/manage"
               isActive={isActive('/admin/category/manage')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/category/manage')}><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="⚙️ Manage" isActive={isActive('/admin/category/manage')} />
+              <StyledListItemText primary="Manage" isActive={isActive('/admin/category/manage')} />
             </StyledListItem>
           </List>
         </Collapse>
 
-        {/* Location */}
+        {/* Location - يظهر للجميع */}
         <StyledListItem onClick={handleClickLocation} button>
           <StyledListItemIcon><LocationOn /></StyledListItemIcon>
-          <StyledListItemText primary="📍 Location" />
+          <StyledListItemText primary="Location" />
           <ExpandIcon isOpen={openLocation}>
             {openLocation ? <ExpandLess /> : <ExpandMore />}
           </ExpandIcon>
         </StyledListItem>
         <Collapse in={openLocation} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/location/add"
               isActive={isActive('/admin/location/add')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/location/add')}><Add /></StyledListItemIcon>
-              <StyledListItemText primary="➕ Add" isActive={isActive('/admin/location/add')} />
+              <StyledListItemText primary="Add" isActive={isActive('/admin/location/add')} />
             </StyledListItem>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/location/manage"
               isActive={isActive('/admin/location/manage')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/location/manage')}><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="⚙️ Manage" isActive={isActive('/admin/location/manage')} />
+              <StyledListItemText primary="Manage" isActive={isActive('/admin/location/manage')} />
             </StyledListItem>
           </List>
         </Collapse>
 
-        {/* Seating */}
-        <StyledListItem 
-          component={Link} 
+        {/* Seating - يظهر للجميع */}
+        <StyledListItem
+          component={Link}
           to="/admin/seating"
           isActive={isActive('/admin/seating')}
           button
         >
           <StyledListItemIcon isActive={isActive('/admin/seating')}><EventSeat /></StyledListItemIcon>
-          <StyledListItemText primary="🪑 Manage Section" isActive={isActive('/admin/seating')} />
+          <StyledListItemText primary="Manage Section" isActive={isActive('/admin/seating')} />
         </StyledListItem>
 
-        {/* Events */}
+        {/* Events - يظهر للجميع */}
         <StyledListItem onClick={handleClickEvents} button>
           <StyledListItemIcon><Event /></StyledListItemIcon>
-          <StyledListItemText primary="🎪 Events" />
+          <StyledListItemText primary="Events" />
           <ExpandIcon isOpen={openEvents}>
             {openEvents ? <ExpandLess /> : <ExpandMore />}
           </ExpandIcon>
         </StyledListItem>
         <Collapse in={openEvents} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/events/add"
               isActive={isActive('/admin/events/add')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/events/add')}><Add /></StyledListItemIcon>
-              <StyledListItemText primary="➕ Add Event" isActive={isActive('/admin/events/add')} />
+              <StyledListItemText primary="Add Event" isActive={isActive('/admin/events/add')} />
             </StyledListItem>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/events/manage"
               isActive={isActive('/admin/events/manage')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/events/manage')}><ManageAccounts /></StyledListItemIcon>
-              <StyledListItemText primary="⚙️ Manage Events" isActive={isActive('/admin/events/manage')} />
+              <StyledListItemText primary="Manage Events" isActive={isActive('/admin/events/manage')} />
             </StyledListItem>
           </List>
         </Collapse>
 
-        <StyledListItem 
-          component={Link} 
+        {/* Gallery - يظهر للجميع */}
+        <StyledListItem
+          component={Link}
           to="/admin/gallery"
           isActive={isActive('/admin/gallery')}
           button
         >
           <StyledListItemIcon isActive={isActive('/admin/gallery')}><MenuBook /></StyledListItemIcon>
-          <StyledListItemText primary="🖼️ Gallery" isActive={isActive('/admin/gallery')} />
+          <StyledListItemText primary="Gallery" isActive={isActive('/admin/gallery')} />
         </StyledListItem>
 
-        <StyledListItem 
-          component={Link} 
+        {/* Manage Users - يظهر للجميع */}
+        <StyledListItem
+          component={Link}
           to="/admin/users"
           isActive={isActive('/admin/users')}
           button
         >
           <StyledListItemIcon isActive={isActive('/admin/users')}><SupervisorAccount /></StyledListItemIcon>
-          <StyledListItemText primary="👥 Manage Users" isActive={isActive('/admin/users')} />
+          <StyledListItemText primary="Manage Users" isActive={isActive('/admin/users')} />
         </StyledListItem>
 
-        {/* Bookings */}
+        {/* Bookings - يظهر للجميع */}
         <StyledListItem onClick={handleClickBookings} button>
           <StyledListItemIcon><BookOnline /></StyledListItemIcon>
-          <StyledListItemText primary="📋 Manage Bookings" />
+          <StyledListItemText primary="Manage Bookings" />
           <ExpandIcon isOpen={openBookings}>
             {openBookings ? <ExpandLess /> : <ExpandMore />}
           </ExpandIcon>
         </StyledListItem>
         <Collapse in={openBookings} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/bookings/all"
               isActive={isActive('/admin/bookings/all')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/bookings/all')}><MenuBook /></StyledListItemIcon>
-              <StyledListItemText primary="📊 All Bookings" isActive={isActive('/admin/bookings/all')} />
+              <StyledListItemText primary="All Bookings" isActive={isActive('/admin/bookings/all')} />
             </StyledListItem>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/bookings/new"
               isActive={isActive('/admin/bookings/new')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/bookings/new')}><Add /></StyledListItemIcon>
-              <StyledListItemText primary="🆕 New Bookings" isActive={isActive('/admin/bookings/new')} />
+              <StyledListItemText primary="New Bookings" isActive={isActive('/admin/bookings/new')} />
             </StyledListItem>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/bookings/cancelled"
               isActive={isActive('/admin/bookings/cancelled')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/bookings/cancelled')}><MenuBook /></StyledListItemIcon>
-              <StyledListItemText primary="❌ Cancelled Bookings" isActive={isActive('/admin/bookings/cancelled')} />
+              <StyledListItemText primary="Cancelled Bookings" isActive={isActive('/admin/bookings/cancelled')} />
             </StyledListItem>
-            <StyledListItem 
-              isSubItem 
-              component={Link} 
+            <StyledListItem
+              isSubItem
+              component={Link}
               to="/admin/bookings/confirmed"
               isActive={isActive('/admin/bookings/confirmed')}
               button
             >
               <StyledListItemIcon isActive={isActive('/admin/bookings/confirmed')}><MenuBook /></StyledListItemIcon>
-              <StyledListItemText primary="✅ Confirmed Bookings" isActive={isActive('/admin/bookings/confirmed')} />
+              <StyledListItemText primary="Confirmed Bookings" isActive={isActive('/admin/bookings/confirmed')} />
             </StyledListItem>
           </List>
         </Collapse>
 
-        {/* Inbox */}
-        <StyledListItem 
-          component={Link} 
+        {/* Inbox - يظهر للجميع */}
+        <StyledListItem
+          component={Link}
           to="/admin/inbox"
           isActive={isActive('/admin/inbox')}
           button
         >
           <StyledListItemIcon isActive={isActive('/admin/inbox')}><Inbox /></StyledListItemIcon>
-          <StyledListItemText primary="📧 Inbox" isActive={isActive('/admin/inbox')} />
+          <StyledListItemText primary="Inbox" isActive={isActive('/admin/inbox')} />
         </StyledListItem>
 
-        <StyledListItem 
-          component={Link} 
-          to="/admin/settings"
-          isActive={isActive('/admin/settings')}
-          button
-        >
-          <StyledListItemIcon isActive={isActive('/admin/settings')}><Settings /></StyledListItemIcon>
-          <StyledListItemText primary="⚙️ Website Setting" isActive={isActive('/admin/settings')} />
-        </StyledListItem>
+        {/* Website Settings - فقط لل superadmin */}
+        {role === 'superadmin' && (
+          <StyledListItem
+            component={Link}
+            to="/admin/settings"
+            isActive={isActive('/admin/settings')}
+            button
+          >
+            <StyledListItemIcon isActive={isActive('/admin/settings')}><Settings /></StyledListItemIcon>
+            <StyledListItemText primary="⚙️ Website Settings" isActive={isActive('/admin/settings')} />
+          </StyledListItem>
+        )}
 
-        {/* Logout with special styling */}
+        {/* Logout */}
         <LogoutSection>
           <StyledListItem onClick={handleLogout} isLogout button>
             <StyledListItemIcon isLogout><Logout /></StyledListItemIcon>
-            <StyledListItemText primary="🚪 Logout" isLogout />
+            <StyledListItemText primary="Logout" isLogout />
           </StyledListItem>
         </LogoutSection>
       </StyledList>
@@ -514,4 +534,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

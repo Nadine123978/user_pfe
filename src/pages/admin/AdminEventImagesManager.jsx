@@ -267,29 +267,26 @@ const UploadButton = styled(Button)({
     background: 'linear-gradient(135deg, #7c3aed 0%, #0891b2 100%)',
   },
 });
-
 const ImageCard = styled(Card)({
+  width: '180px',    // حجم عرض متوسط
+  height: '160px',   // ارتفاع متناسق شوي أصغر من العرض
   background: 'rgba(255, 255, 255, 0.05)',
   backdropFilter: 'blur(10px)',
   border: '1px solid rgba(99, 102, 241, 0.2)',
   borderRadius: '15px',
   overflow: 'hidden',
-  transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  transition: 'all 0.4s ease',
   position: 'relative',
-  aspectRatio: '1',
-  '&:hover': {
-    transform: 'translateY(-10px) scale(1.05)',
-    borderColor: 'rgba(99, 102, 241, 0.6)',
-    boxShadow: `
-      0 20px 40px rgba(0, 0, 0, 0.3),
-      0 0 30px rgba(99, 102, 241, 0.3)
-    `,
-  },
   '& img': {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
     transition: 'all 0.3s ease',
+  },
+  '&:hover': {
+    transform: 'translateY(-10px) scale(1.05)',
+    borderColor: 'rgba(99, 102, 241, 0.6)',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(99, 102, 241, 0.3)',
   },
   '&:hover img': {
     transform: 'scale(1.1)',
@@ -539,8 +536,8 @@ export default function AdminEventImagesManager() {
                     <Grid item xs={12} sm={6} md={4} lg={3} key={image.id}>
                       <ImageCard className="image-card">
                         <img
-                          src={`http://localhost:8081${image.imagePath}`}
-                          alt={`Event ${selectedEvent.title}`}
+                          src={`http://localhost:8081${image.imageUrl}`} 
+                         alt={`Event ${selectedEvent.title}`} 
                         />
                         <DeleteButton
                           onClick={() => handleDeleteImage(image.id)}
@@ -551,11 +548,7 @@ export default function AdminEventImagesManager() {
                       </ImageCard>
                     </Grid>
                   ))}
-                  <Grid item xs={12} sm={6} md={4} lg={3}>
-                    <AddImageCard onClick={handleOpenUploadDialog}>
-                      <AddImageText>+</AddImageText>
-                    </AddImageCard>
-                  </Grid>
+               
                 </Grid>
               </GalleryContainer>
             )}

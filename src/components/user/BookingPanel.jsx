@@ -27,7 +27,7 @@ const BookingPanel = ({ event, onAvailabilityConfirmed }) => {
     if (loading) return; // منع الضغط المتكرر
 
     if (totalTravelers > maxTravelers) {
-      setError(`You can select up to ${maxTravelers} travelers in total.`);
+      setError(`You can select up to ${maxTravelers} seats in total.`);
       return;
     }
 
@@ -99,8 +99,8 @@ const BookingPanel = ({ event, onAvailabilityConfirmed }) => {
 
       <Box sx={{ mt: 3 }}> {/* Increased margin top */}
         <TextField
-          label="Travelers"
-          value={`${totalTravelers} traveler${totalTravelers > 1 ? "s" : ""}`}
+          label="Seats"
+          value={`${totalTravelers} seat${totalTravelers > 1 ? "s" : ""}`}
           InputProps={{
             readOnly: true,
             startAdornment: (
@@ -153,7 +153,7 @@ const BookingPanel = ({ event, onAvailabilityConfirmed }) => {
         >
           <Box sx={{ p: 3, width: 220 }}> {/* Increased padding and width */}
             <Typography variant="subtitle1" gutterBottom sx={{ color: '#E0E0E0' }}>
-              Select number of travelers (up to {maxTravelers})
+              Select number of seats (up to {maxTravelers})
             </Typography>
 
             <Box

@@ -399,13 +399,13 @@ const EditEvent = () => {
     if (file) formData.append("file", file);
 
     try {
-      await axios.put(`http://localhost:8081/api/events/${id}`, formData, {
+      await axios.put(`http://8081/api/events/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
-      setSuccess("Event updated successfully! 🎉");
+      setSuccess("Event updated successfully! ");
       setTimeout(() => {
         navigate("/admin/events/manage");
       }, 2000);
@@ -441,7 +441,7 @@ const EditEvent = () => {
         <FloatingParticles />
         
         <GlassmorphismPaper>
-          <CosmicTitle>✨ Edit Cosmic Event</CosmicTitle>
+          <CosmicTitle> Edit Cosmic Event</CosmicTitle>
           <CosmicSubtitle>
             Update your event details with stellar precision
           </CosmicSubtitle>
@@ -460,9 +460,11 @@ const EditEvent = () => {
 
           <form onSubmit={handleSubmit}>
             <Grid container spacing={4}>
-              <SectionTitle variant="h6">
-                🎪 Event Details
-              </SectionTitle>
+              <Grid item xs={12}>
+                <SectionTitle variant="h6">
+                  🎪 Event Details
+                </SectionTitle>
+              </Grid>
 
               <Grid item xs={12} md={6}>
                 <CosmicTextField
@@ -498,9 +500,11 @@ const EditEvent = () => {
                 />
               </Grid>
 
-              <SectionTitle variant="h6">
-                📅 Schedule & Location
-              </SectionTitle>
+              <Grid item xs={12}>
+                <SectionTitle variant="h6">
+                  📅 Schedule & Location
+                </SectionTitle>
+              </Grid>
 
               <Grid item xs={12} md={6}>
                 <CosmicTextField
@@ -537,57 +541,51 @@ const EditEvent = () => {
                 </CosmicFormControl>
               </Grid>
 
-              <SectionTitle variant="h6">
-                🖼️ Event Media
-              </SectionTitle>
-
               <Grid item xs={12}>
-                <ImagePreviewContainer>
-                  <img
-                    src={file ? URL.createObjectURL(file) : existingImageUrl || "/placeholder.png"}
-                    alt="Event Preview"
-                    style={{ 
-                      maxWidth: "100%", 
-                      maxHeight: 300, 
-                      borderRadius: '12px',
-                      marginBottom: 16,
-                      boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)'
-                    }}
-                  />
-                  <Box>
-                    <label htmlFor="upload-photo">
-                      <Input
-                        accept="image/*"
-                        id="upload-photo"
-                        type="file"
-                        onChange={(e) => setFile(e.target.files[0])}
-                      />
-                      <UploadButton variant="contained" component="span">
-                         Upload New Image
-                      </UploadButton>
-                    </label>
-
-                    <SecondaryButton
-                      variant="outlined"
-                      onClick={() => navigate(`/admin/seating/${id}`)}
-                    >
-                       Manage Seating
-                    </SecondaryButton>
-                  </Box>
-                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)', mt: 1 }}>
-                    Supported formats: JPG, PNG, GIF (Max 5MB)
-                  </Typography>
-                </ImagePreviewContainer>
+                <SectionTitle variant="h6">
+                  🖼️ Event Image
+                </SectionTitle>
               </Grid>
 
-              <Grid item xs={12} sx={{ mt: 4 }}>
-                <CosmicButton 
-                  type="submit" 
-                  fullWidth 
-                  disabled={submitting}
-                  startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : null}
-                >
-                  {submitting ? "Updating Event..." : "🚀 Update Event"}
+              <Grid item xs={12}>
+                <Box display="flex" alignItems="center" mb={2}>
+                  <label htmlFor="upload-image">
+                    <Input
+                      accept="image/*"
+                      id="upload-image"
+                      type="file"
+                      onChange={(e) => setFile(e.target.files[0])}
+                    />
+                    <UploadButton component="span">
+                      Upload Image
+                    </UploadButton>
+                  </label>
+                  {file && (
+                    <Typography variant="body2" color="textSecondary">
+                      {file.name}
+                    </Typography>
+                  )}
+                </Box>
+                {existingImageUrl && (
+                  <ImagePreviewContainer>
+                    <Typography variant="subtitle1" color="textSecondary" mb={1}>
+                      Current Image:
+                    </Typography>
+                    <img
+                    src={file ? URL.createObjectURL(file) : existingImageUrl || "/placeholder.png"}
+                      alt="Event Preview"
+                      style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px' }}
+                    />
+                  </ImagePreviewContainer>
+                )}
+              </Grid>
+
+              <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2} mt={4}>
+                <SecondaryButton onClick={() => navigate(-1)}>
+                  Cancel
+                </SecondaryButton>
+                <CosmicButton type="submit" disabled={submitting}>
+                  {submitting ? <CircularProgress size={24} color="inherit" /> : "Update Event"}
                 </CosmicButton>
               </Grid>
             </Grid>
@@ -599,4 +597,5 @@ const EditEvent = () => {
 };
 
 export default EditEvent;
+
 

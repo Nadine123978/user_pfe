@@ -204,8 +204,12 @@ const TicketCheckout = ({
         color: 'white',
       }}
     >
-      <Card sx={{ backgroundColor: '#2C0050', borderRadius: '12px' }}>
-        <CardContent>
+     <Card sx={{ backgroundColor: '#2C0050', borderRadius: '12px' }}>
+  <CardContent
+    sx={{
+      color: 'white', // يجعل كل النصوص باللون الأبيض
+    }}
+  >
           <Typography variant="h6">Your Tickets</Typography>
           <Stack spacing={2}>
             {ticketsList.map((ticket, index) => (
@@ -216,7 +220,6 @@ const TicketCheckout = ({
                 </Box>
                 <Box textAlign="right">
                   <Typography>${ticket.price?.toFixed(2)}</Typography>
-                  <Typography variant="caption">$3.46 fees</Typography>
                 </Box>
               </Box>
             ))}
@@ -256,10 +259,70 @@ const TicketCheckout = ({
 
         {isOffline && (
           <Box display="flex" flexDirection="column" gap={2} mt={2}>
-            <TextField label="Full Name" value={fullName} onChange={(e) => setFullName(e.target.value)} fullWidth />
-            <TextField label="Phone Number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth />
-            <TextField label="Receipt Number" value={receiptNumber} onChange={(e) => setReceiptNumber(e.target.value)} fullWidth />
-            <input type="file" accept="image/*" onChange={(e) => setReceiptImage(e.target.files[0])} />
+           <TextField
+  label="Full Name"
+  value={fullName}
+  onChange={(e) => setFullName(e.target.value)}
+  fullWidth
+  InputProps={{
+    sx: { color: 'white' },
+  }}
+  InputLabelProps={{
+    sx: { color: 'white' },
+  }}
+/>
+
+<TextField
+  label="Phone Number"
+  value={phoneNumber}
+  onChange={(e) => setPhoneNumber(e.target.value)}
+  fullWidth
+  InputProps={{
+    sx: { color: 'white' },
+  }}
+  InputLabelProps={{
+    sx: { color: 'white' },
+  }}
+/>
+
+<TextField
+  label="Receipt Number"
+  value={receiptNumber}
+  onChange={(e) => setReceiptNumber(e.target.value)}
+  fullWidth
+  InputProps={{
+    sx: { color: 'white' },
+  }}
+  InputLabelProps={{
+    sx: { color: 'white' },
+  }}
+/>
+
+ {/* حقل رفع الملف */}
+    <Button
+      variant="outlined"
+      component="label"
+      sx={{ color: 'white', borderColor: 'white', borderRadius: 2 }}
+    >
+      Choose Receipt Image
+      <input
+        type="file"
+        hidden
+        accept="image/*"
+        onChange={(e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            setReceiptImage(e.target.files[0]);
+          }
+        }}
+      />
+    </Button>
+    {/* عرض اسم الملف المرفوع */}
+    {receiptImage && (
+      <Typography variant="caption" sx={{ mt: 1 }}>
+        Selected file: {receiptImage.name}
+      </Typography>
+    )}
+
           </Box>
         )}
       </Box>
