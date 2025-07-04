@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Typography, Button, Toolbar, CssBaseline } from '@mui/material';
 import { Dashboard, Category, Event, Group, Bookmark, BookOnline, Cancel } from '@mui/icons-material';
-import Sidebar from '../../components/admin/Sidebar';
 import Header from '../../components/admin/Header';
 import axios from 'axios';
 import { styled, createTheme, ThemeProvider, keyframes } from '@mui/material/styles';
