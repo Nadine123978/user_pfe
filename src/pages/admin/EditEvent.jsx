@@ -341,45 +341,45 @@ const EditEvent = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const headers = { Authorization: `Bearer ${token}` };
+ useEffect(() => {
+  const token = localStorage.getItem("token");
+  const headers = { Authorization: `Bearer ${token}` };
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // تحميل بيانات الحدث
-        const eventRes = await axios.get(`http://localhost:8081/api/events/${id}`, { headers });
-        const event = eventRes.data;
-        setTitle(event.title);
-        setDescription(event.description);
-        setStartDate(event.startDate?.slice(0, 16));
-        setEndDate(event.endDate?.slice(0, 16));
-        setCategoryId(event.category?.id || "");
-        setLocationId(event.location?.id || "");
-        setExistingImageUrl(event.imageUrl || "");
+  const fetchData = async () => {
+    try {
+      setLoading(true);
 
-        // تحميل التصنيفات والمواقع
-        const [catRes, locRes] = await Promise.all([
-          axios.get("http://localhost:8081/api/categories", { headers }),
-          axios.get("http://localhost:8081/api/locations", { headers }),
-        ]);
-        setCategories(catRes.data);
-        setLocations(locRes.data);
-console.log("📦 Full event object = ", event);
+      // تحميل التصنيفات والمواقع أولاً
+      const [catRes, locRes] = await Promise.all([
+        axios.get("http://localhost:8081/api/categories", { headers }),
+        axios.get("http://localhost:8081/api/locations", { headers }),
+      ]);
+      setCategories(catRes.data);
+      setLocations(locRes.data);
 
-         console.log("✅ categoryId = ", event.category?.id);
-    console.log("✅ categories = ", catRes.data);
-      } catch (error) {
-        console.error("Error loading event or lists:", error);
-        setError("Failed to load event data.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      // تحميل بيانات الحدث بعد تحميل التصنيفات والمواقع
+      const eventRes = await axios.get(`http://localhost:8081/api/events/${id}`, { headers });
+      const event = eventRes.data;
+      setTitle(event.title);
+      setDescription(event.description);
+      setStartDate(event.startDate?.slice(0, 16));
+      setEndDate(event.endDate?.slice(0, 16));
+      setExistingImageUrl(event.imageUrl || "");
 
-    fetchData();
-  }, [id]);
+      // هنا عيّن categoryId و locationId بعد تنزيل التصنيفات والمواقع
+      setCategoryId(event.category?.id ? event.category.id.toString() : "");
+      setLocationId(event.location?.id ? event.location.id.toString() : "");
+    } catch (error) {
+      console.error("Error loading event or lists:", error);
+      setError("Failed to load event data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [id]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -403,7 +403,7 @@ console.log("📦 Full event object = ", event);
     if (file) formData.append("file", file);
 
     try {
-      await axios.put(`http://8081/api/events/${id}`, formData, {
+      await axios.put(`http://localhost:8081/api/events/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -443,157 +443,130 @@ console.log("📦 Full event object = ", event);
     <ThemeProvider theme={cosmicTheme}>
       <CosmicContainer>
         <FloatingParticles />
-        
-        <GlassmorphismPaper>
-          <CosmicTitle> Edit Cosmic Event</CosmicTitle>
-          <CosmicSubtitle>
-            Update your event details with stellar precision
-          </CosmicSubtitle>
+        <GlassmorphismPaper component="form" onSubmit={handleSubmit} noValidate>
+          <CosmicTitle>Edit Event</CosmicTitle>
+          <CosmicSubtitle>Modify your event details with cosmic style ✨</CosmicSubtitle>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
-              {error}
-            </Alert>
-          )}
+          {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
 
-          {success && (
-            <Alert severity="success" sx={{ mb: 3, borderRadius: '12px' }}>
-              {success}
-            </Alert>
-          )}
+          <SectionTitle>Event Information</SectionTitle>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <CosmicTextField
+                label="Event Title"
+                required
+                fullWidth
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter event title"
+                inputProps={{ maxLength: 120 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CosmicFormControl fullWidth required>
+                <InputLabel id="category-label">Event Category</InputLabel>
+                <Select
+                  labelId="category-label"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                  label="Event Category"
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={String(cat.id)}>
+                      {cat.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </CosmicFormControl>
+            </Grid>
 
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={4}>
-              <Grid item xs={12}>
-                <SectionTitle variant="h6">
-                  🎪 Event Details
-                </SectionTitle>
-              </Grid>
 
-              <Grid item xs={12} md={6}>
-                <CosmicTextField
-                  label="Event Title"
-                  fullWidth
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter an amazing event title..."
+            <Grid item xs={12} sm={6}>
+              <CosmicFormControl fullWidth required>
+                <InputLabel id="location-label">Event Location</InputLabel>
+                <Select
+                  labelId="location-label"
+                  value={locationId}
+                  onChange={(e) => setLocationId(e.target.value)}
+                  label="Event Location"
+                >
+                  {locations.map((loc) => (
+                    <MenuItem key={loc.id} value={String(loc.id)}>
+                      {loc.venueName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </CosmicFormControl>
+            </Grid>
+
+            <Grid item xs={12} sm={6}>
+              <CosmicTextField
+                label="Start Date and Time"
+                type="datetime-local"
+                required
+                fullWidth
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <CosmicTextField
+                label="End Date and Time"
+                type="datetime-local"
+                required
+                fullWidth
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <CosmicTextField
+                label="Event Description"
+                multiline
+                minRows={3}
+                maxRows={6}
+                fullWidth
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your event..."
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <SectionTitle>Event Image</SectionTitle>
+              <ImagePreviewContainer>
+                <img
+                  src={file ? URL.createObjectURL(file) : existingImageUrl || "/placeholder.png"}
+                  alt="Event Preview"
+                  style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', objectFit: 'cover' }}
                 />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <CosmicFormControl fullWidth required>
-                  <InputLabel>Event Category</InputLabel>
-                  <Select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                    {categories.map((cat) => (
-                      <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
-                    ))}
-                  </Select>
-                </CosmicFormControl>
-              </Grid>
-
-              <Grid item xs={12}>
-                <CosmicTextField
-                  label="Event Description"
-                  fullWidth
-                  multiline
-                  rows={4}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe your cosmic event in detail..."
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <SectionTitle variant="h6">
-                  📅 Schedule & Location
-                </SectionTitle>
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <CosmicTextField
-                  label="Start Date & Time"
-                  type="datetime-local"
-                  fullWidth
-                  required
-                  InputLabelProps={{ shrink: true }}
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={6}>
-                <CosmicTextField
-                  label="End Date & Time"
-                  type="datetime-local"
-                  fullWidth
-                  required
-                  InputLabelProps={{ shrink: true }}
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </Grid>
-
-              <Grid item xs={12}>
-                <CosmicFormControl fullWidth required>
-                  <InputLabel>Event Location</InputLabel>
-                  <Select value={locationId} onChange={(e) => setLocationId(e.target.value)}>
-                    {locations.map((loc) => (
-                      <MenuItem key={loc.id} value={loc.id}>{loc.venueName}</MenuItem>
-                    ))}
-                  </Select>
-                </CosmicFormControl>
-              </Grid>
-
-              <Grid item xs={12}>
-                <SectionTitle variant="h6">
-                  🖼️ Event Image
-                </SectionTitle>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Box display="flex" alignItems="center" mb={2}>
-                  <label htmlFor="upload-image">
+                <Box mt={2} display="flex" justifyContent="center" alignItems="center">
+                  <label htmlFor="file-upload">
                     <Input
                       accept="image/*"
-                      id="upload-image"
+                      id="file-upload"
                       type="file"
                       onChange={(e) => setFile(e.target.files[0])}
                     />
-                    <UploadButton component="span">
-                      Upload Image
-                    </UploadButton>
+                    <UploadButton component="span">Upload New Image</UploadButton>
                   </label>
                   {file && (
-                    <Typography variant="body2" color="textSecondary">
-                      {file.name}
-                    </Typography>
+                    <SecondaryButton onClick={() => setFile(null)}>Remove</SecondaryButton>
                   )}
                 </Box>
-                {existingImageUrl && (
-                  <ImagePreviewContainer>
-                    <Typography variant="subtitle1" color="textSecondary" mb={1}>
-                      Current Image:
-                    </Typography>
-                    <img
-                    src={file ? URL.createObjectURL(file) : existingImageUrl || "/placeholder.png"}
-                      alt="Event Preview"
-                      style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px' }}
-                    />
-                  </ImagePreviewContainer>
-                )}
-              </Grid>
-
-              <Grid item xs={12} display="flex" justifyContent="flex-end" gap={2} mt={4}>
-                <SecondaryButton onClick={() => navigate(-1)}>
-                  Cancel
-                </SecondaryButton>
-                <CosmicButton type="submit" disabled={submitting}>
-                  {submitting ? <CircularProgress size={24} color="inherit" /> : "Update Event"}
-                </CosmicButton>
-              </Grid>
+              </ImagePreviewContainer>
             </Grid>
-          </form>
+          </Grid>
+
+          <Box mt={5} textAlign="center">
+            <CosmicButton type="submit" disabled={submitting}>
+              {submitting ? "Updating..." : "Update Event"}
+            </CosmicButton>
+          </Box>
         </GlassmorphismPaper>
       </CosmicContainer>
     </ThemeProvider>
@@ -601,5 +574,3 @@ console.log("📦 Full event object = ", event);
 };
 
 export default EditEvent;
-
-
