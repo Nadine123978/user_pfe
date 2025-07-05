@@ -51,6 +51,8 @@ import UserBookingDetails from './components/user/UserBookingDetails';
 
 import AdminTable from './components/superadmin/AdminTable';
 import { useNavigate } from "react-router-dom";
+import EventsBookingChart from './pages/admin/EventsBookingChart';
+
 
 function SessionChecker() {
   const navigate = useNavigate();
@@ -198,6 +200,7 @@ useEffect(() => {
   <Route path="bookings/:id" element={<BookingDetails />} />
   <Route path="events/add" element={<AddEvent />} />
   <Route path="location/add" element={<AddLocation />} />
+          <Route path="/admin/events-bookings" element={<EventsBookingChart />} />
   <Route path="/admin/events/manage" element={<ManageEvents />} />
   <Route path="edit-event/:id" element={<EditEvent />} />
   <Route path="seating" element={<SelectEventPage />} />

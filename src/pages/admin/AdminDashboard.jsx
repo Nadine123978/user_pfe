@@ -4,6 +4,8 @@ import { Dashboard, Category, Event, Group, Bookmark, BookOnline, Cancel } from 
 import Header from '../../components/admin/Header';
 import axios from 'axios';
 import { styled, createTheme, ThemeProvider, keyframes } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom'; // لازم إذا تستخدم React Router
+
 
 // ثيم بنفسجي-أزرق مخصص (cosmic design)
 const cosmicTheme = createTheme({
@@ -305,7 +307,7 @@ const StatsGrid = styled(Grid)({
 });
 
 const StatCardComponent = ({ title, value, color, icon, onClick }) => (
-  <StatCard color={color} onClick={onClick}>
+  <StatCard color={color}>
     <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={3}>
       <Box flex={1}>
         <StatTitle>{title}</StatTitle>
@@ -315,13 +317,19 @@ const StatCardComponent = ({ title, value, color, icon, onClick }) => (
         {icon}
       </StatIcon>
     </Box>
-    <ViewButton className="view-button" variant="contained">
-      View Details 
+    <ViewButton
+      className="view-button"
+      variant="contained"
+      onClick={onClick}  // ربط الحدث بالزر
+    >
+      View Details
     </ViewButton>
   </StatCard>
 );
 
+
 export default function AdminDashboard() {
+   const navigate = useNavigate();
   const [stats, setStats] = useState({
     categories: 0,
     sponsors: 0,
@@ -366,6 +374,10 @@ export default function AdminDashboard() {
     subscribers: '#6366f1'    // Primary purple
   };
 
+   const handleViewEventsDetails = () => {
+    navigate('/admin/events-bookings'); // عنوان الصفحة التي تعرض الرسم البياني أو تفاصيل الأحداث
+  };
+
   return (
     <ThemeProvider theme={cosmicTheme}>
       <CosmicContainer>
@@ -398,6 +410,8 @@ export default function AdminDashboard() {
                 value={stats.events} 
                 color={colors.events} 
                 icon={<Event fontSize="inherit" />} 
+                onClick={handleViewEventsDetails}  // تمرير دالة التنقل للزر
+
               />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
