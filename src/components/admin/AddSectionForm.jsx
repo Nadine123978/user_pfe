@@ -556,7 +556,7 @@ const AddSectionForm = ({ eventId }) => {
         
         <GlassmorphismPaper>
           <FormTitle>
-            {editingSection ? "✨ Edit Cosmic Section ✨" : "🌟 Add New Cosmic Section 🌟"}
+            {editingSection ? " Edit Cosmic Section ✨" : " Add New Cosmic Section 🌟"}
           </FormTitle>
           
           <FormGrid>
@@ -629,7 +629,7 @@ const AddSectionForm = ({ eventId }) => {
 
           <SectionListContainer>
             <SectionListTitle>
-              🎭 Existing Cosmic Sections
+               Existing Cosmic Sections
             </SectionListTitle>
             
             {sections.map((sec) => (
@@ -637,8 +637,8 @@ const AddSectionForm = ({ eventId }) => {
                 <SectionInfo>
                   <SectionName>{sec.name}</SectionName>
                   <SectionDetails>
-                    <span>🪑 {sec.totalSeats} seats</span>
-                    <span>💰 ${sec.price}</span>
+                    <span> {sec.totalSeats} seats</span>
+                    <span> ${sec.price}</span>
                     <ColorSwatch color={sec.color} />
                   </SectionDetails>
                 </SectionInfo>

@@ -314,7 +314,6 @@ const SearchField = styled(TextField)({
 });
 
 const ManageEvents = () => {
-  console.log("ManageEvents loaded");
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [selectedTab, setSelectedTab] = useState("draft");
@@ -690,20 +689,29 @@ const handleArchive = async (eventId) => {
                       >
                         {event.title}
                       </Typography>
-                      
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          color: 'rgba(255, 255, 255, 0.7)', 
-                          mb: 3,
-                          lineHeight: 1.6,
-                        }}
-                      >
-                         From: {new Date(event.startDate).toLocaleString()} <br />
-                         To: {new Date(event.endDate).toLocaleString()}
-                      </Typography>
+                        <Typography 
+    variant="body2" 
+    sx={{ 
+      color: 'rgba(255, 255, 255, 0.7)', 
+      mb: 3,
+      lineHeight: 1.6,
+    }}
+  >
+     From: {new Date(event.startDate).toLocaleString()} <br />
+     To: {new Date(event.endDate).toLocaleString()}
+  </Typography>
 
-                      
+  {/* إضافة عرض الحقول الناقصة بشكل واضح */}
+  {event.missingFields && event.missingFields.length > 0 && (
+    <Box sx={{ 
+      color: '#f87171', 
+      fontWeight: 'bold', 
+      mb: 2, 
+      fontSize: '0.85rem' 
+    }}>
+      ⚠️ Missing: {event.missingFields.join(", ")}
+    </Box>
+  )}
   {/* إضافة عرض الحقول الناقصة بشكل واضح */}
   {event.missingFields && event.missingFields.length > 0 && (
     <Box sx={{ 
