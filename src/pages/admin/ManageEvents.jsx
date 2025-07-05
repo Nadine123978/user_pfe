@@ -320,51 +320,244 @@ const ManageEvents = () => {
   const [selectedTab, setSelectedTab] = useState("draft");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const tabs = ["draft", "active", "upcoming", "past"];
+  const tabs = ["draft", "active", "upcoming", "past","cancelled"];
 
-  const fetchEvents = async (status) => {
+ 
+const fetchEvents = async (status) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.get(
+      `http://localhost:8081/api/events/by-status?status=${status}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+const eventsWithDetails = await Promise.all(
+  response.data.map(async (event) => {
+    let gallery = [];
+    let section = null;
+    let seats = [];
+
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `http://localhost:8081/api/events/by-status?status=${status}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      const galleryResponse = await axios.get(
+        `http://localhost:8081/api/events/${event.id}/images`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log("Events fetched:", response.data);
-      setEvents(
-        response.data.sort(
-          (a, b) => new Date(a.startDate) - new Date(b.startDate)
-        )
-      );
-    } catch (error) {
-      console.error("Error fetching events:", error);
+      gallery = galleryResponse.data;
+    } catch (e) {
+      console.error(`Failed to fetch gallery for event ${event.id}`, e);
     }
-  };
+
+    try {
+      const sectionResponse = await axios.get(
+        `http://localhost:8081/api/sections/event/${event.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      section = sectionResponse.data;
+    } catch (e) {
+      console.error(`Failed to fetch section for event ${event.id}`, e);
+    }
+
+    try {
+     if (section && section.id) {
+  const seatsResponse = await axios.get(
+    `http://localhost:8081/api/seats/section/${section.id}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  seats = seatsResponse.data;
+}
+
+    } catch (e) {
+      console.error(`Failed to fetch seats for section ${section?.id}`, e);
+    }
+
+    const missingFields = [];
+    if (!event.title || event.title.trim() === "") missingFields.push("title");
+    if (!event.startDate) missingFields.push("startDate");
+    if (!event.endDate) missingFields.push("endDate");
+    if (!event.imageUrl || event.imageUrl.trim() === "") missingFields.push("main image");
+if (Array.isArray(section) && section.length > 0) {
+  const seatPromises = section.map(async (sec) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8081/api/seats/section/${sec.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (e) {
+      console.error(`Failed to fetch seats for section ${sec.id}`, e);
+      return [];
+    }
+  });
+
+  const allSeatsArrays = await Promise.all(seatPromises);
+  seats = allSeatsArrays.flat(); // دمج المقاعد من كل السكاشن
+}
+    if (!gallery || gallery.length === 0) missingFields.push("gallery (images)");
+    if (!seats || seats.length === 0) missingFields.push("seats");
+console.log(`Event ID: ${event.id}`, {
+  title: event.title,
+  startDate: event.startDate,
+  endDate: event.endDate,
+  imageUrl: event.imageUrl,
+  section, // بدل ما تقول event.section
+  gallery,
+  seats,
+  missingFields,
+});
+
+
+
+    return { ...event, gallery, section, seats, missingFields };
+  })
+);
+
+setEvents(
+  eventsWithDetails.sort(
+    (a, b) => new Date(a.startDate) - new Date(b.startDate)
+  )
+);
+
+  } catch (error) {
+    console.error("Error fetching events:", error);
+  }
+};
+
 
   useEffect(() => {
     fetchEvents(selectedTab);
   }, [selectedTab]);
 
   const handlePublish = async (eventId) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:8081/api/events/${eventId}/publish`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      toast.success("Event published successfully");
-      fetchEvents(selectedTab);
-    } catch (error) {
-      console.error("Error publishing event:", error.response?.data || error.message);
-      toast.error("Failed to publish event");
+  const eventToPublish = events.find(e => e.id === eventId);
+
+  if (!eventToPublish) {
+    toast.error("Event data not found.");
+    return;
+  }
+
+  // تحقق من الحقول النصية الأساسية
+  if (
+    !eventToPublish.title || eventToPublish.title.trim() === "" ||
+    !eventToPublish.startDate || !eventToPublish.endDate ||
+    !eventToPublish.imageUrl || eventToPublish.imageUrl.trim() === "" ||
+!Array.isArray(eventToPublish.section) || 
+eventToPublish.section.length === 0 || 
+!eventToPublish.section[0].name || 
+eventToPublish.section[0].name.trim() === ""
+  ) {
+    toast.error("Please fill in all required fields (title, dates, main image, section).");
+    return;
+  }
+
+  // تحقق من التواريخ
+  if (new Date(eventToPublish.startDate) > new Date(eventToPublish.endDate)) {
+    toast.error("Start date must be before end date.");
+    return;
+  }
+
+  // تحقق من gallery (مصفوفة الصور)
+  if (!Array.isArray(eventToPublish.gallery) || eventToPublish.gallery.length === 0) {
+    toast.error("Please add at least one image to the gallery.");
+    return;
+  }
+
+  // تحقق من seats (مثلاً مصفوفة أو رقم)
+  // لنفترض seats عبارة عن عدد المقاعد المتوفرة (رقم)
+ if (
+  !Array.isArray(eventToPublish.seats) ||
+  eventToPublish.seats.length === 0
+) {
+  toast.error("Please add seats information.");
+  return;
+}
+
+// (اختياري) تحقق إذا في مقاعد متاحة
+const hasAvailableSeats = eventToPublish.seats.some(seat => seat.available === true);
+if (!hasAvailableSeats) {
+  toast.error("At least one seat must be available.");
+  return;
+}
+
+try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:8081/api/events/${eventId}/publish`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    toast.success("Event published successfully");
+    fetchEvents(selectedTab);
+  } catch (error) {
+    console.error("Error publishing event:", error.response?.data || error.message);
+    toast.error("Failed to publish event");
+  }
+};
+
+
+ 
+ const handleCancel = async (eventId) => {
+  try {
+    const token = localStorage.getItem("token");
+
+    // Step 1: Check booking count
+    const countResponse = await axios.get(
+      `http://localhost:8081/api/events/${eventId}/booking-count`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const bookingCount = countResponse.data;
+
+    // Step 2: Show appropriate confirmation
+    let confirmMessage = "";
+    if (bookingCount > 0) {
+      confirmMessage = `This event has ${bookingCount} active bookings. Are you sure you want to cancel it and notify all users?`;
+    } else {
+      confirmMessage = "Are you sure you want to cancel this event? No bookings exist for this event.";
     }
-  };
+
+    if (!window.confirm(confirmMessage)) return;
+
+    // Step 3: Perform cancellation
+    await axios.put(
+      `http://localhost:8081/api/events/${eventId}/cancel`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    toast.success("Event cancelled successfully");
+    fetchEvents(selectedTab);
+  } catch (error) {
+    console.error("Error cancelling event:", error);
+    toast.error("Failed to cancel event");
+  }
+};
+
+
+const handleArchive = async (eventId) => {
+  if (!window.confirm("Are you sure you want to archive this past event?")) return;
+  try {
+    const token = localStorage.getItem("token");
+    await axios.put(
+      `http://localhost:8081/api/events/${eventId}/archive`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    toast.success("Event archived successfully");
+    fetchEvents(selectedTab);
+  } catch (error) {
+    console.error("Error archiving event:", error);
+    toast.error("Failed to archive event");
+  }
+};
+
+
 
   const handleDelete = async (eventId) => {
     if (!window.confirm("Are you sure you want to delete this draft?")) return;
@@ -506,65 +699,120 @@ const ManageEvents = () => {
                           lineHeight: 1.6,
                         }}
                       >
-                        📅 From: {new Date(event.startDate).toLocaleString()} <br />
-                        🕐 To: {new Date(event.endDate).toLocaleString()}
+                         From: {new Date(event.startDate).toLocaleString()} <br />
+                         To: {new Date(event.endDate).toLocaleString()}
                       </Typography>
 
-                      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => navigate(`/admin/edit-event/${event.id}`)}
-                          sx={{ flex: 1, minWidth: '80px' }}
-                        >
-                           Edit
-                        </Button>
-                        
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => alert("Preview not implemented yet.")}
-                          sx={{ flex: 1, minWidth: '80px' }}
-                        >
-                           Preview
-                        </Button>
-                        
-                        {event.status === "draft" && (
-                          <>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              onClick={() => handlePublish(event.id)}
-                              sx={{ 
-                                flex: 1, 
-                                minWidth: '80px',
-                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                '&:hover': {
-                                  background: 'linear-gradient(135deg, #0d9488 0%, #047857 100%)',
-                                },
-                              }}
-                            >
-                               Publish
-                            </Button>
-                            
-                            <Button
-                              variant="contained"
-                              size="small"
-                              onClick={() => handleDelete(event.id)}
-                              sx={{ 
-                                flex: 1, 
-                                minWidth: '80px',
-                                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                                '&:hover': {
-                                  background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-                                },
-                              }}
-                            >
-                              🗑️ Delete
-                            </Button>
-                          </>
-                        )}
-                      </Box>
+                      
+  {/* إضافة عرض الحقول الناقصة بشكل واضح */}
+  {event.missingFields && event.missingFields.length > 0 && (
+    <Box sx={{ 
+      color: '#f87171', 
+      fontWeight: 'bold', 
+      mb: 2, 
+      fontSize: '0.85rem' 
+    }}>
+      ⚠️ Missing: {event.missingFields.join(", ")}
+    </Box>
+  )}
+
+                      
+         
+
+                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+  {/* Edit و Preview تظهر دائماً */}
+  <Button
+    variant="outlined"
+    size="small"
+    onClick={() => navigate(`/admin/edit-event/${event.id}`)}
+    sx={{ flex: 1, minWidth: '80px' }}
+  >
+    Edit
+  </Button>
+
+  <Button
+    variant="outlined"
+    size="small"
+    onClick={() => alert("Preview not implemented yet.")}
+    sx={{ flex: 1, minWidth: '80px' }}
+  >
+    Preview
+  </Button>
+
+  {/* أزرار حسب حالة الحدث */}
+  {event.status === "DRAFT" && (
+    <>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() => handlePublish(event.id)}
+        sx={{
+          flex: 1,
+          minWidth: '80px',
+          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #0d9488 0%, #047857 100%)',
+          },
+        }}
+      >
+        Publish
+      </Button>
+
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() => handleDelete(event.id)}
+        sx={{
+          flex: 1,
+          minWidth: '80px',
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+          },
+        }}
+      >
+        Delete
+      </Button>
+    </>
+  )}
+
+  {(event.status === "ACTIVE" || event.status === "UPCOMING") && (
+    <Button
+      variant="contained"
+      size="small"
+      onClick={() => handleCancel(event.id)}
+      sx={{
+        flex: 1,
+        minWidth: '80px',
+        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+        '&:hover': {
+          background: 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)',
+        },
+      }}
+    >
+      Cancel
+    </Button>
+  )}
+
+  {event.status === "PAST" && (
+    <Button
+      variant="contained"
+      size="small"
+      onClick={() => handleArchive(event.id)}
+      sx={{
+        flex: 1,
+        minWidth: '80px',
+        background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+        '&:hover': {
+          background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+        },
+      }}
+    >
+      Archive
+    </Button>
+  )}
+</Box>
+
                     </CardContent>
                   </GlassmorphismCard>
                 </Grid>

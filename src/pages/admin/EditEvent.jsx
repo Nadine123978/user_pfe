@@ -376,46 +376,45 @@ const EditEvent = () => {
 
     fetchData();
   }, [id]);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setSuccess("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+  if (new Date(startDate) >= new Date(endDate)) {
+    setError("Start date must be before end date.");
+    return;
+  }
 
-    if (new Date(startDate) >= new Date(endDate)) {
-      setError("Start date must be before end date.");
-      return;
-    }
+  setSubmitting(true);
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("categoryId", categoryId);
+  formData.append("locationId", locationId);
+  formData.append("startDate", startDate);
+  formData.append("endDate", endDate);
+  if (file) formData.append("file", file);
 
-    setSubmitting(true);
-    const token = localStorage.getItem("token");
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("categoryId", categoryId);
-    formData.append("locationId", locationId);
-    formData.append("startDate", startDate);
-    formData.append("endDate", endDate);
-    if (file) formData.append("file", file);
+  try {
+    await axios.put(`http://localhost:8081/api/events/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,  // فقط التوكين بدون Content-Type
+      },
+    });
+    setSuccess("Event updated successfully!");
+    setTimeout(() => {
+      navigate("/admin/events/manage");
+    }, 2000);
+  } catch (err) {
+    console.error("Error updating event:", err);
+    setError("Failed to update event. Please try again.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
-    try {
-      await axios.put(`http://8081/api/events/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setSuccess("Event updated successfully! ");
-      setTimeout(() => {
-        navigate("/admin/events/manage");
-      }, 2000);
-    } catch (err) {
-      console.error("Error updating event:", err);
-      setError("Failed to update event. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   if (loading) {
     return (
