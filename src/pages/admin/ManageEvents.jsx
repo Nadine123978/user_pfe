@@ -712,17 +712,7 @@ const handleArchive = async (eventId) => {
       ⚠️ Missing: {event.missingFields.join(", ")}
     </Box>
   )}
-  {/* إضافة عرض الحقول الناقصة بشكل واضح */}
-  {event.missingFields && event.missingFields.length > 0 && (
-    <Box sx={{ 
-      color: '#f87171', 
-      fontWeight: 'bold', 
-      mb: 2, 
-      fontSize: '0.85rem' 
-    }}>
-      ⚠️ Missing: {event.missingFields.join(", ")}
-    </Box>
-  )}
+
 
                       
          
