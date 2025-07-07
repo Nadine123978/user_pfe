@@ -341,7 +341,7 @@ const EditEvent = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
- useEffect(() => {
+useEffect(() => {
   const token = localStorage.getItem("token");
   const headers = { Authorization: `Bearer ${token}` };
 
@@ -349,7 +349,6 @@ const EditEvent = () => {
     try {
       setLoading(true);
 
-      // تحميل التصنيفات والمواقع أولاً
       const [catRes, locRes] = await Promise.all([
         axios.get("http://localhost:8081/api/categories", { headers }),
         axios.get("http://localhost:8081/api/locations", { headers }),
@@ -357,7 +356,6 @@ const EditEvent = () => {
       setCategories(catRes.data);
       setLocations(locRes.data);
 
-      // تحميل بيانات الحدث بعد تحميل التصنيفات والمواقع
       const eventRes = await axios.get(`http://localhost:8081/api/events/${id}`, { headers });
       const event = eventRes.data;
       setTitle(event.title);
@@ -366,9 +364,18 @@ const EditEvent = () => {
       setEndDate(event.endDate?.slice(0, 16));
       setExistingImageUrl(event.imageUrl || "");
 
-      // هنا عيّن categoryId و locationId بعد تنزيل التصنيفات والمواقع
-      setCategoryId(event.category?.id ? event.category.id.toString() : "");
-      setLocationId(event.location?.id ? event.location.id.toString() : "");
+      const eventCategoryId = event.category?.id ? event.category.id.toString() : "";
+      const eventLocationId = event.location?.id ? event.location.id.toString() : "";
+
+      setCategoryId(eventCategoryId);
+      setLocationId(eventLocationId);
+
+      // ✅✅✅ console logs to debug
+      console.log("✅ Categories loaded:", catRes.data);
+      console.log("✅ Event loaded:", event);
+      console.log("✅ Event category id set to:", eventCategoryId);
+      console.log("✅ Event location id set to:", eventLocationId);
+
     } catch (error) {
       console.error("Error loading event or lists:", error);
       setError("Failed to load event data.");
@@ -377,10 +384,9 @@ const EditEvent = () => {
     }
   };
 
+  fetchData();
+}, [id]);
 
-
-    fetchData();
-  }, [id]);
 const handleSubmit = async (e) => {
   e.preventDefault();
   setError("");

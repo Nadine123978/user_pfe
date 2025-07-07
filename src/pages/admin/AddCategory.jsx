@@ -17,6 +17,7 @@ import {
   Error,
   Close,
   Celebration,
+   AutoAwesome, 
 
   Category as CategoryIcon
 } from '@mui/icons-material';

@@ -378,6 +378,11 @@ export default function AdminDashboard() {
     navigate('/admin/events-bookings'); // عنوان الصفحة التي تعرض الرسم البياني أو تفاصيل الأحداث
   };
 
+     const handleViewCategoryDetails= () => {
+    navigate('/admin/category-bookings'); // عنوان الصفحة التي تعرض الرسم البياني أو تفاصيل الأحداث
+  };
+
+
   return (
     <ThemeProvider theme={cosmicTheme}>
       <CosmicContainer>
@@ -401,6 +406,8 @@ export default function AdminDashboard() {
                 value={stats.categories} 
                 color={colors.categories} 
                 icon={<Category fontSize="inherit" />} 
+                                onClick={handleViewCategoryDetails} // تمرير دالة التنقل للزر
+
               />
             </Grid>
            

@@ -715,27 +715,22 @@ const handleArchive = async (eventId) => {
 
 
                       
-         
+       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+  {/* أزرار Edit و Preview تظهر فقط إذا الحالة ليست "ACTIVE" */}
+  {event.status !== "ACTIVE" && (
+    <>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => navigate(`/admin/edit-event/${event.id}`)}
+        sx={{ flex: 1, minWidth: '80px' }}
+      >
+        Edit
+      </Button>
 
-                   <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-  {/* Edit و Preview تظهر دائماً */}
-  <Button
-    variant="outlined"
-    size="small"
-    onClick={() => navigate(`/admin/edit-event/${event.id}`)}
-    sx={{ flex: 1, minWidth: '80px' }}
-  >
-    Edit
-  </Button>
-
-  <Button
-    variant="outlined"
-    size="small"
-    onClick={() => alert("Preview not implemented yet.")}
-    sx={{ flex: 1, minWidth: '80px' }}
-  >
-    Preview
-  </Button>
+   
+    </>
+  )}
 
   {/* أزرار حسب حالة الحدث */}
   {event.status === "DRAFT" && (
@@ -774,7 +769,8 @@ const handleArchive = async (eventId) => {
     </>
   )}
 
-  {(event.status === "ACTIVE" || event.status === "UPCOMING") && (
+  {/* إلغاء الزر Cancel لما الحالة "ACTIVE" */}
+  {(event.status === "UPCOMING") && (
     <Button
       variant="contained"
       size="small"
