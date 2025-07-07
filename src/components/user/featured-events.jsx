@@ -16,15 +16,16 @@ const StyledCard = styled(Card)(({ theme }) => ({
   background: '#ffffff',
   borderRadius: 20,
   overflow: 'hidden',
-  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-  transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
+  transition: 'all 0.3s ease',
   border: '1px solid rgba(255, 255, 255, 0.1)',
-  height: '100%', // ✅ Ensure all cards have same height
+  height: '100%',
   display: 'flex',
   flexDirection: 'column',
+  minHeight: 380,   // أقل من السابق
   '&:hover': {
-    transform: 'translateY(-12px) scale(1.02)',
-    boxShadow: '0 20px 60px rgba(233, 30, 99, 0.2)',
+    transform: 'translateY(-8px) scale(1.015)',
+    boxShadow: '0 16px 40px rgba(233, 30, 99, 0.15)',
   },
 }));
 
@@ -104,32 +105,34 @@ const FeaturedEvents = () => {
   const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUpcomingEventsWithBooking = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-          toast.error("User ID not found. Please login again.");
-          return;
-        }
+ useEffect(() => {
+  const fetchUpcomingEventsWithBooking = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
 
-       const response = await axios.get(
-  `http://localhost:8081/api/events/upcoming-with-booking?userId=${userId}`,
-  {
-    headers: { Authorization: `Bearer ${token}` },
-  }
-);
+      let url = "";
+      let headers = {};
 
-        setEvents(response.data);
-      } catch (error) {
-        console.error("❌ Error fetching events:", error);
-        toast.error("Failed to load events.");
+      if (userId) {
+        url = `http://localhost:8081/api/events/upcoming-with-booking?userId=${userId}`;
+        if (token) headers.Authorization = `Bearer ${token}`;
+      } else {
+        // لما ما في userId، جلب الأحداث بدون حجز
+        url = `http://localhost:8081/api/events/upcoming`;
       }
-    };
 
-    fetchUpcomingEventsWithBooking();
-  }, []);
+      const response = await axios.get(url, { headers });
+      setEvents(response.data);
+    } catch (error) {
+      console.error("❌ Error fetching events:", error);
+      toast.error("Failed to load events.");
+    }
+  };
+
+  fetchUpcomingEventsWithBooking();
+}, []);
+
 const handleButtonClick = (event) => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -179,8 +182,19 @@ const handleButtonClick = (event) => {
   return false; // أو فقط تعطل في حالات معينة غير "PAID" و "CONFIRMED"
 };
 
-
+  // ✅ Display only 4 cards as requested
   const visibleEvents = events.slice(0, 4);
+
+  const getPriceLabel = (event) => {
+  if (event.minPrice != null && event.maxPrice != null) {
+    if (event.minPrice === event.maxPrice) {
+      return `$${event.minPrice}`;
+    }
+    return `$${event.minPrice} - $${event.maxPrice}`;
+  }
+  return "Free";
+};
+
 
   return (
     <SectionContainer sx={{ py: 12, px: { xs: 2, md: 6 } }}>
@@ -221,25 +235,26 @@ const handleButtonClick = (event) => {
           </SeeAllButton>
         </Box>
 
+        {/* ✅ Grid with consistent card sizing */}
         <Grid container spacing={4} sx={{ maxWidth: 1400, mx: 'auto' }}>
           {visibleEvents.map((event) => (
-            <Grid item xs={12} sm={6} lg={4} key={event.id} sx={{ display: 'flex' }}>
+            <Grid item xs={12} sm={6} md={6} lg={3} key={event.id} sx={{ display: 'flex' }}>
               <StyledCard>
                 <Box sx={{ position: 'relative' }}>
-                  <CardMedia
-                    component="img"
-image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
-                    alt={event.title}
-                    sx={{
-                      objectFit: 'cover',
-                      width: '100%',
-                      height: 240,
-                      transition: 'transform 0.3s ease',
-                      '&:hover': {
-                        transform: 'scale(1.05)',
-                      },
-                    }}
-                  />
+                 <CardMedia
+  component="img"
+  image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
+  alt={event.title}
+  sx={{
+    objectFit: 'cover',
+    width: '100%',
+    height: 140,  // أقل من 200
+    transition: 'transform 0.3s ease',
+    '&:hover': {
+      transform: 'scale(1.03)',
+    },
+  }}
+/>
 
                   <Box
                     sx={{
@@ -249,39 +264,49 @@ image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `h
                       zIndex: 3,
                     }}
                   >
-                    <PriceChip 
-                      label={event.priceRange || "Free"} 
-                      size="small"
-                    />
+                   <PriceChip 
+  label={getPriceLabel(event)} 
+  size="small" 
+/>
+
                   </Box>
                 </Box>
                 
-                <CardContent sx={{ p: 3, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+               <CardContent sx={{ 
+  p: 2, // أقل من 3
+  flexGrow: 1, 
+  display: 'flex', 
+  flexDirection: 'column', 
+  justifyContent: 'space-between' 
+}}>
                   <Box>
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 700,
-                        color: ' #200245',
-                        mb: 2,
-                        lineHeight: 1.3,
-                        fontFamily: "'Inter', sans-serif",
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,      // تحديد عدد الأسطر (2 هنا)
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {event.title}
-                    </Typography>
+                  <Typography
+  variant="h6"
+  sx={{
+    fontWeight: 700,
+    color: '#200245',
+    mb: 1.5,  // أقل من 2
+    lineHeight: 1.2,
+    fontFamily: "'Inter', sans-serif",
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    minHeight: '2.2em',
+    fontSize: '1.1rem',  // تصغير الخط قليلاً
+  }}
+>
+  {event.title}
+</Typography>
+
 
                     <Stack spacing={1.5} sx={{ mb: 3 }}>
                       <Stack direction="row" alignItems="center" spacing={1}>
-                        <CalendarTodayIcon sx={{ fontSize: 18, color: '#E91E63' }} />
+                        <CalendarTodayIcon sx={{ fontSize: 16, color: '#E91E63' }} />
                         <Typography
                           variant="body2"
-                          sx={{ color:'  #200245', fontWeight: 500 }}
+                          sx={{ color: '#200245', fontWeight: 500, fontSize: '0.85rem' }}
                         >
                           {event.startDate ? new Date(event.startDate).toLocaleDateString('en-US', {
                             weekday: 'short',
@@ -293,35 +318,43 @@ image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `h
                       </Stack>
                       
                       <Stack direction="row" alignItems="center" spacing={1}>
-                        <LocationOnIcon sx={{ fontSize: 18, color: '#E91E63' }} />
-                        <Typography
-                          variant="body2"
-                          sx={{ 
-                            color: ' #200245',
-                            fontWeight: 500,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {event.location
-                            ? (event.location.length > 25
-                                ? event.location.substring(0, 25) + "..."
-                                : event.location)
-                            : "Location N/A"}
-                        </Typography>
-                      </Stack>
+  <LocationOnIcon sx={{ fontSize: 16, color: '#E91E63' }} />
+  <Typography
+  variant="body2"
+  sx={{ 
+    color: '#200245',
+    fontWeight: 500,
+    fontSize: '0.85rem',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    maxWidth: '15ch',  // تحديد العرض بـ 15 حرف تقريبا
+    display: 'block'   // ضروري لتفعيل maxWidth و textOverflow مع whiteSpace nowrap
+  }}
+>
+  {event.location
+    ? (typeof event.location == "string"
+        ? (event.location.length > 15
+            ? event.location.substring(0, 15) + "..."
+            : event.location)
+        : event.location.venueName || "Location N/A")
+    : "Location N/A"}
+</Typography>
+
+</Stack>
+
                     </Stack>
                   </Box>
 
-                  <GradientButton
-                    onClick={() => handleButtonClick(event)}
-                    fullWidth
-                    endIcon={<OpenInNewIcon />}
-                    disabled={isButtonDisabled(event)}
-                  >
-                    {getButtonLabel(event)}
-                  </GradientButton>
+                 <GradientButton
+  onClick={() => handleButtonClick(event)}
+  fullWidth
+  endIcon={<OpenInNewIcon />}
+  disabled={isButtonDisabled(event)}
+  sx={{ mt: 'auto', minHeight: 40, fontSize: '13px' }}  // زر أصغر قليلاً
+>
+  {getButtonLabel(event)}
+</GradientButton>
                 </CardContent>
               </StyledCard>
             </Grid>
@@ -333,3 +366,4 @@ image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `h
 };
 
 export default FeaturedEvents;
+
