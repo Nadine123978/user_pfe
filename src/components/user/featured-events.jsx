@@ -105,54 +105,53 @@ const FeaturedEvents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUpcomingEventsWithBooking = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-          toast.error("User ID not found. Please login again.");
-          return;
-        }
+  const fetchUpcomingEventsWithBooking = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
 
-        const response = await axios.get(
-          `http://localhost:8081/api/events/upcoming-with-booking?userId=${userId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setEvents(response.data);
-      } catch (error) {
-        console.error("❌ Error fetching events:", error);
-        toast.error("Failed to load events.");
-      }
-    };
+      const url = userId 
+        ? `http://localhost:8081/api/events/upcoming-with-booking?userId=${userId}`
+        : `http://localhost:8081/api/events/upcoming`;
 
-    fetchUpcomingEventsWithBooking();
-  }, []);
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const handleButtonClick = (event) => {
-    const status = event.bookingStatus?.toUpperCase();
-    if (event.alreadyBooked) {
-      switch (status) {
-        case 'PENDING':
-          navigate("/checkout", { state: { bookingId: event.bookingId } });
-          break;
-        case 'CANCELLED':
-          navigate(`/booking/${event.id}`);
-          break;
-case 'PAID':
-case 'CONFIRMED':
-  navigate(`/user/detail/${event.bookingId}`);
-  break;
-
-
-        default:
-          navigate(`/booking/${event.id}`);
-      }
-    } else {
-      navigate(`/booking/${event.id}`);
+      const response = await axios.get(url, { headers });
+      setEvents(response.data);
+    } catch (error) {
+      console.error("❌ Error fetching events:", error);
+      toast.error("Failed to load events.");
     }
   };
+
+  fetchUpcomingEventsWithBooking();
+}, []);
+
+
+const handleButtonClick = (event) => {
+  const status = event.bookingStatus?.toUpperCase();
+  const userId = localStorage.getItem("userId");
+
+  if (userId && event.alreadyBooked) {
+    switch (status) {
+      case 'PENDING':
+        navigate("/checkout", { state: { bookingId: event.bookingId } });
+        break;
+      case 'CANCELLED':
+        navigate(`/booking/${event.id}`);
+        break;
+      case 'PAID':
+      case 'CONFIRMED':
+        navigate(`/user/detail/${event.bookingId}`);
+        break;
+      default:
+        navigate(`/booking/${event.id}`);
+    }
+  } else {
+    navigate(`/booking/${event.id}`);
+  }
+};
+
 
   const getButtonLabel = (event) => {
     if (event.alreadyBooked) {
