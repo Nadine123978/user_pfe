@@ -105,34 +105,40 @@ const FeaturedEvents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  const fetchUpcomingEventsWithBooking = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const userId = localStorage.getItem("userId");
+    const fetchUpcomingEventsWithBooking = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          toast.error("User ID not found. Please login again.");
+          return;
+        }
 
-      const url = userId 
-        ? `http://localhost:8081/api/events/upcoming-with-booking?userId=${userId}`
-        : `http://localhost:8081/api/events/upcoming`;
+       const response = await axios.get(
+  `http://localhost:8081/api/events/upcoming-with-booking?userId=${userId}`,
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
 
-      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        setEvents(response.data);
+      } catch (error) {
+        console.error("❌ Error fetching events:", error);
+        toast.error("Failed to load events.");
+      }
+    };
 
-      const response = await axios.get(url, { headers });
-      setEvents(response.data);
-    } catch (error) {
-      console.error("❌ Error fetching events:", error);
-      toast.error("Failed to load events.");
-    }
-  };
-
-  fetchUpcomingEventsWithBooking();
-}, []);
-
-
+    fetchUpcomingEventsWithBooking();
+  }, []);
 const handleButtonClick = (event) => {
-  const status = event.bookingStatus?.toUpperCase();
-  const userId = localStorage.getItem("userId");
+  const token = localStorage.getItem("token");
+  if (!token) {
+    toast.error("Please login to book an event.");
+    return;
+  }
 
-  if (userId && event.alreadyBooked) {
+  const status = event.bookingStatus?.toUpperCase();
+  if (event.alreadyBooked) {
     switch (status) {
       case 'PENDING':
         navigate("/checkout", { state: { bookingId: event.bookingId } });
@@ -151,7 +157,6 @@ const handleButtonClick = (event) => {
     navigate(`/booking/${event.id}`);
   }
 };
-
 
   const getButtonLabel = (event) => {
     if (event.alreadyBooked) {
@@ -223,7 +228,7 @@ const handleButtonClick = (event) => {
                 <Box sx={{ position: 'relative' }}>
                   <CardMedia
                     component="img"
-                    image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
+image={event.imageUrl ? (event.imageUrl.startsWith("http") ? event.imageUrl : `http://localhost:8081${event.imageUrl}`) : "/default-event-image.jpg"}
                     alt={event.title}
                     sx={{
                       objectFit: 'cover',
