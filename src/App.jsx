@@ -54,42 +54,29 @@ import { useNavigate } from "react-router-dom";
 import EventBookingsChart from './components/admin/EventBookingsChart';
 import CategoryBookingsChart from './components/admin/CategoryBookingsChart';
 
-
 function SessionChecker() {
-  const navigate = useNavigate();
-
   useEffect(() => {
     const checkSession = () => {
       const loginTime = localStorage.getItem("loginTime");
       const token = localStorage.getItem("token");
 
-      const maxSessionTime = 60 * 60 * 1000; // ساعة
+      const maxSessionTime = 60 * 60 * 1000; // 1 hour
 
-      if (!token) {
-        // إذا لم يوجد توكن، أعد التوجيه
-        navigate("/login");
-        return;
-      }
-
-      if (loginTime) {
+      if (token && loginTime) {
         const timePassed = Date.now() - parseInt(loginTime, 10);
         if (timePassed > maxSessionTime) {
           localStorage.clear();
-          navigate("/login");
         }
       }
     };
 
-    checkSession(); // تحقق مرة عند التركيب
-
-    const interval = setInterval(checkSession, 60000); // كل دقيقة
-
+    checkSession();
+    const interval = setInterval(checkSession, 60000);
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, []);
 
   return null;
 }
-
 
 function App() {
   const [role, setRole] = useState(null);
@@ -105,15 +92,16 @@ function App() {
     }
     setLoading(false);
   };
-useEffect(() => {
-  updateRoleFromStorage();
-  window.addEventListener("storage", updateRoleFromStorage);
-  window.addEventListener("focus", updateRoleFromStorage);
-  return () => {
-    window.removeEventListener("storage", updateRoleFromStorage);
-    window.removeEventListener("focus", updateRoleFromStorage);
-  };
-}, []);
+
+  useEffect(() => {
+    updateRoleFromStorage();
+    window.addEventListener("storage", updateRoleFromStorage);
+    window.addEventListener("focus", updateRoleFromStorage);
+    return () => {
+      window.removeEventListener("storage", updateRoleFromStorage);
+      window.removeEventListener("focus", updateRoleFromStorage);
+    };
+  }, []);
 
   if (loading) return <div>Loading...</div>;
 
@@ -140,21 +128,21 @@ useEffect(() => {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/all-upcoming-event" element={<AllUpcomingEvent />} />
-<Route path="/user/detail/:id" element={<UserBookingDetails />} />
+        <Route path="/user/detail/:id" element={<UserBookingDetails />} />
 
+        <Route 
+          path="/login" 
+          element={
+            loading ? (
+              <div>Loading...</div>
+            ) : role ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Login />
+            )
+          }
+        />
 
-<Route 
-  path="/login" 
-  element={
-    loading ? (
-      <div>Loading...</div>
-    ) : role ? (
-      <Navigate to="/dashboard" replace />
-    ) : (
-      <Login />
-    )
-  }
-/>
         {/* صفحة السوبر أدمن */}
         <Route
           path="/secure1234"
@@ -169,53 +157,48 @@ useEffect(() => {
           }
         />
 
-   
-
         {/* صفحة داشبورد المستخدم */}
         <Route
           path="/dashboard"
           element={role === "ROLE_USER" ? <Home /> : <Navigate to="/login" replace />}
         />
 
-        {/* مجموعة صفحات الأدمن داخل AdminLayout */}
-<Route
-  path="/admin"
-  element={
-    role === "ROLE_ADMIN" || role === "ROLE_SUPER_ADMIN" ? (
-      <AdminLayout role={role} />
-    ) : (
-      <Navigate to="/login" replace />
-    )
-  }
->
-  <Route index element={<AdminDashboard />} />
-  <Route path="category/add" element={<AddCategory />} />
-  <Route path="category/manage" element={<ManageCategories />} />
-    <Route path="location/manage" element={<ManageLocations />} />
-  <Route path="categories/edit/:id" element={<EditCategory />} />
-  <Route path="gallery" element={<AdminEventImagesManager />} />
-  <Route path="bookings/all" element={<AllBookings />} />
-  <Route path="bookings/new" element={<NewBookings />} />
-  <Route path="bookings/cancelled" element={<CancelledBookings />} />
-  <Route path="bookings/confirmed" element={<ConfirmedBookings />} />
-  <Route path="bookings/:id" element={<BookingDetails />} />
-  <Route path="events/add" element={<AddEvent />} />
-  <Route path="location/add" element={<AddLocation />} />
-<Route path="events-bookings" element={<EventBookingsChart />} />
-<Route path="category-bookings"   element={<CategoryBookingsChart/>}/>
-  <Route path="/admin/events/manage" element={<ManageEvents />} />
-  <Route path="edit-event/:id" element={<EditEvent />} />
-  <Route path="seating" element={<SelectEventPage />} />
-  <Route path="seating/:eventId" element={<ManageSeatingPage />} />
-  <Route path="manage-seats" element={<EditSeatsPage />} />
-  <Route path="users" element={<ManageUsers />} />
-  <Route path="users/:userId/bookings" element={<UserBookings />} />
-  <Route path="inbox" element={<EmailInterface />} />
-   <Route path="super" element={<AdminTable />} />
-
-</Route>
-
-
+        {/* صفحات الأدمن */}
+        <Route
+          path="/admin"
+          element={
+            role === "ROLE_ADMIN" || role === "ROLE_SUPER_ADMIN" ? (
+              <AdminLayout role={role} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="category/add" element={<AddCategory />} />
+          <Route path="category/manage" element={<ManageCategories />} />
+          <Route path="location/manage" element={<ManageLocations />} />
+          <Route path="categories/edit/:id" element={<EditCategory />} />
+          <Route path="gallery" element={<AdminEventImagesManager />} />
+          <Route path="bookings/all" element={<AllBookings />} />
+          <Route path="bookings/new" element={<NewBookings />} />
+          <Route path="bookings/cancelled" element={<CancelledBookings />} />
+          <Route path="bookings/confirmed" element={<ConfirmedBookings />} />
+          <Route path="bookings/:id" element={<BookingDetails />} />
+          <Route path="events/add" element={<AddEvent />} />
+          <Route path="location/add" element={<AddLocation />} />
+          <Route path="events-bookings" element={<EventBookingsChart />} />
+          <Route path="category-bookings" element={<CategoryBookingsChart />} />
+          <Route path="events/manage" element={<ManageEvents />} />
+          <Route path="edit-event/:id" element={<EditEvent />} />
+          <Route path="seating" element={<SelectEventPage />} />
+          <Route path="seating/:eventId" element={<ManageSeatingPage />} />
+          <Route path="manage-seats" element={<EditSeatsPage />} />
+          <Route path="users" element={<ManageUsers />} />
+          <Route path="users/:userId/bookings" element={<UserBookings />} />
+          <Route path="inbox" element={<EmailInterface />} />
+          <Route path="super" element={<AdminTable />} />
+        </Route>
       </Routes>
     </Router>
   );
